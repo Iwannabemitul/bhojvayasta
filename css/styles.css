@@ -1,0 +1,540 @@
+/**
+ * BhojVayasta - Custom Theme & Micro-Interactions Design System
+ * File: css/styles.css
+ * 
+ * Palette:
+ * - Deep Emerald: #065f46, #047857, #10b981
+ * - Warm Amber:   #d97706, #f59e0b, #fbbf24
+ * - Crisp Slate:  #0f172a, #1e293b, #334155
+ * - Soft Cream:   #f8fafc (Clean canvas with high-contrast surfaces)
+ */
+
+/* ==========================================================================
+   1. CSS Custom Properties & Design Tokens
+   ========================================================================== */
+:root {
+  /* Brand Emerald Shades */
+  --color-emerald-950: #022c22;
+  --color-emerald-900: #064e3b;
+  --color-emerald-800: #065f46; /* Core Deep Emerald */
+  --color-emerald-700: #047857;
+  --color-emerald-600: #059669;
+  --color-emerald-500: #10b981;
+  --color-emerald-400: #34d399;
+  --color-emerald-300: #6ee7b7;
+
+  /* Warm Amber Accent Shades */
+  --color-amber-950: #451a03;
+  --color-amber-900: #78350f;
+  --color-amber-800: #92400e;
+  --color-amber-700: #b45309;
+  --color-amber-600: #d97706; /* Core Warm Amber */
+  --color-amber-500: #f59e0b;
+  --color-amber-400: #fbbf24;
+  --color-amber-100: #fef3c7;
+
+  /* Crisp Slate Surfaces & Grays */
+  --color-slate-950: #020617;
+  --color-slate-900: #0f172a; /* Core Crisp Slate */
+  --color-slate-800: #1e293b;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+
+  /* Canvas Background */
+  --color-canvas-cream: #f8fafc;
+  --color-canvas-dark:  #020617;
+
+  /* Glassmorphism Variables */
+  --glass-bg-dark: rgba(15, 23, 42, 0.75);
+  --glass-bg-card: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-emerald: rgba(16, 185, 129, 0.25);
+  --glass-border-amber: rgba(245, 158, 11, 0.3);
+  --glass-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ==========================================================================
+   2. Base & Typography
+   ========================================================================== */
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  color-scheme: dark light;
+}
+
+body {
+  background-color: var(--color-slate-950);
+  color: var(--color-slate-100);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-slate-950);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-slate-800);
+  border-radius: 9999px;
+  border: 2px solid var(--color-slate-950);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-emerald-700);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-800) var(--color-slate-950);
+}
+
+/* ==========================================================================
+   3. Glassmorphism Architecture
+   ========================================================================== */
+.glass-nav {
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.glass-card {
+  background: var(--glass-bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.25s ease, 
+              box-shadow 0.25s ease;
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-3px);
+  border-color: var(--glass-border-emerald);
+  box-shadow: 0 20px 30px -10px rgba(6, 95, 70, 0.25), 0 0 15px -3px rgba(16, 185, 129, 0.15);
+}
+
+.glass-card-amber-hover:hover {
+  transform: translateY(-3px);
+  border-color: var(--glass-border-amber);
+  box-shadow: 0 20px 30px -10px rgba(217, 119, 6, 0.25), 0 0 15px -3px rgba(245, 158, 11, 0.15);
+}
+
+.glass-panel {
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Metric Display Counters */
+.metric-value {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' on, 'zero' on;
+  letter-spacing: -0.03em;
+}
+
+/* ==========================================================================
+   4. Status Badges & Lifecycle Chips
+   ========================================================================== */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.status-pill.status-available {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-emerald-300);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.status-pill.status-available .status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background-color: var(--color-emerald-400);
+  box-shadow: 0 0 8px #10b981;
+}
+
+.status-pill.status-intransit {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--color-amber-300);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.status-pill.status-intransit .status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background-color: var(--color-amber-400);
+  box-shadow: 0 0 8px #f59e0b;
+}
+
+.status-pill.status-delivered {
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+}
+
+.status-pill.status-delivered .status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background-color: #818cf8;
+}
+
+/* ==========================================================================
+   5. Leaflet Map Container & Custom Styles
+   ========================================================================== */
+#relief-map,
+.bhoj-map-container {
+  min-height: 520px;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.6);
+  background: var(--color-slate-900);
+  z-index: 10;
+}
+
+/* Leaflet Zoom Control Styling */
+.leaflet-bar {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-bar a {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  color: #f1f5f9 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(8px);
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  transition: all 0.2s ease;
+}
+
+.leaflet-bar a:hover {
+  background-color: var(--color-emerald-700) !important;
+  color: #ffffff !important;
+}
+
+/* Custom Popup Bubble */
+.leaflet-popup-content-wrapper {
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #f8fafc !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.8), 0 0 15px -3px rgba(16, 185, 129, 0.15) !important;
+  backdrop-filter: blur(14px);
+  padding: 4px !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  padding: 8px 8px 0 0 !important;
+  top: 4px !important;
+  right: 6px !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   6. Pulsing Map Markers & Urgency Rings
+   ========================================================================== */
+/* Urgent Food Marker with Radiant Pulse */
+.bhoj-pin-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bhoj-pin-body {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.bhoj-pin-wrapper:hover .bhoj-pin-body {
+  transform: rotate(-45deg) scale(1.15);
+}
+
+.bhoj-pin-icon {
+  transform: rotate(45deg);
+  width: 16px;
+  height: 16px;
+  color: white;
+}
+
+/* Color Themes for Pins */
+.pin-available .bhoj-pin-body {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: 2px solid #ffffff;
+}
+
+.pin-intransit .bhoj-pin-body {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  border: 2px solid #ffffff;
+}
+
+.pin-delivered .bhoj-pin-body {
+  background: linear-gradient(135deg, #4f46e5, #818cf8);
+  border: 2px solid #ffffff;
+}
+
+.pin-shelter .bhoj-pin-body {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  border: 2px solid #ffffff;
+}
+
+/* Pulsing Ripple Effect for Urgent Food (<2h expiry) */
+.pin-urgent .bhoj-pin-body {
+  background: linear-gradient(135deg, #dc2626, #f97316);
+  border: 2px solid #ffffff;
+}
+
+.urgent-pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid #f97316;
+  background-color: rgba(249, 115, 22, 0.25);
+  animation: urgentPulse 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.urgent-pulse-ring-delayed {
+  animation-delay: 0.6s;
+}
+
+@keyframes urgentPulse {
+  0% {
+    width: 28px;
+    height: 28px;
+    opacity: 0.9;
+  }
+  100% {
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
+}
+
+/* Continuous Subtle Beacon for Active Food Hubs */
+@keyframes beaconWave {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+.active-beacon-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  animation: beaconWave 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   7. Micro-Interactions & Form Elements
+   ========================================================================== */
+/* Interactive Button Scale Feedback */
+.btn-press {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Glow Borders & Highlights */
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
+}
+
+.glow-amber {
+  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.35);
+}
+
+/* Form inputs modern focus styling */
+.bhoj-input {
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(71, 85, 105, 0.6);
+  color: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.bhoj-input:focus {
+  outline: none;
+  border-color: var(--color-emerald-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  background-color: rgba(15, 23, 42, 0.95);
+}
+
+.bhoj-input::placeholder {
+  color: #64748b;
+}
+
+/* Custom Checkbox Gate Style */
+.bhoj-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bhoj-checkbox-label:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.bhoj-checkbox-label input[type="checkbox"]:checked + .bhoj-check-content {
+  color: #f1f5f9;
+}
+
+/* Shimmer Loading Skeleton */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.5) 0%,
+    rgba(51, 65, 85, 0.8) 50%,
+    rgba(30, 41, 59, 0.5) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ==========================================================================
+   8. Toast Notification System Animations
+   ========================================================================== */
+#bhoj-toast-container {
+  z-index: 9999;
+}
+
+.toast-item {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Expiry Countdown Timer Pill */
+.timer-pill-urgent {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  animation: pulseTimer 2s infinite ease-in-out;
+}
+
+@keyframes pulseTimer {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive Utilities */
+@media (max-width: 640px) {
+  #relief-map,
+  .bhoj-map-container {
+    min-height: 400px;
+    border-radius: 0.75rem;
+  }
+  
+  .glass-card {
+    padding: 1rem;
+  }
+}

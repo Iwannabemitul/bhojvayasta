@@ -1,0 +1,16 @@
+# UI/UX ANTI-SLOP DESIGN RULES
+You are strictly forbidden from generating "AI SaaS Slop". Follow these visual rules on every HTML/CSS file:
+
+1. BANNED TROPE LIST (NEVER USE):
+   - NO dark-mode navy/black backgrounds (#0f172a, #0b0f19) unless building a code editor.
+   - NO `background-clip: text` gradients on headings. Ever. Solid, high-contrast ink only.
+   - NO centered hero sections with stacked rounded pill badges above the H1.
+   - NO glowing neon emerald/cyan buttons (`box-shadow: 0 0 20px rgba(...)`).
+   - NO generic `backdrop-filter: blur()` glassmorphism cards floating in empty space.
+   - NO wrapping text inside navigation bar links (`white-space: nowrap` is mandatory on nav items).
+
+2. MANDATORY AESTHETIC (Editorial Civic & Operations Design):
+   - Palette: Warm Editorial Paper (`#F6F5F0`), Crisp Pure White surfaces (`#FFFFFF`), Deep Forest Ink (`#111C16`), Terracotta Clay accent (`#C84B31`), Warm Ochre status (`#D97706`), Hairline Stone borders (`#E2E0D8`).
+   - Typography: Pair a high-contrast Editorial Serif for display headings (`Fraunces` or `Instrument Serif`) with a sharp Neo-Grotesque Sans (`Plus Jakarta Sans` or `Inter`) for UI and `JetBrains Mono` for live tabular data, IDs, weights, and coordinates.
+   - Layout: Asymmetric split grids, exposed `1px solid #E2E0D8` structural borders (Bento/Swiss grid style), high data density, and tactile flat surfaces with crisp 1px borders instead of blurry drop shadows.
+   - Hero Rule: Never build a text-only marketing hero. The top of the page must immediately show functional UI (e.g., an asymmetric 7:5 split with editorial typography on the left and a live interactive dispatch ticker/control board on the right).
