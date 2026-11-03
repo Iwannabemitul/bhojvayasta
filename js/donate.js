@@ -111,7 +111,7 @@
     const btnSubmit = document.getElementById('btn-submit-dispatch');
     const btnSubmitLabel = document.getElementById('btn-submit-label');
 
-    if (countText) countText.textContent = `${checkedCount} / 3 Verified`;
+    if (countText) countText.textContent = `${checkedCount} / 3 Checked`;
     if (pctText) pctText.textContent = `${progressPct}%`;
     if (progressBar) progressBar.style.width = `${progressPct}%`;
 
@@ -127,20 +127,20 @@
       if (checkedCount === 3) {
         btnSubmit.disabled = false;
         btnSubmit.className = 'w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded text-sm font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white cursor-pointer shadow-sm transition-all duration-200';
-        if (btnSubmitLabel) btnSubmitLabel.textContent = 'Dispatch Surplus Food to Relief Network (Gate Cleared)';
+        if (btnSubmitLabel) btnSubmitLabel.textContent = 'Send Food to Relief Network (Ready for Pickup)';
 
         if (gateLockMsg) {
           gateLockMsg.className = 'p-3 rounded bg-[#E8F3EE] border border-[#A3C9B8] text-xs text-[#1B4332] font-mono';
-          gateLockMsg.innerHTML = '✓ <strong>100% Hygiene Gate Cleared.</strong> Certified safe for immediate courier pickup.';
+          gateLockMsg.innerHTML = '✓ <strong>All 3 safety checks passed.</strong> Ready for volunteer pickup.';
         }
       } else {
         btnSubmit.disabled = true;
         btnSubmit.className = 'w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded text-sm font-semibold uppercase tracking-wider bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] cursor-not-allowed opacity-70 transition-all duration-200';
-        if (btnSubmitLabel) btnSubmitLabel.textContent = `Unlock By Completing Hygiene Checklist (${checkedCount}/3)`;
+        if (btnSubmitLabel) btnSubmitLabel.textContent = `Unlock By Checking All 3 Boxes (${checkedCount}/3)`;
 
         if (gateLockMsg) {
           gateLockMsg.className = 'p-3 rounded bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#B45309] font-mono';
-          gateLockMsg.innerHTML = 'All 3 safety gates must be checked to unlock community courier dispatch.';
+          gateLockMsg.innerHTML = 'Please check all 3 boxes above to submit your donation.';
         }
       }
     }
@@ -186,7 +186,7 @@
         icon: pinIcon
       }).addTo(donorMap);
 
-      donorMarker.bindPopup('<strong>Pickup Dock</strong><br>Drag pin or click map to move');
+      donorMarker.bindPopup('<strong>Pickup Location</strong><br>Drag pin or click map to move');
 
       donorMarker.on('dragend', function (e) {
         const coord = e.target.getLatLng();
@@ -377,7 +377,7 @@
 
       if (!chkTemp.checked || !chkPackaging.checked || !chkSpoilage.checked) {
         if (global.BhojToast) {
-          global.BhojToast.error('Mandatory Hygiene Gate: Verify all 3 safety checks before dispatch.');
+          global.BhojToast.error('Please check all 3 safety boxes before submitting.');
         }
         document.getElementById('hygiene-gate-container')?.scrollIntoView({ behavior: 'smooth' });
         return;
@@ -404,17 +404,17 @@
       const address = (document.getElementById('donor-address')?.value || 'Central Delhi Hub, New Delhi').trim();
 
       if (!donorName) {
-        if (global.BhojToast) global.BhojToast.warning('Please enter the establishment or organization name.');
+        if (global.BhojToast) global.BhojToast.warning('Please enter the kitchen or organization name.');
         document.getElementById('donor-name')?.focus();
         return;
       }
       if (!contactPhone) {
-        if (global.BhojToast) global.BhojToast.warning('Please provide a direct contact phone number.');
+        if (global.BhojToast) global.BhojToast.warning('Please enter a contact phone number.');
         document.getElementById('contact-phone')?.focus();
         return;
       }
       if (!foodDescription) {
-        if (global.BhojToast) global.BhojToast.warning('Please describe the food items.');
+        if (global.BhojToast) global.BhojToast.warning('Please list the food items.');
         document.getElementById('food-items-desc')?.focus();
         return;
       }
@@ -449,7 +449,7 @@
         const newDispatch = global.BhojStore.addDispatch(payload);
 
         if (global.BhojToast) {
-          global.BhojToast.success(`Surplus food dispatched! ID: ${newDispatch.id}`);
+          global.BhojToast.success(`Food donation posted! ID: ${newDispatch.id}`);
         }
 
         showSuccessModal(newDispatch);

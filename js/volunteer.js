@@ -103,8 +103,8 @@
 
     courierMarker.bindPopup(`
       <div class="text-xs space-y-1">
-        <strong class="text-[#1d4ed8]">Courier Location</strong>
-        <p class="text-[#525B55]">Drag this pin anywhere in Delhi/NCR to test live Haversine distance recalculation.</p>
+        <strong class="text-[#1d4ed8]">Your Location</strong>
+        <p class="text-[#525B55]">Drag this pin anywhere in Delhi/NCR to see live distances update.</p>
       </div>
     `);
 
@@ -127,7 +127,7 @@
       }
 
       if (global.BhojToast) {
-        global.BhojToast.info(`Courier position moved to [${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}]`);
+        global.BhojToast.info(`Location updated to [${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}]`);
       }
     });
   }
@@ -238,7 +238,7 @@
           <div class="grid grid-cols-2 gap-1 p-2 rounded bg-[#F7F5F0] border border-[#DCD9D0] font-mono text-[11px]">
             <div>
               <span class="text-[#525B55]">Quantity:</span>
-              <div class="text-[#141E18] font-bold">${item.servings} portions</div>
+              <div class="text-[#141E18] font-bold">${item.servings} servings</div>
             </div>
             <div>
               <span class="text-[#525B55]">Distance:</span>
@@ -249,11 +249,11 @@
           ${
             item.status === 'Available'
               ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="w-full py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#C84B31] hover:bg-[#A83820] cursor-pointer">
-                  Accept Pickup Now
+                  I'll Pick This Up
                 </button>`
               : item.status === 'In-Transit'
               ? `<button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="w-full py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
-                  Complete Delivery
+                  Mark as Delivered
                 </button>`
               : `<div class="text-center text-[#525B55] font-mono text-[11px]">Delivered to ${item.targetShelter || 'Shelter'}</div>`
           }
@@ -332,11 +332,11 @@
       const actionBtn = document.getElementById('btn-route-action');
       if (actionBtn) {
         if (dispatch.status === 'Available') {
-          actionBtn.textContent = 'Accept Pickup';
+          actionBtn.textContent = "I'll Pick This Up";
           actionBtn.className = 'btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-wider shrink-0 cursor-pointer';
           actionBtn.onclick = () => openShelterAssignModal(dispatch.id);
         } else if (dispatch.status === 'In-Transit') {
-          actionBtn.textContent = 'Complete Delivery';
+          actionBtn.textContent = 'Mark as Delivered';
           actionBtn.className = 'px-4 py-2 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] shrink-0 cursor-pointer';
           actionBtn.onclick = () => completeDelivery(dispatch.id);
         } else {
@@ -444,7 +444,7 @@
     });
 
     if (totalBadge) {
-      totalBadge.textContent = `${filtered.length} Displayed`;
+      totalBadge.textContent = `${filtered.length} Pickups`;
     }
 
     if (filtered.length === 0) {
@@ -514,41 +514,41 @@
               </div>
 
               <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                <div class="text-[10px] text-[#525B55]">Safe Window</div>
+                <div class="text-[10px] text-[#525B55]">Safe For</div>
                 <div class="font-bold ${expiry.isUrgent ? 'text-[#C84B31]' : 'text-[#1B4332]'}">${expiry.formattedText}</div>
                 <div class="text-[10px] text-[#525B55]">${item.storageTemp || 'Temp OK'}</div>
               </div>
 
               <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                <div class="text-[10px] text-[#525B55]">Haversine</div>
+                <div class="text-[10px] text-[#525B55]">Distance</div>
                 <div class="font-bold text-[#1d4ed8]">${distKm} km</div>
                 <div class="text-[10px] text-[#525B55]">~${travelMins} mins</div>
               </div>
             </div>
 
             <div class="text-[11px] font-mono text-[#1B4332] bg-[#E8F3EE] border border-[#A3C9B8] px-2 py-1 rounded">
-              ✓ Temp Checked • ✓ Clean Food-Grade Packaging • ✓ Unspoiled
+              ✓ Temperature Checked • ✓ Clean Food-Grade Packaging • ✓ Fresh
             </div>
 
             <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()">
               <button type="button" onclick="window.BhojFocusDispatch('${item.id}')" class="px-3 py-1.5 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] transition-colors cursor-pointer">
-                Locate Route
+                View on Map
               </button>
 
               ${
                 item.status === 'Available'
                   ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="btn-primary px-4 py-1.5 text-xs uppercase tracking-wider cursor-pointer">
-                      Accept Pickup
+                      I'll Pick This Up
                     </button>`
                   : item.status === 'In-Transit'
                   ? `<div class="flex items-center gap-2">
                       <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">➔ ${item.targetShelter || 'Shelter'}</span>
                       <button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
-                        Complete Delivery
+                        Mark as Delivered
                       </button>
                     </div>`
                   : `<span class="text-xs font-mono font-bold text-[#525B55]">
-                      ✓ Delivered & Logged
+                      ✓ Delivered to Shelter
                     </span>`
               }
             </div>
@@ -576,7 +576,7 @@
 
     document.getElementById('assign-modal-id').textContent = dispatch.id;
     document.getElementById('assign-modal-donor').textContent = dispatch.donorName;
-    document.getElementById('assign-modal-servings').textContent = `${dispatch.servings} portions (~${((dispatch.servings * 0.45).toFixed(1))} kg)`;
+    document.getElementById('assign-modal-servings').textContent = `${dispatch.servings} servings (~${((dispatch.servings * 0.45).toFixed(1))} kg)`;
     document.getElementById('assign-modal-volunteer-name').textContent = volunteerName;
 
     const shelters = global.BhojStore.getShelters();
@@ -601,7 +601,7 @@
                   <span>Capacity: <strong class="text-[#141E18]">${s.currentOccupancy}/${s.mealDemand}</strong></span>
                   <span>•</span>
                   <span>Contact: ${s.contactPerson}</span>
-                  ${isNearest ? `<span class="ml-auto px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-bold">Nearest Hub</span>` : ''}
+                  ${isNearest ? `<span class="ml-auto px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-bold">Nearest Shelter</span>` : ''}
                 </div>
               </div>
             </label>
@@ -645,7 +645,7 @@
           close();
 
           if (global.BhojToast) {
-            global.BhojToast.success(`Pickup accepted! Route plotted to ${chosenShelter}`);
+            global.BhojToast.success(`Pickup confirmed! Route shown to ${chosenShelter}`);
           }
 
           renderFeed();
@@ -687,7 +687,7 @@
 
       if (global.BhojToast) {
         global.BhojToast.success(
-          `Delivery complete! ${updated.servings} meals handed over to ${updated.targetShelter}.`
+          `Delivery complete! ${updated.servings} meals delivered to ${updated.targetShelter}.`
         );
       }
 

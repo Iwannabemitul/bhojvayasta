@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Report Surplus Food Dispatch - BhojVayasta Relief Network</title>
-  <meta name="description" content="Commercial surplus food dispatch portal with mandatory FSSAI hygiene safety gate and real-time community courier dispatch across Delhi/NCR.">
+  <title>Donate Extra Food - BhojVayasta Relief Network</title>
+  <meta name="description" content="Quickly donate extra food from banquets, cafeterias, and stores to local community shelters in Delhi/NCR.">
 
   <!-- Favicon SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C84B31' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
@@ -74,13 +74,13 @@
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#DCD9D0] pb-6">
         <div>
           <div class="font-mono text-xs uppercase tracking-wider text-[#1B4332] font-bold mb-1">
-            Commercial Food Surplus Ingestion Desk
+            Donate Extra Food
           </div>
           <h1 class="text-3xl sm:text-4xl font-bold font-display text-[#141E18]">
-            Surplus Food Dispatch Portal
+            Send Food to Community Shelters
           </h1>
           <p class="text-sm text-[#525B55] max-w-2xl mt-1">
-            Report high-volume surplus meals from banquets, corporate dining halls, and supermarkets. All dispatches pass mandatory FSSAI hygiene verification before broadcasting to verified community couriers.
+            Share extra meals from weddings, cafeterias, restaurants, and grocery stores. Once 3 quick safety checks are confirmed, nearby volunteers are notified for pickup.
           </p>
         </div>
 
@@ -88,14 +88,14 @@
           <div class="p-3 bg-white border border-[#DCD9D0] rounded flex items-center gap-3 text-xs">
             <span class="w-2 h-2 rounded-full bg-[#1B4332]"></span>
             <div>
-              <div class="font-mono text-[10px] uppercase text-[#525B55] font-semibold">Hygiene Gate</div>
-              <div class="font-bold text-[#141E18]">FSSAI Compliant</div>
+              <div class="font-mono text-[10px] uppercase text-[#525B55] font-semibold">Food Safety</div>
+              <div class="font-bold text-[#141E18]">Verified Safe</div>
             </div>
           </div>
           <div class="p-3 bg-white border border-[#DCD9D0] rounded flex items-center gap-3 text-xs">
             <span class="w-2 h-2 rounded-full bg-[#B45309]"></span>
             <div>
-              <div class="font-mono text-[10px] uppercase text-[#525B55] font-semibold">Avg Claim Time</div>
+              <div class="font-mono text-[10px] uppercase text-[#525B55] font-semibold">Average Pickup</div>
               <div class="font-bold text-[#B45309] font-mono">&lt; 15 Mins</div>
             </div>
           </div>
@@ -115,55 +115,55 @@
             <!-- SECTION 1: ESTABLISHMENT DETAILS -->
             <div class="space-y-4">
               <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h2 class="font-display text-base font-bold text-[#141E18]">1. Donor & Commercial Establishment Details</h2>
+                <h2 class="font-display text-base font-bold text-[#141E18]">1. Your Details</h2>
                 <span class="font-mono text-xs text-[#525B55]">Step 1 of 4</span>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
                   <label for="donor-name" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Organization / Establishment Name <span class="text-[#C84B31]">*</span>
+                    Kitchen or Organization Name <span class="text-[#C84B31]">*</span>
                   </label>
-                  <input id="donor-name" type="text" required placeholder="e.g. Grand Imperial Wedding Banquet, TechSpace Dining" class="bhoj-input text-sm">
-                  <span class="text-[11px] text-[#525B55] mt-1 block">Full commercial or corporate donor identity</span>
+                  <input id="donor-name" type="text" required placeholder="e.g. Grand Imperial Banquet, TechSpace Canteen" class="bhoj-input text-sm">
+                  <span class="text-[11px] text-[#525B55] mt-1 block">Name of the hotel, banquet hall, office, or store</span>
                 </div>
 
                 <div>
                   <label for="donor-category" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Establishment Category <span class="text-[#C84B31]">*</span>
+                    Type of Place <span class="text-[#C84B31]">*</span>
                   </label>
                   <select id="donor-category" class="bhoj-input text-sm bg-white">
-                    <option value="Wedding Banquet">Wedding Banquet / Luxury Hall</option>
-                    <option value="Corporate Dining Hall">Corporate Dining Hall / Cafeteria</option>
-                    <option value="Supermarket / Grocery">Supermarket / Retail Grocer</option>
-                    <option value="Hotel / Restaurant">Hotel / Fine Dining Buffet</option>
-                    <option value="Commercial Kitchen">Commercial Cloud Kitchen</option>
-                    <option value="Wholesale Depot">Agricultural Wholesale Depot</option>
+                    <option value="Wedding Banquet">Wedding Banquet Hall</option>
+                    <option value="Corporate Dining Hall">Office Cafeteria / Canteen</option>
+                    <option value="Supermarket / Grocery">Supermarket / Grocery Store</option>
+                    <option value="Hotel / Restaurant">Hotel / Restaurant Buffet</option>
+                    <option value="Commercial Kitchen">Cloud Kitchen</option>
+                    <option value="Wholesale Depot">Wholesale Market</option>
                   </select>
                 </div>
 
                 <div>
                   <label for="diet-type" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Dietary Classification <span class="text-[#C84B31]">*</span>
+                    Food Category <span class="text-[#C84B31]">*</span>
                   </label>
                   <select id="diet-type" class="bhoj-input text-sm bg-white">
-                    <option value="Vegetarian">Pure Vegetarian (100% Veg)</option>
-                    <option value="Vegan">Vegan (Plant Based, Dairy-Free)</option>
+                    <option value="Vegetarian">Pure Vegetarian</option>
+                    <option value="Vegan">Vegan (No Dairy)</option>
                     <option value="Non-Vegetarian">Non-Vegetarian</option>
-                    <option value="Jain Friendly">Jain Friendly (No Root Veg)</option>
+                    <option value="Jain Friendly">Jain (No Root Veg)</option>
                   </select>
                 </div>
 
                 <div>
                   <label for="contact-person" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Dispatch Coordinator / Head Chef <span class="text-[#C84B31]">*</span>
+                    Contact Person <span class="text-[#C84B31]">*</span>
                   </label>
                   <input id="contact-person" type="text" required placeholder="e.g. Sunil Manchanda" class="bhoj-input text-sm">
                 </div>
 
                 <div>
                   <label for="contact-phone" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Direct Contact Phone <span class="text-[#C84B31]">*</span>
+                    Phone Number <span class="text-[#C84B31]">*</span>
                   </label>
                   <input id="contact-phone" type="tel" required placeholder="e.g. +91 98101 23450" class="bhoj-input text-sm font-mono">
                 </div>
@@ -173,14 +173,14 @@
             <!-- SECTION 2: FOOD PARTICULARS, SERVINGS & DYNAMIC WEIGHT -->
             <div class="space-y-4">
               <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h2 class="font-display text-base font-bold text-[#141E18]">2. Food Particulars, Servings & Safe Window</h2>
+                <h2 class="font-display text-base font-bold text-[#141E18]">2. Food Details & Quantity</h2>
                 <span class="font-mono text-xs text-[#525B55]">Step 2 of 4</span>
               </div>
 
               <!-- Food Type Selector -->
               <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-2">
-                  Food Type Classification <span class="text-[#C84B31]">*</span>
+                  Food Type <span class="text-[#C84B31]">*</span>
                 </label>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="food-type-selector">
                   
@@ -189,10 +189,10 @@
                     <div class="space-y-1">
                       <div class="flex items-center gap-2">
                         <span class="text-sm font-bold text-[#141E18]">Cooked Meals</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-[#1B4332] border border-[#A3C9B8]">Hot Chain</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-[#1B4332] border border-[#A3C9B8]">Hot Food</span>
                       </div>
                       <p class="text-xs text-[#525B55] leading-snug">
-                        Prepared curries, rice, dal, rotis, buffet surplus. Rapid courier pickup needed within 4-6 hours.
+                        Prepared curries, rice, dal, and rotis. Best picked up within 4–6 hours.
                       </p>
                     </div>
                   </label>
@@ -201,11 +201,11 @@
                     <input type="radio" name="foodType" value="Raw Produce" class="mt-1 accent-[#C84B31]">
                     <div class="space-y-1">
                       <div class="flex items-center gap-2">
-                        <span class="text-sm font-bold text-[#141E18]">Raw Produce / Bulk Staples</span>
+                        <span class="text-sm font-bold text-[#141E18]">Raw Produce & Staples</span>
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">Ambient</span>
                       </div>
                       <p class="text-xs text-[#525B55] leading-snug">
-                        Fruits, vegetables, whole grain sacks. Extended consumption window (12-48 hours).
+                        Fresh fruits, vegetables, or dry grains. Safe to consume over 12–48 hours.
                       </p>
                     </div>
                   </label>
@@ -218,13 +218,13 @@
                 <div>
                   <div class="flex items-center justify-between mb-1.5">
                     <label for="servings-input" class="text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                      Surplus Quantity (Servings) <span class="text-[#C84B31]">*</span>
+                      Quantity (Servings) <span class="text-[#C84B31]">*</span>
                     </label>
-                    <span class="text-[11px] font-mono text-[#1B4332] font-bold">1 serving ≈ 450g</span>
+                    <span class="text-[11px] font-mono text-[#1B4332] font-bold">1 serving ≈ 0.45 kg</span>
                   </div>
                   <input id="servings-input" type="number" min="10" max="5000" step="5" value="120" required class="bhoj-input text-base font-mono font-bold text-[#141E18]">
                   <div class="flex items-center gap-2 mt-2">
-                    <span class="text-[11px] text-[#525B55]">Presets:</span>
+                    <span class="text-[11px] text-[#525B55]">Quick picks:</span>
                     <button type="button" data-servings="50" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">50</button>
                     <button type="button" data-servings="120" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">120</button>
                     <button type="button" data-servings="250" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">250</button>
@@ -234,15 +234,15 @@
 
                 <div class="p-4 rounded bg-[#FAF9F6] border border-[#DCD9D0] space-y-2">
                   <div class="text-[10px] font-mono uppercase tracking-wider text-[#525B55] font-semibold">
-                    Live Weight & Impact Calculation
+                    Calculated Weight & People Fed
                   </div>
                   <div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#DCD9D0]">
                     <div>
-                      <span class="text-[11px] text-[#525B55]">Estimated Weight</span>
+                      <span class="text-[11px] text-[#525B55]">Total Weight</span>
                       <div id="calc-weight-kg" class="text-base font-bold font-mono text-[#C84B31]">54.0 kg</div>
                     </div>
                     <div>
-                      <span class="text-[11px] text-[#525B55]">Community Meals</span>
+                      <span class="text-[11px] text-[#525B55]">People Fed</span>
                       <div id="calc-people-fed" class="text-base font-bold font-mono text-[#1B4332]">120 People</div>
                     </div>
                   </div>
@@ -252,20 +252,20 @@
               <!-- Detailed Items Description -->
               <div>
                 <label for="food-items-desc" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                  Detailed Food Items & Dishes <span class="text-[#C84B31]">*</span>
+                  List of Food Items & Dishes <span class="text-[#C84B31]">*</span>
                 </label>
-                <textarea id="food-items-desc" rows="2" required placeholder="e.g. Shahi Paneer, Dal Makhani, Steamed Rice, Tandoori Rotis, Gulab Jamun (Packed in sealed aluminum trays)" class="bhoj-input text-xs sm:text-sm"></textarea>
+                <textarea id="food-items-desc" rows="2" required placeholder="e.g. Paneer curry, dal makhani, steamed rice, rotis, gulab jamun (packed in clean foil trays)" class="bhoj-input text-xs sm:text-sm"></textarea>
               </div>
 
               <!-- Time & Shelf Life Slider -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label for="prepared-time" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Prepared / Cooked Time <span class="text-[#C84B31]">*</span>
+                    When Was It Cooked / Prepared? <span class="text-[#C84B31]">*</span>
                   </label>
                   <input id="prepared-time" type="datetime-local" class="bhoj-input text-xs sm:text-sm font-mono">
                   <div class="flex items-center gap-2 mt-1.5 text-[11px]">
-                    <button type="button" id="btn-cooked-just-now" class="text-[#1B4332] font-semibold underline">Just Prepared</button>
+                    <button type="button" id="btn-cooked-just-now" class="text-[#1B4332] font-semibold underline">Just now</button>
                     <span class="text-[#DCD9D0]">•</span>
                     <button type="button" id="btn-cooked-1hr" class="text-[#525B55] hover:text-[#141E18] underline">1 hr ago</button>
                     <span class="text-[#DCD9D0]">•</span>
@@ -276,10 +276,10 @@
                 <div>
                   <div class="flex items-center justify-between mb-1.5">
                     <label for="shelf-life" class="text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                      Safe Window: <span id="shelf-life-display" class="font-mono text-[#1B4332] text-sm font-bold">4 Hours</span>
+                      Safe to Eat For: <span id="shelf-life-display" class="font-mono text-[#1B4332] text-sm font-bold">4 Hours</span>
                     </label>
                     <span id="urgency-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
-                      Moderate 3-6 hrs
+                      Moderate (3–6 hrs)
                     </span>
                   </div>
                   <input id="shelf-life" type="range" min="2" max="24" step="1" value="4" class="w-full accent-[#C84B31] cursor-pointer">
@@ -290,7 +290,7 @@
                     <span>24 hrs (Produce)</span>
                   </div>
                   <div class="text-[11px] text-[#525B55] mt-1 font-mono">
-                    Exact Expiry: <strong id="calc-expiry-timestamp" class="text-[#141E18]">Calculating...</strong>
+                    Best Before: <strong id="calc-expiry-timestamp" class="text-[#141E18]">Calculating...</strong>
                   </div>
                 </div>
               </div>
@@ -299,22 +299,22 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label for="packaging-type" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Packaging Format <span class="text-[#C84B31]">*</span>
+                    How Is It Packed? <span class="text-[#C84B31]">*</span>
                   </label>
                   <select id="packaging-type" class="bhoj-input text-xs sm:text-sm bg-white">
-                    <option value="Sealed Aluminum Food-Grade Trays">Sealed Aluminum Food-Grade Trays</option>
+                    <option value="Sealed Aluminum Food-Grade Trays">Sealed Aluminum Trays</option>
                     <option value="Insulated Stainless Steel Urns">Insulated Stainless Steel Urns</option>
-                    <option value="Eco-Friendly Biodegradable Meal Boxes">Eco-Friendly Biodegradable Meal Boxes</option>
-                    <option value="Commercial Ventilated Plastic Crates">Commercial Ventilated Plastic Crates (Produce)</option>
-                    <option value="Food Grade Jute Bags">Food Grade Jute Sacks (Dry Staples)</option>
+                    <option value="Eco-Friendly Biodegradable Meal Boxes">Eco Meal Boxes</option>
+                    <option value="Commercial Ventilated Plastic Crates">Plastic Crates (Produce)</option>
+                    <option value="Food Grade Jute Bags">Jute Sacks (Dry Staples)</option>
                   </select>
                 </div>
 
                 <div>
                   <label for="temperature-input" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Holding Temperature <span class="text-[#C84B31]">*</span>
+                    Current Temperature <span class="text-[#C84B31]">*</span>
                   </label>
-                  <input id="temperature-input" type="text" value="68°C" placeholder="e.g. 68°C (Hot) or 18°C (Ambient)" class="bhoj-input text-xs sm:text-sm font-mono">
+                  <input id="temperature-input" type="text" value="68°C" placeholder="e.g. 68°C (Hot) or 18°C (Normal)" class="bhoj-input text-xs sm:text-sm font-mono">
                 </div>
               </div>
             </div>
@@ -322,27 +322,27 @@
             <!-- SECTION 3: PICKUP LOCATION & LEAFLET MAP -->
             <div class="space-y-4">
               <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h2 class="font-display text-base font-bold text-[#141E18]">3. Pickup Location & Dock Coordinates</h2>
+                <h2 class="font-display text-base font-bold text-[#141E18]">3. Pickup Address</h2>
                 <span class="font-mono text-xs text-[#525B55]">Step 3 of 4</span>
               </div>
 
               <!-- Quick Presets -->
               <div class="space-y-1.5">
                 <div class="text-[11px] font-mono text-[#525B55] uppercase tracking-wider font-semibold">
-                  Quick Delhi/NCR Presets or Click On Map:
+                  Quick Locations or Click on Map:
                 </div>
                 <div class="flex flex-wrap gap-2" id="location-presets">
                   <button type="button" data-lat="28.6280" data-lng="77.2190" data-addr="Barakhamba Road, Connaught Place, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    CP Banquet Hub
+                    CP Hub (Central)
                   </button>
                   <button type="button" data-lat="28.5355" data-lng="77.3910" data-addr="Logix Cyber Park, Sector 62, Noida, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    Noida Sec 62
+                    Noida Sector 62
                   </button>
                   <button type="button" data-lat="28.4950" data-lng="77.0890" data-addr="DLF CyberCity Wing 4, Gurugram, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    Gurugram CyberHub
+                    Gurugram CyberCity
                   </button>
                   <button type="button" data-lat="28.5921" data-lng="77.0460" data-addr="Sector 21 Institutional Area, Dwarka, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    Dwarka Sec 21
+                    Dwarka Sector 21
                   </button>
                 </div>
               </div>
@@ -351,7 +351,7 @@
               <div class="space-y-2">
                 <div id="donor-map" class="h-64 sm:h-72 w-full rounded border border-[#DCD9D0] overflow-hidden z-10"></div>
                 <div class="flex items-center justify-between text-[11px] font-mono text-[#525B55]">
-                  <span>Drag marker or click map to move dock location</span>
+                  <span>Drag the marker or click the map to set pickup point</span>
                   <span class="text-[#141E18] font-bold" id="coords-readout">Lat: 28.6280, Lng: 77.2190</span>
                 </div>
               </div>
@@ -361,9 +361,9 @@
 
               <div>
                 <label for="donor-address" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                  Detailed Street Address & Gate Instructions <span class="text-[#C84B31]">*</span>
+                  Full Street Address & Gate Instructions <span class="text-[#C84B31]">*</span>
                 </label>
-                <input id="donor-address" type="text" required value="Barakhamba Road, Connaught Place, New Delhi" placeholder="e.g. Gate No. 3 Basement Dispatch Dock, Near Reception" class="bhoj-input text-xs sm:text-sm">
+                <input id="donor-address" type="text" required value="Barakhamba Road, Connaught Place, New Delhi" placeholder="e.g. Gate No. 3 Basement Loading Dock, Near Security Desk" class="bhoj-input text-xs sm:text-sm">
               </div>
             </div>
 
@@ -373,22 +373,22 @@
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#DCD9D0] pb-3">
                 <div>
                   <h3 class="font-display text-base font-bold text-[#141E18]">
-                    4. Mandatory Food Safety & Hygiene Checklist
+                    4. Food Safety Checklist
                   </h3>
                   <p class="text-xs text-[#525B55]">
-                    Zero-Tolerance FSSAI Safe Food Sharing Gate
+                    Confirm all 3 checks to unlock volunteer courier pickup
                   </p>
                 </div>
 
                 <div id="compliance-badge" class="px-3 py-1 rounded text-xs font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] self-start sm:self-auto">
-                  <span id="compliance-count-text">0 / 3 Verified</span>
+                  <span id="compliance-count-text">0 / 3 Checked</span>
                 </div>
               </div>
 
               <!-- Progress Bar -->
               <div class="space-y-1">
                 <div class="flex justify-between text-[11px] font-mono text-[#525B55]">
-                  <span>Hygiene Gate Completion</span>
+                  <span>Safety Checklist Progress</span>
                   <span id="compliance-progress-pct" class="text-[#1B4332] font-bold">0%</span>
                 </div>
                 <div class="w-full h-2 rounded bg-[#EFECE6] overflow-hidden">
@@ -402,10 +402,10 @@
                   <input id="chk-temp-check" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
                   <div class="text-xs">
                     <div class="font-bold text-[#141E18]">
-                      Temperature Check Passed (&gt;60°C Hot / &lt;5°C Cold)
+                      Kept at Safe Temperature (&gt;60°C Hot or &lt;5°C Cold)
                     </div>
                     <p class="text-[#525B55] mt-0.5 leading-snug">
-                      Food maintained under thermal control in commercial warmers or chillers, avoiding the microbial danger zone.
+                      Food was stored hot in warmers or chilled in coolers until dispatch.
                     </p>
                   </div>
                 </label>
@@ -414,10 +414,10 @@
                   <input id="chk-packaging" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
                   <div class="text-xs">
                     <div class="font-bold text-[#141E18]">
-                      Clean & Food-Grade Sealed Packaging
+                      Packed in Clean, Sealed Containers
                     </div>
                     <p class="text-[#525B55] mt-0.5 leading-snug">
-                      Packed in sanitized, leak-proof, food-grade containers or urns ready for immediate courier transport.
+                      Packed in clean, covered, leak-proof food trays or urns ready for transit.
                     </p>
                   </div>
                 </label>
@@ -426,10 +426,10 @@
                   <input id="chk-no-spoilage" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
                   <div class="text-xs">
                     <div class="font-bold text-[#141E18]">
-                      Zero Spoilage & Sensory Inspection Verified
+                      Checked Fresh (Smells & Looks Good)
                     </div>
                     <p class="text-[#525B55] mt-0.5 leading-snug">
-                      Visual, textural, and aroma inspection completed by kitchen staff. Zero cross-contamination or stale items.
+                      Kitchen team checked the food. Fresh, clean, and safe to eat.
                     </p>
                   </div>
                 </label>
@@ -437,14 +437,14 @@
 
               <!-- Help Note -->
               <div id="gate-lock-message" class="p-3 rounded bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#B45309]">
-                All 3 safety gates must be checked to unlock community courier dispatch.
+                Please check all 3 boxes above to unlock courier dispatch.
               </div>
             </div>
 
             <!-- Submit Button (Locked until 3/3 verified) -->
             <div class="pt-2">
               <button id="btn-submit-dispatch" type="submit" disabled class="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded text-sm font-semibold uppercase tracking-wider bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] cursor-not-allowed opacity-70 transition-all duration-200">
-                <span id="btn-submit-label">Unlock By Completing Hygiene Checklist (0/3)</span>
+                <span id="btn-submit-label">Unlock By Completing Safety Checklist (0/3)</span>
               </button>
             </div>
 
@@ -463,10 +463,10 @@
             <div class="card-surface p-6 rounded space-y-4">
               <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
                 <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                  Live Courier Feed Preview
+                  How Volunteers See Your Listing
                 </h3>
                 <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
-                  Real-time Preview
+                  Preview
                 </span>
               </div>
 
@@ -477,7 +477,7 @@
                       BV-PENDING
                     </span>
                     <h4 id="preview-donor" class="text-base font-bold text-[#141E18] mt-1">
-                      Grand Imperial Wedding Banquet
+                      Grand Imperial Banquet
                     </h4>
                     <div id="preview-address" class="text-xs text-[#525B55] truncate max-w-xs mt-0.5">
                       Barakhamba Road, Connaught Place, New Delhi
@@ -499,7 +499,7 @@
                     </span>
                   </div>
                   <p id="preview-description" class="text-xs text-[#525B55] line-clamp-2 italic">
-                    Shahi Paneer, Dal Makhani, Steamed Rice, Tandoori Rotis in foil urns.
+                    Paneer curry, dal makhani, steamed rice, rotis in foil trays.
                   </p>
                 </div>
 
@@ -513,19 +513,19 @@
                     <div id="preview-weight" class="font-bold text-[#C84B31]">54.0 kg</div>
                   </div>
                   <div class="p-2 bg-white rounded border border-[#DCD9D0]">
-                    <div class="text-[10px] text-[#525B55]">Safe Window</div>
+                    <div class="text-[10px] text-[#525B55]">Safe For</div>
                     <div id="preview-expiry" class="font-bold text-[#1B4332]">4h left</div>
                   </div>
                 </div>
 
                 <div class="pt-2 flex items-center justify-between text-[11px] font-mono text-[#525B55]">
-                  <span>✓ FSSAI Hygiene Guarded</span>
-                  <span class="font-semibold text-[#1B4332]">Ready for Dispatch</span>
+                  <span>✓ Safety Verified</span>
+                  <span class="font-semibold text-[#1B4332]">Ready for Pickup</span>
                 </div>
               </div>
 
               <p class="text-[11px] text-[#525B55] leading-relaxed">
-                When submitted, this listing broadcasts directly to registered volunteers on the courier map.
+                When submitted, this listing broadcasts directly to nearby volunteers on the map.
               </p>
             </div>
 
@@ -533,10 +533,10 @@
             <div class="card-surface p-6 rounded space-y-4">
               <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
                 <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                  Recent Network Submissions
+                  Recent Donations
                 </h3>
                 <a href="volunteer.html" class="font-mono text-xs text-[#C84B31] hover:underline">
-                  Feed →
+                  View Map →
                 </a>
               </div>
 
@@ -548,10 +548,10 @@
             <!-- Good Samaritan Info -->
             <div class="p-4 bg-white border border-[#DCD9D0] rounded text-xs text-[#525B55] space-y-1.5">
               <div class="font-bold text-[#141E18] flex items-center gap-1.5">
-                <span>FSSAI Good Samaritan Protection</span>
+                <span>Good Samaritan Protection</span>
               </div>
               <p class="leading-relaxed text-[11px]">
-                Under Indian Food Safety Regulations, verified donors sharing safe, unadulterated edible surplus in good faith bear zero civil or criminal liability.
+                Under Indian food safety guidelines, donors sharing wholesome surplus food in good faith bear zero legal liability.
               </p>
             </div>
 
@@ -576,37 +576,37 @@
 
       <div class="space-y-1">
         <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-semibold">
-          Dispatched To Relief Grid
+          Donation Live
         </span>
         <h3 class="font-display text-2xl font-bold text-[#141E18]">
-          Surplus Batch Logged!
+          Food Posted for Pickup!
         </h3>
         <p class="text-xs text-[#525B55]">
-          Your surplus meals have passed the hygiene gate and are live on the courier feed.
+          Your donation is now visible to nearby volunteer couriers on the live map.
         </p>
       </div>
 
       <div class="p-3.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-2 font-mono text-left text-xs">
         <div class="flex justify-between">
-          <span class="text-[#525B55]">Dispatch ID:</span>
+          <span class="text-[#525B55]">Donation ID:</span>
           <span id="modal-success-id" class="text-[#141E18] font-bold">BV-0000</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-[#525B55]">Quantity Logged:</span>
+          <span class="text-[#525B55]">Total Food:</span>
           <span id="modal-success-servings" class="text-[#141E18] font-bold">120 servings</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-[#525B55]">Pickup Dock:</span>
+          <span class="text-[#525B55]">Pickup Location:</span>
           <span id="modal-success-zone" class="text-[#141E18] truncate max-w-[200px]">Connaught Place</span>
         </div>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
         <a id="btn-view-on-feed" href="volunteer.html" class="flex-1 btn-primary py-2.5 text-xs text-center uppercase tracking-wider">
-          Track On Live Map
+          Track on Map
         </a>
         <button id="btn-modal-dismiss" type="button" class="btn-secondary py-2.5 px-4 text-xs">
-          Report Another Batch
+          Donate More Food
         </button>
       </div>
 

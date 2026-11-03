@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BhojVayasta - Surplus Food Recovery & Community Hunger Relief Network</title>
-  <meta name="description" content="Civil logistics platform connecting commercial banquet and corporate food surplus with Delhi/NCR hunger relief centers within sub-2-hour safety windows.">
+  <title>BhojVayasta - Save Extra Food, Feed People in Need</title>
+  <meta name="description" content="A simple community food recovery platform in Delhi/NCR. We connect wedding halls, corporate cafeterias, and grocery stores with nearby shelters.">
 
   <!-- Favicon SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C84B31' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
 
-  <!-- Google Fonts: Fraunces (Editorial Display), Plus Jakarta Sans (Interface), JetBrains Mono (Telemetry) -->
+  <!-- Google Fonts: Fraunces, Plus Jakarta Sans, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800;9..144,900&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -69,62 +69,61 @@
   <main class="flex-grow">
     
     <!-- ====================================================================
-         1. HERO SECTION & LIVE RECOVERY TICKER
+         1. HERO SECTION (Simple, Direct, Action-Oriented)
          ==================================================================== -->
-    <section class="border-b border-[#DCD9D0] bg-[#F7F5F0] pt-10 pb-16 sm:pt-16 sm:pb-20">
+    <section class="border-b border-[#DCD9D0] bg-[#F7F5F0] pt-10 pb-16 sm:pt-14 sm:pb-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- Live Alert / Ticker Strip -->
-        <div class="flex justify-start mb-6">
+        <!-- Live Ticker -->
+        <div class="flex justify-start mb-5">
           <div id="live-hero-ticker" class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#DCD9D0] rounded text-xs text-[#525B55]">
             <span class="flex h-2 w-2 relative">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1B4332] opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-[#1B4332]"></span>
             </span>
             <span id="hero-ticker-text" class="font-mono text-xs text-[#141E18]">
-              Connecting Delhi/NCR Relief Grid...
+              Checking live food pickups in Delhi/NCR...
             </span>
           </div>
         </div>
 
-        <!-- Main Headline -->
-        <div class="max-w-4xl space-y-6">
-          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">
-            Civil Surplus Food Recovery & Rapid Logistics Infrastructure
+        <!-- Headline & Plain English Intro -->
+        <div class="max-w-3xl space-y-5">
+          <div class="font-mono text-xs uppercase tracking-wider text-[#C84B31] font-bold">
+            Delhi/NCR Surplus Food Recovery
           </div>
 
-          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight text-[#141E18] leading-[1.08]">
-            Turning Commercial Surplus Into Dignified Community Meals
+          <h1 class="text-4xl sm:text-6xl font-bold font-display tracking-tight text-[#141E18] leading-[1.1]">
+            Save Extra Food.<br>
+            Feed People in Need.
           </h1>
 
-          <p class="text-base sm:text-xl text-[#525B55] max-w-2xl font-normal leading-relaxed">
-            Bridging wedding banquets, corporate dining halls, and supermarkets with urban slum relief camps and childcare homes within <strong class="text-[#141E18] font-semibold">sub-2-hour safety windows</strong>.
+          <p class="text-base sm:text-lg text-[#525B55] max-w-2xl leading-relaxed">
+            Weddings, office cafeterias, and grocery stores often have good food left over. We help volunteers pick it up and deliver it to nearby shelters in <strong>under 2 hours</strong>.
           </p>
 
-          <!-- Action CTA Buttons -->
-          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            
-            <a href="donate.html" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white transition-colors rounded shadow-sm">
-              <span>Report Surplus Food</span>
-              <span class="text-xs">→</span>
+          <!-- Action Buttons -->
+          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <a href="donate.html" class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white transition-colors rounded shadow-sm">
+              <span>Donate Extra Food</span>
+              <span>→</span>
             </a>
 
-            <a href="volunteer.html" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-[#141E18] bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] transition-colors rounded">
-              <span>Join Courier Pickup Feed</span>
-              <span id="hero-badge-count" class="font-mono text-xs px-2 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#F59E0B]/40">
+            <a href="volunteer.html" class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-[#141E18] bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] transition-colors rounded">
+              <span>See Food Waiting for Pickup</span>
+              <span id="hero-badge-count" class="font-mono text-xs px-2 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
                 ...
               </span>
             </a>
-
           </div>
 
-          <!-- Editorial Metric Highlights -->
-          <div class="pt-4 flex flex-wrap items-center gap-6 text-xs text-[#525B55] font-mono border-t border-[#DCD9D0]">
-            <div>Average Rescue Time: <strong class="text-[#141E18]">48 Mins</strong></div>
+          <!-- 3 Plain Facts -->
+          <div class="pt-4 flex flex-wrap items-center gap-5 text-xs text-[#525B55] font-mono border-t border-[#DCD9D0]">
+            <div>Average Delivery Time: <strong class="text-[#141E18]">48 Mins</strong></div>
             <span class="text-[#DCD9D0]">•</span>
-            <div>Holding Temperature Gate: <strong class="text-[#141E18]">&gt;60°C Verified</strong></div>
+            <div>Safety Checked: <strong class="text-[#141E18]">Hot (&gt;60°C) & Fresh</strong></div>
             <span class="text-[#DCD9D0]">•</span>
-            <div>Target Relief Centers: <strong class="text-[#141E18]">4 Verified Hubs</strong></div>
+            <div>Partner Shelters: <strong class="text-[#141E18]">4 Delhi Hubs</strong></div>
           </div>
 
         </div>
@@ -133,26 +132,26 @@
     </section>
 
     <!-- ====================================================================
-         2. COMMUNITY HUNGER RELIEF IMPACT DASHBOARD
+         2. LIVE IMPACT NUMBERS (Easy to read & understand)
          ==================================================================== -->
     <section id="impact-dashboard" class="py-12 bg-[#F7F5F0]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        <!-- Header -->
+        <!-- Section Title -->
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#DCD9D0] pb-4">
           <div>
             <div class="font-mono text-xs uppercase tracking-wider text-[#1B4332] font-bold">
-              Field Telemetry & Audit Ledger
+              Real-Time Community Impact
             </div>
             <h2 class="text-2xl sm:text-3xl font-bold font-display text-[#141E18] mt-1">
-              Community Hunger Relief Impact Dashboard
+              Food Saved & Meals Delivered
             </h2>
           </div>
 
           <div class="flex items-center gap-3">
             <span class="text-xs font-mono text-[#525B55] flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#1B4332]"></span>
-              <span id="last-sync-time">Synchronized</span>
+              <span class="w-2 h-2 rounded-full bg-[#1B4332]"></span>
+              <span id="last-sync-time">Updated just now</span>
             </span>
             <button id="btn-manual-sync" type="button" title="Refresh Live Data" class="p-1.5 rounded border border-[#DCD9D0] bg-white text-[#525B55] hover:text-[#141E18] transition-colors">
               <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
@@ -160,91 +159,92 @@
           </div>
         </div>
 
-        <!-- 4 KPI METRIC CARDS (White on Paper Grid) -->
+        <!-- 4 KPI Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           <!-- KPI 1 -->
-          <div class="card-surface p-6 rounded space-y-2">
+          <div class="card-surface p-5 rounded space-y-2">
             <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
-              Total Meals Served
+              Total Meals Given
             </div>
             <div class="flex items-baseline gap-2">
               <span id="kpi-meals-served" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0</span>
-              <span class="text-xs font-bold text-[#1B4332] uppercase">Servings</span>
+              <span class="text-xs font-bold text-[#1B4332] uppercase">Meals</span>
             </div>
             <p class="text-xs text-[#525B55]">
-              12,400 established baseline meals + verified live drop-offs.
+              12,400 past meals + live verified deliveries.
             </p>
           </div>
 
           <!-- KPI 2 -->
-          <div class="card-surface p-6 rounded space-y-2">
+          <div class="card-surface p-5 rounded space-y-2">
             <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
-              Landfill Diversion (MT)
+              Food Kept Out of Trash
             </div>
             <div class="flex items-baseline gap-2">
               <span id="kpi-tons-diverted" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0.00</span>
-              <span class="text-xs font-bold text-[#B45309] uppercase">MT</span>
+              <span class="text-xs font-bold text-[#B45309] uppercase">Tons</span>
             </div>
             <p class="text-xs text-[#525B55]">
-              Metric tons diverted (1 serving ≈ 0.45 kg edible food).
+              Weight of edible food saved (1 meal ≈ 450 grams).
             </p>
           </div>
 
           <!-- KPI 3 -->
-          <div class="card-surface p-6 rounded space-y-2">
+          <div class="card-surface p-5 rounded space-y-2">
             <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
-              Active Dispatches
+              Active Pickups
             </div>
             <div class="flex items-baseline gap-2">
               <span id="kpi-active-pickups" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0</span>
               <span class="text-xs font-bold text-[#C84B31] uppercase">Batches</span>
             </div>
             <p class="text-xs text-[#525B55]">
-              Surplus food currently available or in-transit on the map.
+              Batches waiting for a courier or on the road right now.
             </p>
           </div>
 
           <!-- KPI 4 -->
-          <div class="card-surface p-6 rounded space-y-2">
+          <div class="card-surface p-5 rounded space-y-2">
             <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
-              CO₂e Avoided
+              Clean Air Impact (CO₂ Saved)
             </div>
             <div class="flex items-baseline gap-2">
               <span id="kpi-co2-saved" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0</span>
-              <span class="text-xs font-bold text-[#1B4332] uppercase">kg CO₂e</span>
+              <span class="text-xs font-bold text-[#1B4332] uppercase">kg CO₂</span>
             </div>
             <p class="text-xs text-[#525B55]">
-              ~1.12 kg greenhouse gases eliminated per recovered meal.
+              Food rotting in landfills creates gas; saving it protects our air.
             </p>
           </div>
 
         </div>
 
         <!-- ====================================================================
-             3. ANALYTICS ROW (CHART.JS DOUGHNUT & BAR GRAPHS)
+             3. VISUAL CHARTS
              ==================================================================== -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <!-- Left Chart: Composition -->
+          <!-- Chart 1: Food Breakdown -->
           <div class="lg:col-span-5 card-surface p-6 rounded flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between pb-3 border-b border-[#DCD9D0]">
-                <h3 class="font-display text-base font-bold text-[#141E18]">Surplus Food Composition</h3>
+                <h3 class="font-display text-base font-bold text-[#141E18]">What Kind of Food Was Donated?</h3>
                 <span id="chart-total-servings-badge" class="font-mono text-xs px-2 py-0.5 bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] rounded">
-                  ... Servings
+                  ... Meals
                 </span>
               </div>
               <p class="text-xs text-[#525B55] mt-2 mb-4">
-                Cooked meals (hot chain) vs. raw farm produce salvaged across active and historic batches.
+                Cooked meals (hot and ready to eat) vs. fresh raw fruits and vegetables.
               </p>
             </div>
 
-            <!-- Chart.js Enclosed Wrapper -->
+            <!-- Canvas Container -->
             <div class="relative h-64 sm:h-72 w-full flex items-center justify-center my-auto">
               <canvas id="foodTypeChart"></canvas>
             </div>
 
+            <!-- Chart Legend -->
             <div class="pt-4 border-t border-[#DCD9D0] grid grid-cols-2 gap-2 text-xs font-mono">
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-[#1B4332] shrink-0"></span>
@@ -259,29 +259,29 @@
             </div>
           </div>
 
-          <!-- Right Chart: Distribution -->
+          <!-- Chart 2: Where Food Went -->
           <div class="lg:col-span-7 card-surface p-6 rounded flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between pb-3 border-b border-[#DCD9D0]">
-                <h3 class="font-display text-base font-bold text-[#141E18]">Relief Distribution Across Shelters</h3>
+                <h3 class="font-display text-base font-bold text-[#141E18]">Meals Delivered to Each Shelter</h3>
                 <span class="font-mono text-xs px-2 py-0.5 bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8] rounded">
-                  4 Receiving Hubs
+                  4 Delhi Centers
                 </span>
               </div>
               <p class="text-xs text-[#525B55] mt-2 mb-4">
-                Cumulative food portions delivered directly to partner shelters and slum relief camps.
+                Number of meals delivered to partner orphanages and relief camps.
               </p>
             </div>
 
-            <!-- Chart.js Enclosed Wrapper -->
+            <!-- Canvas Container -->
             <div class="relative h-64 sm:h-72 w-full">
               <canvas id="shelterDistChart"></canvas>
             </div>
 
             <div class="pt-4 border-t border-[#DCD9D0] flex items-center justify-between text-xs text-[#525B55]">
-              <span>Verified receiving shelters across North, South, Central & West NCR</span>
+              <span>Delivered to shelters in Central, North, South, and West Delhi</span>
               <a href="volunteer.html" class="text-[#C84B31] hover:underline font-semibold font-mono text-[11px]">
-                Open Map View →
+                See on Live Map →
               </a>
             </div>
           </div>
@@ -289,35 +289,35 @@
         </div>
 
         <!-- ====================================================================
-             4. LIVE NETWORK ACTIVITY LEDGER
+             4. RECENT ACTIVITY LIST (Simple Table)
              ==================================================================== -->
         <div id="activity-ledger" class="card-surface rounded overflow-hidden">
           
-          <div class="p-6 border-b border-[#DCD9D0] space-y-4">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="p-5 border-b border-[#DCD9D0] space-y-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
-                <h3 class="font-display text-xl font-bold text-[#141E18]">Live Network Activity Ledger</h3>
-                <p class="text-xs text-[#525B55] mt-0.5">
-                  Synchronized audit log of surplus food recovery dispatches, courier claims, and verified shelter handovers.
+                <h3 class="font-display text-lg sm:text-xl font-bold text-[#141E18]">Recent Food Donations</h3>
+                <p class="text-xs text-[#525B55]">
+                  Real-time list of food reported, picked up, and delivered to shelters.
                 </p>
               </div>
 
-              <!-- Quick Search Input -->
+              <!-- Quick Search -->
               <div class="w-full md:w-72">
-                <input id="ledger-search-input" type="text" placeholder="Search donor, ID, or shelter..." class="bhoj-input text-xs font-sans">
+                <input id="ledger-search-input" type="text" placeholder="Search by donor, food, or shelter..." class="bhoj-input text-xs font-sans">
               </div>
             </div>
 
-            <!-- Status Filter Tabs -->
+            <!-- Status Filter Buttons -->
             <div class="flex flex-wrap items-center gap-2 pt-1" id="ledger-filter-buttons">
               <button data-filter="all" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-[#141E18] text-white">
                 All (<span id="filter-count-all">0</span>)
               </button>
               <button data-filter="Available" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0]">
-                Available (<span id="filter-count-available">0</span>)
+                Waiting for Courier (<span id="filter-count-available">0</span>)
               </button>
               <button data-filter="In-Transit" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0]">
-                In-Transit (<span id="filter-count-intransit">0</span>)
+                On the Way (<span id="filter-count-intransit">0</span>)
               </button>
               <button data-filter="Delivered" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0]">
                 Delivered (<span id="filter-count-delivered">0</span>)
@@ -325,42 +325,42 @@
             </div>
           </div>
 
-          <!-- Table Container -->
+          <!-- Table -->
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="bg-[#EFECE6] border-b border-[#DCD9D0] text-[11px] uppercase tracking-wider text-[#525B55] font-mono">
-                  <th class="py-3 px-4 sm:px-6">Dispatch ID</th>
-                  <th class="py-3 px-4">Donor / Commercial Source</th>
-                  <th class="py-3 px-4">Food Particulars</th>
-                  <th class="py-3 px-4">Quantity / Weight</th>
-                  <th class="py-3 px-4">Hygiene Gate</th>
+                  <th class="py-3 px-4 sm:px-6">ID</th>
+                  <th class="py-3 px-4">Donated By</th>
+                  <th class="py-3 px-4">Food Items</th>
+                  <th class="py-3 px-4">Quantity</th>
+                  <th class="py-3 px-4">Safety Check</th>
                   <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4">Assigned Logistics</th>
-                  <th class="py-3 px-4 text-right">Action</th>
+                  <th class="py-3 px-4">Courier & Destination</th>
+                  <th class="py-3 px-4 text-right">Details</th>
                 </tr>
               </thead>
               <tbody id="ledger-table-body" class="divide-y divide-[#DCD9D0] bg-white">
-                <!-- Dynamically populated by js/dashboard.js -->
+                <!-- Populated dynamically by js/dashboard.js -->
               </tbody>
             </table>
           </div>
 
           <!-- Empty State -->
-          <div id="ledger-empty-state" class="hidden py-12 px-4 text-center">
-            <h4 class="text-sm font-bold text-[#141E18]">No dispatches match the selected filter</h4>
-            <p class="text-xs text-[#525B55] mt-1">Try switching status filters or clearing your search term.</p>
+          <div id="ledger-empty-state" class="hidden py-10 px-4 text-center">
+            <h4 class="text-sm font-bold text-[#141E18]">No items found</h4>
+            <p class="text-xs text-[#525B55] mt-1">Try clicking "All" above or clearing your search term.</p>
           </div>
 
-          <!-- Footer -->
-          <div class="p-4 border-t border-[#DCD9D0] bg-[#FAF9F6] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#525B55]">
-            <span id="ledger-pagination-summary">Showing 0 listings</span>
+          <!-- Table Bottom Bar -->
+          <div class="p-3.5 border-t border-[#DCD9D0] bg-[#FAF9F6] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#525B55]">
+            <span id="ledger-pagination-summary">Showing 0 donations</span>
             <div class="flex items-center gap-4 font-mono text-[11px]">
               <a href="volunteer.html" class="text-[#141E18] hover:text-[#C84B31] font-semibold">
                 Open Courier Map →
               </a>
               <a href="donate.html" class="text-[#C84B31] hover:underline font-semibold">
-                Report New Batch +
+                Donate Food Now +
               </a>
             </div>
           </div>
@@ -371,63 +371,69 @@
     </section>
 
     <!-- ====================================================================
-         5. ARCHITECTURAL 1PX BORDERED LEDGER STRIP (Replacing Slop 01/02/03)
+         5. HOW IT WORKS (In 3 Simple Steps)
          ==================================================================== -->
-    <section class="border-y border-[#DCD9D0] bg-white my-12">
-      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#DCD9D0]">
-        
-        <!-- Phase 1 -->
-        <div class="p-8 space-y-2">
-          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Phase 01 // Ingestion & Safety</div>
-          <h3 class="font-display text-xl font-bold text-[#141E18]">Mandatory FSSAI Hygiene Gate</h3>
-          <p class="text-sm text-[#525B55] leading-relaxed">
-            Commercial kitchens log cooking timestamp, holding temperature (&gt;60°C), and food-grade packaging integrity before dispatch unlocks on the courier network.
-          </p>
+    <section class="border-y border-[#DCD9D0] bg-white my-10">
+      <div class="max-w-7xl mx-auto py-4">
+        <div class="px-4 sm:px-6 lg:px-8 py-4 border-b border-[#DCD9D0]">
+          <h2 class="font-display text-2xl font-bold text-[#141E18]">How BhojVayasta Works (In 3 Steps)</h2>
+          <p class="text-xs text-[#525B55]">From kitchen surplus to a hot meal for someone in need.</p>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#DCD9D0]">
+          
+          <!-- Step 1 -->
+          <div class="p-6 sm:p-8 space-y-2">
+            <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Step 1 // Donor Reports Food</div>
+            <h3 class="font-display text-lg font-bold text-[#141E18]">Confirm Food is Safe & Packaged</h3>
+            <p class="text-xs sm:text-sm text-[#525B55] leading-relaxed">
+              Kitchens and banquet halls enter how many meals they have, when it was cooked, and verify it is hot (&gt;60°C) and sealed cleanly.
+            </p>
+          </div>
 
-        <!-- Phase 2 -->
-        <div class="p-8 space-y-2">
-          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Phase 02 // Rapid Mobilization</div>
-          <h3 class="font-display text-xl font-bold text-[#141E18]">Haversine Proximity Dispatch</h3>
-          <p class="text-sm text-[#525B55] leading-relaxed">
-            Nearby registered couriers claim pickups on the interactive map. Turn-by-turn routes connect donor loading docks directly to recipient hunger relief shelters.
-          </p>
+          <!-- Step 2 -->
+          <div class="p-6 sm:p-8 space-y-2">
+            <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Step 2 // Volunteer Claims It</div>
+            <h3 class="font-display text-lg font-bold text-[#141E18]">Pickup on the Live Map</h3>
+            <p class="text-xs sm:text-sm text-[#525B55] leading-relaxed">
+              Nearby volunteers see the food alert on their map with driving distance. One click claims the pickup and sets the route.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="p-6 sm:p-8 space-y-2">
+            <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Step 3 // Direct Shelter Delivery</div>
+            <h3 class="font-display text-lg font-bold text-[#141E18]">Delivered to Children & Elders</h3>
+            <p class="text-xs sm:text-sm text-[#525B55] leading-relaxed">
+              The volunteer delivers directly to a verified orphanage or slum relief camp. The meals are logged to the community dashboard.
+            </p>
+          </div>
+
         </div>
-
-        <!-- Phase 3 -->
-        <div class="p-8 space-y-2">
-          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Phase 03 // Verified Handover</div>
-          <h3 class="font-display text-xl font-bold text-[#141E18]">Direct Shelter Delivery Audit</h3>
-          <p class="text-sm text-[#525B55] leading-relaxed">
-            Food batches are transferred directly to verified orphanages and slum relief camps. Handovers log immediately to the publicly verifiable impact ledger.
-          </p>
-        </div>
-
       </div>
     </section>
 
   </main>
 
   <!-- ====================================================================
-       MODAL: DISPATCH AUDIT & DETAILS
+       MODAL: DONATION DETAILS
        ==================================================================== -->
   <div id="dispatch-detail-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
-    <div class="bg-white border border-[#DCD9D0] w-full max-w-lg rounded p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div class="bg-white border border-[#DCD9D0] w-full max-w-lg rounded p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex items-start justify-between border-b border-[#DCD9D0] pb-3">
         <div>
           <div class="flex items-center gap-2">
             <span id="modal-dispatch-id" class="font-mono font-bold text-xs px-2 py-0.5 bg-[#EFECE6] text-[#141E18] border border-[#DCD9D0] rounded">BV-0000</span>
             <span id="modal-dispatch-status" class="status-pill status-available">Available</span>
           </div>
-          <h3 id="modal-donor-title" class="font-display text-xl font-bold text-[#141E18] mt-1">Donor Name</h3>
+          <h3 id="modal-donor-title" class="font-display text-lg font-bold text-[#141E18] mt-1">Donor Name</h3>
           <p id="modal-donor-address" class="text-xs text-[#525B55]">Donor Address</p>
         </div>
         <button id="modal-close-btn" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm font-mono p-1">✕</button>
       </div>
 
-      <div class="space-y-4 text-xs">
+      <div class="space-y-3 text-xs">
         <div>
-          <div class="font-mono uppercase text-[#525B55] font-semibold text-[10px] mb-1">Food Particulars</div>
+          <div class="font-mono uppercase text-[#525B55] font-semibold text-[10px] mb-1">Food Items</div>
           <p id="modal-food-desc" class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded text-[#141E18] leading-relaxed">
             Description...
           </p>
@@ -435,7 +441,7 @@
 
         <div class="grid grid-cols-3 gap-2 text-center font-mono">
           <div class="p-2.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-            <span class="text-[10px] text-[#525B55] uppercase">Servings</span>
+            <span class="text-[10px] text-[#525B55] uppercase">Meals</span>
             <div id="modal-servings" class="font-bold text-sm text-[#141E18] mt-0.5">0</div>
           </div>
           <div class="p-2.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
@@ -443,20 +449,20 @@
             <div id="modal-temperature" class="font-bold text-sm text-[#B45309] mt-0.5">65°C</div>
           </div>
           <div class="p-2.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-            <span class="text-[10px] text-[#525B55] uppercase">Safe Window</span>
+            <span class="text-[10px] text-[#525B55] uppercase">Eat Within</span>
             <div id="modal-expiry" class="font-bold text-sm text-[#1B4332] mt-0.5">4h left</div>
           </div>
         </div>
 
         <div class="p-3 bg-[#E8F3EE] border border-[#A3C9B8] rounded text-[#1B4332] space-y-1">
-          <div class="font-bold font-mono text-[11px]">✓ FSSAI Safe Food Sharing Verified</div>
-          <div class="text-[11px] leading-snug">Visual inspection passed, leak-proof food-grade containers verified, hot-chain compliance checked.</div>
+          <div class="font-bold font-mono text-[11px]">✓ Safety Checks Passed</div>
+          <div class="text-[11px] leading-snug">Visual check passed, clean food containers used, kept hot and fresh.</div>
         </div>
 
         <div class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-0.5">
-          <div class="font-mono text-[10px] text-[#525B55] uppercase">Logistics Status</div>
+          <div class="font-mono text-[10px] text-[#525B55] uppercase">Delivery Status</div>
           <div id="modal-logistics-text" class="text-[#141E18] font-medium text-xs">
-            Awaiting Courier
+            Waiting for courier
           </div>
         </div>
       </div>

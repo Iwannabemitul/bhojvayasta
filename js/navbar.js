@@ -149,7 +149,7 @@
               ? 'text-[#141E18] border-b-2 border-[#C84B31]'
               : 'text-[#525B55] hover:text-[#141E18] border-b-2 border-transparent'
           }">
-            Impact Ledger
+            Impact Dashboard
           </a>
 
           <a href="donate.html" class="whitespace-nowrap py-5 text-sm font-semibold transition-colors ${
@@ -157,7 +157,7 @@
               ? 'text-[#141E18] border-b-2 border-[#C84B31]'
               : 'text-[#525B55] hover:text-[#141E18] border-b-2 border-transparent'
           }">
-            Dispatch Surplus
+            Donate Food
           </a>
 
           <a href="volunteer.html" class="whitespace-nowrap py-5 text-sm font-semibold transition-colors flex items-center gap-2 ${
@@ -165,19 +165,19 @@
               ? 'text-[#141E18] border-b-2 border-[#C84B31]'
               : 'text-[#525B55] hover:text-[#141E18] border-b-2 border-transparent'
           }">
-            <span>Courier Map</span>
+            <span>Volunteer Map</span>
             ${badgeMarkup}
           </a>
         </nav>
 
         <!-- Right Utility Actions -->
         <div class="hidden sm:flex items-center gap-3 shrink-0">
-          <button id="btn-reset-demo" type="button" title="Reset state for evaluation" class="whitespace-nowrap font-mono text-xs text-[#525B55] hover:text-[#141E18] px-2.5 py-1.5 border border-[#DCD9D0] bg-white rounded cursor-pointer transition-colors">
-            Reset State
+          <button id="btn-reset-demo" type="button" title="Reset sample data for testing" class="whitespace-nowrap font-mono text-xs text-[#525B55] hover:text-[#141E18] px-2.5 py-1.5 border border-[#DCD9D0] bg-white rounded cursor-pointer transition-colors">
+            Reset Demo
           </button>
 
           <a href="donate.html" class="whitespace-nowrap text-xs font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white px-4 py-2 rounded transition-colors shadow-sm">
-            Report Food →
+            Donate Food →
           </a>
         </div>
 
@@ -197,21 +197,21 @@
       <!-- Mobile Dropdown Drawer -->
       <div id="mobile-menu" class="hidden md:hidden border-t border-[#DCD9D0] bg-[#F7F5F0] px-4 py-4 space-y-2">
         <a href="index.html" class="block py-2 text-sm font-semibold ${currentPage === 'index' ? 'text-[#C84B31]' : 'text-[#141E18]'}">
-          Impact Ledger
+          Impact Dashboard
         </a>
         <a href="donate.html" class="block py-2 text-sm font-semibold ${currentPage === 'donate' ? 'text-[#C84B31]' : 'text-[#141E18]'}">
-          Dispatch Surplus Food
+          Donate Food
         </a>
         <a href="volunteer.html" class="flex items-center justify-between py-2 text-sm font-semibold ${currentPage === 'volunteer' ? 'text-[#C84B31]' : 'text-[#141E18]'}">
-          <span>Courier Map & Feed</span>
+          <span>Volunteer Map</span>
           <span class="font-mono text-xs bg-[#FEF3C7] text-[#B45309] px-2 py-0.5 border border-[#F59E0B]/30 rounded">${availableCount} Live</span>
         </a>
         <div class="pt-3 border-t border-[#DCD9D0] flex flex-col gap-2">
           <button id="mobile-btn-reset-demo" type="button" class="w-full text-center py-2 text-xs font-mono border border-[#DCD9D0] bg-white text-[#525B55]">
-            Reset Seed State
+            Reset Demo Data
           </button>
           <a href="donate.html" class="w-full text-center py-2.5 text-xs font-semibold uppercase tracking-wider bg-[#C84B31] text-white rounded">
-            Report Surplus Food
+            Donate Food
           </a>
         </div>
       </div>
@@ -243,12 +243,12 @@
 
     const handleReset = function () {
       const confirmReset = window.confirm(
-        'BhojVayasta State Reset:\n\nDo you want to re-seed demo data with the 6 baseline Delhi/NCR listings?'
+        'Reset BhojVayasta Demo?\n\nThis will restore the 6 original sample listings in Delhi/NCR.'
       );
 
       if (confirmReset && global.BhojStore) {
         global.BhojStore.resetDemoData();
-        BhojToast.success('Demo state restored! Delhi/NCR listings re-seeded.');
+        BhojToast.success('Demo data restored! Sample listings re-seeded.');
         updateBadge();
         window.dispatchEvent(new CustomEvent('bhoj:datareload'));
       }
@@ -297,40 +297,40 @@
                 <span class="font-display text-lg font-bold text-[#141E18]">BhojVayasta</span>
               </div>
               <p class="text-xs text-[#525B55] leading-relaxed">
-                Hyper-local surplus food recovery infrastructure. Rapid FSSAI-monitored redistribution across Delhi/NCR community relief centers.
+                Connecting wedding banquets, office cafeterias, and grocery stores with nearby child care homes and community shelters across Delhi/NCR.
               </p>
               <div class="pt-1">
                 <span class="font-mono text-[10px] px-2 py-0.5 bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8] rounded">
-                  SDG 2: Zero Hunger Node
+                  SDG 2: Zero Hunger Network
                 </span>
               </div>
             </div>
 
             <!-- Col 2: Navigation -->
             <div class="space-y-2 text-xs">
-              <div class="font-mono uppercase font-bold text-[#525B55] tracking-wider mb-2">Relief Terminals</div>
-              <div><a href="index.html" class="text-[#525B55] hover:text-[#C84B31]">Impact & Recovery Ledger</a></div>
-              <div><a href="donate.html" class="text-[#525B55] hover:text-[#C84B31]">Commercial Dispatch Desk</a></div>
-              <div><a href="volunteer.html" class="text-[#525B55] hover:text-[#C84B31]">Courier Live Map & Routing</a></div>
-              <div><a href="javascript:void(0)" onclick="document.getElementById('btn-reset-demo')?.click()" class="text-[#B45309] hover:underline">Re-seed Evaluation State</a></div>
+              <div class="font-mono uppercase font-bold text-[#525B55] tracking-wider mb-2">Quick Links</div>
+              <div><a href="index.html" class="text-[#525B55] hover:text-[#C84B31]">Impact Dashboard</a></div>
+              <div><a href="donate.html" class="text-[#525B55] hover:text-[#C84B31]">Donate Extra Food</a></div>
+              <div><a href="volunteer.html" class="text-[#525B55] hover:text-[#C84B31]">Volunteer Pickup Map</a></div>
+              <div><a href="javascript:void(0)" onclick="document.getElementById('btn-reset-demo')?.click()" class="text-[#B45309] hover:underline">Reset Demo Data</a></div>
             </div>
 
             <!-- Col 3: Food Safety & Hygiene -->
             <div class="space-y-2 text-xs">
-              <div class="font-mono uppercase font-bold text-[#525B55] tracking-wider mb-2">FSSAI Safe Food Sharing</div>
+              <div class="font-mono uppercase font-bold text-[#525B55] tracking-wider mb-2">Food Safety Standards</div>
               <p class="text-[#525B55] leading-relaxed">
-                Hot cooked items strictly audited &gt;60°C with mandatory food-grade sanitary packaging. Verified direct handovers to registered centers.
+                Hot meals are kept at safe temperatures (&gt;60°C) and sealed in clean food-grade packaging before being handed over to registered shelters.
               </p>
               <div class="font-mono text-[11px] text-[#1B4332] font-semibold">
-                ✓ Good Samaritan Protection Act Compliant
+                ✓ Protected by Good Samaritan Law
               </div>
             </div>
 
             <!-- Col 4: Helpline Desk -->
             <div class="space-y-2 text-xs">
-              <div class="font-mono uppercase font-bold text-[#525B55] tracking-wider mb-2">Relief Helpline</div>
+              <div class="font-mono uppercase font-bold text-[#525B55] tracking-wider mb-2">Need Help?</div>
               <div class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                <div class="font-mono text-[10px] text-[#525B55] uppercase">24/7 Bulk Surplus Dispatch:</div>
+                <div class="font-mono text-[10px] text-[#525B55] uppercase">Toll-Free Helpline:</div>
                 <div class="font-mono text-base font-bold text-[#141E18]">1800-BHOJ-RELIEF</div>
               </div>
               <div class="text-[11px] text-[#525B55]">
@@ -343,10 +343,10 @@
           <!-- Bottom Row -->
           <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#525B55]">
             <div>
-              &copy; 2026 BhojVayasta Community Food Network. Verified Civic Logistics.
+              &copy; 2026 BhojVayasta — Surplus Food Recovery & Relief Network.
             </div>
             <div class="font-mono text-[11px] text-[#525B55]">
-              Delhi/NCR Regional Node Active • Sub-2h Rescue Protocol
+              Active across Delhi, Noida, and Gurugram.
             </div>
           </div>
 

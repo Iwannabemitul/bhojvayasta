@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Volunteer Courier Feed & Map - BhojVayasta Network</title>
-  <meta name="description" content="Live volunteer courier pickup feed with interactive Haversine distance map, real-time donor routing, and shelter delivery workflow across Delhi/NCR.">
+  <title>Volunteer Courier Feed & Map - BhojVayasta Network</title>
+  <meta name="description" content="View nearby surplus food pickups, choose a shelter, and deliver meals across Delhi/NCR.">
 
   <!-- Favicon SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C84B31' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
@@ -78,15 +78,15 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#DCD9D0]">
         
         <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-          <div class="font-mono text-xs uppercase text-[#525B55] font-semibold">Active Courier:</div>
+          <div class="font-mono text-xs uppercase text-[#525B55] font-semibold">Courier Name:</div>
           <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Simulated courier name" class="bhoj-input text-xs font-bold text-[#141E18] w-52 sm:w-60 py-1 px-2.5">
           <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
-            GPS Simulator Active
+            GPS Simulator
           </span>
         </div>
 
         <div class="flex items-center gap-2 self-start md:self-auto">
-          <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Courier Hub:</span>
+          <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Your Location:</span>
           <select id="courier-location-select" class="bhoj-input text-xs font-medium text-[#141E18] py-1 px-2.5 bg-white cursor-pointer w-auto">
             <option value="28.6139,77.2090" selected>📍 Connaught Place (Central)</option>
             <option value="28.5355,77.3910">📍 Sector 62 (Noida)</option>
@@ -111,7 +111,7 @@
             Available (<span id="count-status-available">0</span>)
           </button>
           <button data-status="In-Transit" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
-            In-Transit (<span id="count-status-intransit">0</span>)
+            On the Way (<span id="count-status-intransit">0</span>)
           </button>
           <button data-status="Delivered" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
             Delivered (<span id="count-status-delivered">0</span>)
@@ -132,14 +132,14 @@
           <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
             <span class="text-[#525B55] font-mono text-[11px]">Sort:</span>
             <select id="feed-sort-select" class="bg-transparent text-[#C84B31] font-semibold focus:outline-none cursor-pointer">
-              <option value="nearest">Nearest Distance First</option>
-              <option value="urgent">Most Urgent Expiry</option>
-              <option value="servings">Highest Servings</option>
+              <option value="nearest">Closest First</option>
+              <option value="urgent">Needs Pickup Soonest</option>
+              <option value="servings">Most Food First</option>
             </select>
           </div>
 
           <div class="w-44 sm:w-52">
-            <input id="feed-search-input" type="text" placeholder="Search listing or donor..." class="bhoj-input py-1 px-2.5 text-xs">
+            <input id="feed-search-input" type="text" placeholder="Search dish, donor, or area..." class="bhoj-input py-1 px-2.5 text-xs">
           </div>
         </div>
 
@@ -158,12 +158,12 @@
         <!-- Feed Sub-Header -->
         <div class="p-3.5 border-b border-[#DCD9D0] bg-white flex items-center justify-between text-xs font-mono">
           <div class="flex items-center gap-2">
-            <span class="font-bold text-[#141E18]">Live Recovery Feed</span>
+            <span class="font-bold text-[#141E18]">Nearby Pickups</span>
             <span id="feed-total-badge" class="px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] text-[10px]">
               0 Live
             </span>
           </div>
-          <span class="text-[#525B55] text-[11px]">Haversine Proximity Grid</span>
+          <span class="text-[#525B55] text-[11px]">Sorted by Distance</span>
         </div>
 
         <!-- Scrollable Feed -->
@@ -173,8 +173,8 @@
 
         <!-- Empty State -->
         <div id="feed-empty-state" class="hidden p-8 text-center space-y-2">
-          <div class="font-display text-sm font-bold text-[#141E18]">No Listings Found</div>
-          <p class="text-xs text-[#525B55]">Try switching the status filter or choosing another courier hub location.</p>
+          <div class="font-display text-sm font-bold text-[#141E18]">No Pickups Found</div>
+          <p class="text-xs text-[#525B55]">Try switching the status filter or choosing another location.</p>
         </div>
 
       </div>
@@ -192,19 +192,19 @@
           </div>
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-[#1d4ed8] shrink-0"></span>
-            <span class="text-[#525B55]">Courier (Drag to relocate)</span>
+            <span class="text-[#525B55]">Your Location (drag to move)</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-[#1B4332] shrink-0"></span>
-            <span class="text-[#525B55]">Available Surplus</span>
+            <span class="text-[#525B55]">Available Food</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-[#B45309] shrink-0"></span>
-            <span class="text-[#525B55]">In-Transit Batch</span>
+            <span class="text-[#525B55]">On the Way</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-[#0284C7] shrink-0"></span>
-            <span class="text-[#525B55]">Receiving Shelter Hub</span>
+            <span class="text-[#525B55]">Hunger Relief Shelter</span>
           </div>
         </div>
 
@@ -214,19 +214,19 @@
             <div class="space-y-0.5">
               <div class="flex items-center gap-2">
                 <span class="font-mono text-[10px] uppercase font-bold text-[#1B4332] px-1.5 py-0.5 bg-[#E8F3EE] border border-[#A3C9B8] rounded">
-                  Active Route
+                  Selected Route
                 </span>
-                <span id="route-donor-name" class="font-bold text-[#141E18]">Grand Imperial Wedding Banquet</span>
+                <span id="route-donor-name" class="font-bold text-[#141E18]">Grand Imperial Banquet</span>
               </div>
               <div class="text-[11px] text-[#525B55] font-mono flex items-center gap-2">
-                <span>Courier ➔ Donor: <strong id="route-courier-dist" class="text-[#141E18]">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
+                <span>To Pickup: <strong id="route-courier-dist" class="text-[#141E18]">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
                 <span>•</span>
-                <span id="route-shelter-dist">Donor ➔ Shelter: 0.0 km</span>
+                <span id="route-shelter-dist">To Shelter: 0.0 km</span>
               </div>
             </div>
 
             <button id="btn-route-action" type="button" class="btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-wider shrink-0">
-              Accept Pickup
+              I'll Pick This Up
             </button>
           </div>
         </div>
@@ -246,10 +246,10 @@
       <div class="flex items-start justify-between border-b border-[#DCD9D0] pb-3">
         <div>
           <span class="font-mono text-xs font-bold text-[#B45309] px-2 py-0.5 rounded bg-[#FEF3C7] border border-[#FDE68A]">
-            Courier Claim Gate
+            Confirm Pickup
           </span>
-          <h3 class="font-display text-xl font-bold text-[#141E18] mt-1">Accept Surplus Recovery Pickup</h3>
-          <p class="text-xs text-[#525B55]">Select the target receiving shelter for this dispatch.</p>
+          <h3 class="font-display text-xl font-bold text-[#141E18] mt-1">Where will you deliver this food?</h3>
+          <p class="text-xs text-[#525B55]">Select a community shelter or child care home near the donor.</p>
         </div>
         <button id="modal-shelter-close" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm font-mono p-1">✕</button>
       </div>
@@ -257,7 +257,7 @@
       <!-- Batch Summary -->
       <div class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-1 text-xs font-mono">
         <div class="flex justify-between">
-          <span class="text-[#525B55]">Dispatch ID:</span>
+          <span class="text-[#525B55]">Donation ID:</span>
           <span id="assign-modal-id" class="text-[#141E18] font-bold">BV-0000</span>
         </div>
         <div class="flex justify-between">
@@ -265,14 +265,14 @@
           <span id="assign-modal-donor" class="text-[#141E18] font-bold">Establishment</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-[#525B55]">Quantity:</span>
+          <span class="text-[#525B55]">Food Quantity:</span>
           <span id="assign-modal-servings" class="text-[#C84B31] font-bold">0 Servings</span>
         </div>
       </div>
 
       <!-- Shelter Hub Radio Selector -->
       <div class="space-y-2">
-        <div class="font-mono text-xs uppercase font-bold text-[#525B55]">Select Receiving Hunger Shelter</div>
+        <div class="font-mono text-xs uppercase font-bold text-[#525B55]">Select Receiving Shelter</div>
         <div class="space-y-2 max-h-56 overflow-y-auto pr-1" id="shelter-options-list">
           <!-- Dynamically filled with 4 shelters -->
         </div>
@@ -287,7 +287,7 @@
           Cancel
         </button>
         <button id="btn-confirm-pickup" type="button" class="btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-wider">
-          Confirm & Begin Transit
+          Confirm & Start Delivery
         </button>
       </div>
 
@@ -306,13 +306,13 @@
 
       <div class="space-y-1">
         <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-semibold">
-          Handover Verified
+          Delivered Safely
         </span>
         <h3 class="font-display text-2xl font-bold text-[#141E18]">
           Food Delivered to Shelter!
         </h3>
         <p class="text-xs text-[#525B55]">
-          Thank you, <span id="celebrate-volunteer-name" class="font-bold text-[#141E18]">Arjun Mehta</span>! This batch has been logged directly to the community impact ledger.
+          Thank you, <span id="celebrate-volunteer-name" class="font-bold text-[#141E18]">Arjun Mehta</span>! This food has been safely handed over and added to the community total.
         </p>
       </div>
 
@@ -322,17 +322,17 @@
           <div id="celebrate-meals-count" class="text-base font-bold text-[#141E18]">180 serv</div>
         </div>
         <div>
-          <span class="text-[10px] text-[#525B55] uppercase">Landfill Avoided</span>
+          <span class="text-[10px] text-[#525B55] uppercase">Food Saved</span>
           <div id="celebrate-kg-count" class="text-base font-bold text-[#C84B31]">~81.0 kg</div>
         </div>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
         <a href="index.html" class="flex-1 btn-secondary py-2.5 text-xs text-center">
-          View Impact Ledger
+          View Impact Dashboard
         </a>
         <button id="btn-celebrate-dismiss" type="button" class="flex-1 btn-primary py-2.5 text-xs uppercase tracking-wider">
-          Back to Live Feed
+          Back to Pickups
         </button>
       </div>
 

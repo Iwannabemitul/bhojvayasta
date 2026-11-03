@@ -1,9 +1,8 @@
 /**
- * BhojVayasta - Landing Page & Community Hunger Relief Impact Dashboard Logic
+ * BhojVayasta - Landing Page & Community Impact Dashboard Logic
  * File: js/dashboard.js
  * 
- * Theme: Warm Editorial & Civic Logistics
- * Preserves 100% of BhojStore CRUD & metric computations
+ * Simple English, clear labels, and 100% state integrity.
  */
 
 (function (global) {
@@ -76,9 +75,9 @@
 
       if (tickerTextEl) {
         if (availableItems.length > 0) {
-          tickerTextEl.innerHTML = `<strong class="text-[#141E18] font-bold">${availableItems.length} Live Pickups Waiting</strong> in Delhi/NCR • <strong class="text-[#C84B31]">${totalAvailableServings} Servings</strong> Immediate Rescue Need`;
+          tickerTextEl.innerHTML = `<strong class="text-[#141E18] font-bold">${availableItems.length} Live Pickups Waiting</strong> in Delhi/NCR • <strong class="text-[#C84B31]">${totalAvailableServings} Meals</strong> Ready for Pickup`;
         } else {
-          tickerTextEl.innerHTML = `All Current Dispatches Recovered & In-Transit • Next Run Scheduled`;
+          tickerTextEl.innerHTML = `All extra food has been claimed and is on the way to shelters.`;
         }
       }
 
@@ -88,8 +87,8 @@
 
       const syncEl = document.getElementById('last-sync-time');
       if (syncEl) {
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        syncEl.textContent = `Sync: ${timeStr}`;
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        syncEl.textContent = `Updated at ${timeStr}`;
       }
 
     } catch (e) {
@@ -100,7 +99,6 @@
   function updateCharts() {
     if (!global.BhojStore || typeof Chart === 'undefined') return;
 
-    // Set Editorial Theme Defaults for Chart.js
     Chart.defaults.color = '#525B55';
     Chart.defaults.borderColor = '#DCD9D0';
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
@@ -108,9 +106,7 @@
     const dispatches = global.BhojStore.getDispatches();
     const shelters = global.BhojStore.getShelters();
 
-    // ----------------------------------------------------
     // Chart 1: Food Composition (Doughnut)
-    // ----------------------------------------------------
     let cookedServings = 0;
     let rawServings = 0;
     let otherServings = 0;
@@ -133,14 +129,14 @@
     const legendRaw = document.getElementById('legend-raw-count');
     const badgeTotal = document.getElementById('chart-total-servings-badge');
 
-    if (legendCooked) legendCooked.textContent = `${cookedServings.toLocaleString('en-IN')}`;
-    if (legendRaw) legendRaw.textContent = `${rawServings.toLocaleString('en-IN')}`;
-    if (badgeTotal) badgeTotal.textContent = `${totalServings.toLocaleString('en-IN')} Servings Logged`;
+    if (legendCooked) legendCooked.textContent = `${cookedServings.toLocaleString('en-IN')} meals`;
+    if (legendRaw) legendRaw.textContent = `${rawServings.toLocaleString('en-IN')} meals`;
+    if (badgeTotal) badgeTotal.textContent = `${totalServings.toLocaleString('en-IN')} Meals Total`;
 
     const foodCanvas = document.getElementById('foodTypeChart');
     if (foodCanvas) {
       const doughnutData = {
-        labels: ['Cooked Meals', 'Raw Produce', 'Staples / Bakery'],
+        labels: ['Cooked Meals', 'Raw Fruits & Veggies', 'Dry Staples & Bread'],
         datasets: [{
           data: [cookedServings, rawServings, otherServings],
           backgroundColor: [
@@ -178,7 +174,7 @@
                   label: function (ctx) {
                     const value = ctx.parsed || 0;
                     const pct = totalServings > 0 ? ((value / totalServings) * 100).toFixed(1) : 0;
-                    return ` ${ctx.label}: ${value.toLocaleString('en-IN')} serv (${pct}%)`;
+                    return ` ${ctx.label}: ${value.toLocaleString('en-IN')} meals (${pct}%)`;
                   }
                 }
               }
@@ -188,10 +184,8 @@
       }
     }
 
-    // ----------------------------------------------------
-    // Chart 2: Relief Distribution by Shelter Hub (Bar)
-    // ----------------------------------------------------
-    const shelterLabels = shelters.map((s) => s.name.replace(' Shelter', '').replace(' Orphanage', ''));
+    // Chart 2: Distribution by Shelter Hub (Bar)
+    const shelterLabels = shelters.map((s) => s.name.replace(' Shelter', '').replace(' Orphanage', '').replace(' Home', ''));
     const baselineShares = [3850, 4900, 2150, 1500];
 
     const shelterDeliveries = shelters.map((s, idx) => {
@@ -219,7 +213,7 @@
           ],
           borderColor: '#DCD9D0',
           borderWidth: 1,
-          borderRadius: 2,
+          borderRadius: 3,
           barPercentage: 0.6
         }]
       };
@@ -243,7 +237,7 @@
                 padding: 10,
                 callbacks: {
                   label: function (ctx) {
-                    return ` Handed Over: ${ctx.parsed.y.toLocaleString('en-IN')} portions`;
+                    return ` Delivered: ${ctx.parsed.y.toLocaleString('en-IN')} meals`;
                   }
                 }
               }
@@ -312,7 +306,7 @@
     });
 
     if (paginationSummary) {
-      paginationSummary.textContent = `Showing ${filtered.length} of ${dispatches.length} audited records`;
+      paginationSummary.textContent = `Showing ${filtered.length} of ${dispatches.length} donations`;
     }
 
     if (filtered.length === 0) {
@@ -328,12 +322,18 @@
         const expiry = global.BhojStore.getExpiryStatus(item);
 
         let statusPillClass = 'status-available';
-        if (item.status === 'In-Transit') statusPillClass = 'status-intransit';
-        if (item.status === 'Delivered') statusPillClass = 'status-delivered';
+        let statusText = 'Waiting for Courier';
+        if (item.status === 'In-Transit') {
+          statusPillClass = 'status-intransit';
+          statusText = 'On the Way';
+        } else if (item.status === 'Delivered') {
+          statusPillClass = 'status-delivered';
+          statusText = 'Delivered';
+        }
 
         const isCooked = (item.foodType || '').toLowerCase().includes('cooked');
         const foodTypeBadge = isCooked
-          ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">Cooked Meals</span>`
+          ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">Cooked Food</span>`
           : `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">Raw Produce</span>`;
 
         const weightKg = ((parseInt(item.servings, 10) || 0) * 0.45).toFixed(1);
@@ -341,17 +341,17 @@
         let logisticsHtml = '';
         if (item.status === 'Delivered') {
           logisticsHtml = `
-            <div class="text-[#141E18] font-medium">Delivered: <strong>${item.volunteer || 'Volunteer'}</strong></div>
+            <div class="text-[#141E18] font-medium">Delivered by <strong>${item.volunteer || 'Volunteer'}</strong></div>
             <div class="text-[11px] text-[#525B55] mt-0.5">➔ ${item.targetShelter || 'Shelter'}</div>
           `;
         } else if (item.status === 'In-Transit') {
           logisticsHtml = `
-            <div class="text-[#B45309] font-medium">In Transit: <strong>${item.volunteer || 'Courier'}</strong></div>
-            <div class="text-[11px] text-[#525B55] mt-0.5">➔ ${item.targetShelter || 'Asha Shelter'}</div>
+            <div class="text-[#B45309] font-medium">Picked up by <strong>${item.volunteer || 'Courier'}</strong></div>
+            <div class="text-[11px] text-[#525B55] mt-0.5">➔ Going to: ${item.targetShelter || 'Asha Shelter'}</div>
           `;
         } else {
           logisticsHtml = `
-            <div class="text-[#1B4332] font-semibold">Seeking Courier</div>
+            <div class="text-[#1B4332] font-semibold">Waiting for volunteer</div>
             <div class="text-[11px]">
               <a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] hover:underline font-semibold font-mono">
                 Claim on Map →
@@ -367,7 +367,7 @@
               <div class="flex items-center gap-1.5">
                 <span>${item.id}</span>
                 ${expiry.isUrgent && item.status === 'Available'
-                  ? `<span title="Expires soon (<2h)" class="w-2 h-2 rounded-full bg-[#C84B31]"></span>`
+                  ? `<span title="Eat soon (<2h left)" class="w-2 h-2 rounded-full bg-[#C84B31]"></span>`
                   : ''}
               </div>
             </td>
@@ -383,23 +383,23 @@
             </td>
 
             <td class="py-3.5 px-4 font-mono">
-              <div class="font-bold text-[#141E18]">${item.servings} <span class="text-[11px] font-normal text-[#525B55]">serv</span></div>
+              <div class="font-bold text-[#141E18]">${item.servings} <span class="text-[11px] font-normal text-[#525B55]">meals</span></div>
               <div class="text-[11px] text-[#525B55]">~${weightKg} kg</div>
             </td>
 
             <td class="py-3.5 px-4">
               <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
-                <span>✓ 100% Passed</span>
+                <span>✓ Safe & Clean</span>
               </div>
               <div class="text-[10px] font-mono text-[#525B55] mt-0.5">
-                ${item.storageTemp || 'Safe Chain'}
+                ${item.storageTemp || 'Fresh'}
               </div>
             </td>
 
             <td class="py-3.5 px-4">
               <span class="status-pill ${statusPillClass}">
                 <span class="status-dot"></span>
-                <span>${item.status}</span>
+                <span>${statusText}</span>
               </span>
             </td>
 
@@ -409,7 +409,7 @@
 
             <td class="py-3.5 px-4 text-right">
               <button type="button" data-action="view-modal" data-id="${item.id}" class="px-2.5 py-1 text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] rounded transition-colors cursor-pointer">
-                Audit
+                Details
               </button>
             </td>
 
@@ -434,7 +434,7 @@
     document.getElementById('modal-dispatch-id').textContent = dispatch.id;
 
     const statusEl = document.getElementById('modal-dispatch-status');
-    statusEl.textContent = dispatch.status;
+    statusEl.textContent = dispatch.status === 'Available' ? 'Waiting for Courier' : dispatch.status === 'In-Transit' ? 'On the Way' : 'Delivered';
     statusEl.className = `status-pill ${
       dispatch.status === 'Available' ? 'status-available' : dispatch.status === 'In-Transit' ? 'status-intransit' : 'status-delivered'
     }`;
@@ -442,7 +442,7 @@
     document.getElementById('modal-donor-title').textContent = dispatch.donorName;
     document.getElementById('modal-donor-address').textContent = `${dispatch.address} • Phone: ${dispatch.contactPhone || 'N/A'}`;
     document.getElementById('modal-food-desc').textContent = dispatch.itemsDescription || dispatch.foodTitle;
-    document.getElementById('modal-servings').textContent = `${dispatch.servings} serv (~${((parseInt(dispatch.servings, 10) || 0) * 0.45).toFixed(1)} kg)`;
+    document.getElementById('modal-servings').textContent = `${dispatch.servings} meals (~${((parseInt(dispatch.servings, 10) || 0) * 0.45).toFixed(1)} kg)`;
     document.getElementById('modal-temperature').textContent = dispatch.temperatureRecorded || dispatch.storageTemp || '65°C';
 
     const expiry = global.BhojStore.getExpiryStatus(dispatch);
@@ -450,11 +450,11 @@
 
     const logisticsBox = document.getElementById('modal-logistics-text');
     if (dispatch.status === 'Delivered') {
-      logisticsBox.innerHTML = `Delivered to <strong class="text-[#141E18]">${dispatch.targetShelter || 'Shelter'}</strong> by Courier <strong class="text-[#1B4332]">${dispatch.volunteer || 'Volunteer'}</strong>`;
+      logisticsBox.innerHTML = `Delivered to <strong class="text-[#141E18]">${dispatch.targetShelter || 'Shelter'}</strong> by volunteer <strong class="text-[#1B4332]">${dispatch.volunteer || 'Volunteer'}</strong>`;
     } else if (dispatch.status === 'In-Transit') {
-      logisticsBox.innerHTML = `Currently in transit with <strong class="text-[#B45309]">${dispatch.volunteer || 'Volunteer'}</strong> heading to <strong class="text-[#141E18]">${dispatch.targetShelter || 'Asha Shelter'}</strong>`;
+      logisticsBox.innerHTML = `Being delivered by volunteer <strong class="text-[#B45309]">${dispatch.volunteer || 'Volunteer'}</strong> to <strong class="text-[#141E18]">${dispatch.targetShelter || 'Asha Shelter'}</strong>`;
     } else {
-      logisticsBox.innerHTML = `Ready at donor dock. <strong class="text-[#1B4332]">Awaiting courier claim.</strong>`;
+      logisticsBox.innerHTML = `Ready at donor location. <strong class="text-[#1B4332]">Waiting for a volunteer to pick up.</strong>`;
     }
 
     const cta = document.getElementById('modal-action-cta');
@@ -465,7 +465,7 @@
         cta.classList.remove('hidden');
       } else {
         cta.href = 'volunteer.html';
-        cta.textContent = 'View Map Live Feed';
+        cta.textContent = 'Open Courier Map';
       }
     }
 
@@ -537,7 +537,7 @@
         updateCharts();
         renderLedger();
         if (global.BhojToast) {
-          global.BhojToast.info('Dashboard metrics synchronized.');
+          global.BhojToast.info('Dashboard numbers refreshed.');
         }
       };
     }
@@ -553,7 +553,7 @@
 
       if (event.type === 'DISPATCH_ADDED' && event.payload) {
         if (global.BhojToast) {
-          global.BhojToast.success(`New surplus food dispatch: ${event.payload.donorName} (${event.payload.servings} serv)`);
+          global.BhojToast.success(`New food donation: ${event.payload.donorName} (${event.payload.servings} meals)`);
         }
       }
     });
