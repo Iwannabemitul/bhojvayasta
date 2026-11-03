@@ -2,38 +2,25 @@
  * BhojVayasta - Surplus Food Dispatch Report Portal & Safety Gate Logic
  * File: js/donate.js
  * 
- * Features:
- * - Real-time auto-calculation of food weight in kg and beneficiaries
- * - Dynamic shelf-life expiry timestamp with urgency status classification
- * - Mandatory 3-stage Food Safety & Hygiene Checklist Gate (temp, packaging, spoilage)
- * - Interactive Leaflet mini-map coordinate picker with Delhi/NCR hotspot presets
- * - Real-time Courier Feed Preview card reflecting live inputs
- * - Integration with BhojStore.addDispatch() and cross-tab synchronization
+ * Theme: Warm Editorial & Civic Logistics
+ * Preserves 100% of BhojStore logic and calculations
  */
 
 (function (global) {
   'use strict';
 
-  // Map state
   let donorMap = null;
   let donorMarker = null;
 
-  // Default coordinate: Connaught Place, New Delhi
   const DEFAULT_LAT = 28.6280;
   const DEFAULT_LNG = 77.2190;
 
-  /**
-   * Helper to format a local datetime string for input[type="datetime-local"]
-   */
   function getLocalDateTimeString(offsetHours = 0) {
     const d = new Date(Date.now() - offsetHours * 60 * 60 * 1000);
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d.toISOString().slice(0, 16);
   }
 
-  /**
-   * Formats a future expiry timestamp nicely (e.g. "Today, 08:30 PM")
-   */
   function formatExpiryTime(hoursFromNow) {
     const expiryDate = new Date(Date.now() + hoursFromNow * 60 * 60 * 1000);
     const now = new Date();
@@ -50,13 +37,12 @@
   }
 
   // ==========================================
-  // 1. Calculations: Weight, Beneficiaries & Expiry
+  // 1. Calculations: Weight & Safe Window
   // ==========================================
   function updateCalculations() {
     const servingsInput = document.getElementById('servings-input');
     const servings = Math.max(1, parseInt(servingsInput ? servingsInput.value : 120, 10) || 120);
 
-    // Weight calculation: 1 serving ≈ 0.45 kg
     const weightKg = (servings * 0.45).toFixed(1);
     const weightDisplay = weightKg >= 1000 
       ? `${(weightKg / 1000).toFixed(2)} MT (${weightKg} kg)` 
@@ -72,7 +58,6 @@
     if (previewServingsEl) previewServingsEl.textContent = `${servings} serv`;
     if (previewWeightEl) previewWeightEl.textContent = `${weightKg} kg`;
 
-    // Shelf life & expiry calculation
     const shelfLifeInput = document.getElementById('shelf-life');
     const shelfLifeHours = parseInt(shelfLifeInput ? shelfLifeInput.value : 4, 10) || 4;
 
@@ -81,28 +66,20 @@
     const expiryTimestampEl = document.getElementById('calc-expiry-timestamp');
     const previewExpiryEl = document.getElementById('preview-expiry');
 
-    if (shelfLifeDisplay) {
-      shelfLifeDisplay.textContent = `${shelfLifeHours} Hours`;
-    }
-
-    if (expiryTimestampEl) {
-      expiryTimestampEl.textContent = formatExpiryTime(shelfLifeHours);
-    }
-
-    if (previewExpiryEl) {
-      previewExpiryEl.textContent = `${shelfLifeHours}h left`;
-    }
+    if (shelfLifeDisplay) shelfLifeDisplay.textContent = `${shelfLifeHours} Hours`;
+    if (expiryTimestampEl) expiryTimestampEl.textContent = formatExpiryTime(shelfLifeHours);
+    if (previewExpiryEl) previewExpiryEl.textContent = `${shelfLifeHours}h left`;
 
     if (urgencyBadge) {
       if (shelfLifeHours < 3) {
         urgencyBadge.textContent = 'Critical < 3 hrs';
-        urgencyBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse';
+        urgencyBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF2F2] text-[#C84B31] border border-[#FCA5A5]';
       } else if (shelfLifeHours <= 6) {
         urgencyBadge.textContent = 'Moderate 3-6 hrs';
-        urgencyBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        urgencyBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]';
       } else {
         urgencyBadge.textContent = 'Stable > 6 hrs';
-        urgencyBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        urgencyBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]';
       }
     }
   }
@@ -126,14 +103,12 @@
 
     const progressPct = Math.round((checkedCount / 3) * 100);
 
-    // Update UI indicators
     const countText = document.getElementById('compliance-count-text');
     const pctText = document.getElementById('compliance-progress-pct');
     const progressBar = document.getElementById('compliance-progress-bar');
     const complianceBadge = document.getElementById('compliance-badge');
     const gateLockMsg = document.getElementById('gate-lock-message');
     const btnSubmit = document.getElementById('btn-submit-dispatch');
-    const btnSubmitIcon = document.getElementById('btn-submit-icon');
     const btnSubmitLabel = document.getElementById('btn-submit-label');
 
     if (countText) countText.textContent = `${checkedCount} / 3 Verified`;
@@ -142,58 +117,37 @@
 
     if (complianceBadge) {
       if (checkedCount === 3) {
-        complianceBadge.className = 'px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 self-start sm:self-auto';
+        complianceBadge.className = 'px-3 py-1 rounded text-xs font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]';
       } else {
-        complianceBadge.className = 'px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 self-start sm:self-auto';
+        complianceBadge.className = 'px-3 py-1 rounded text-xs font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]';
       }
     }
 
-    // Toggle Submit Button Lock
     if (btnSubmit) {
       if (checkedCount === 3) {
         btnSubmit.disabled = false;
-        btnSubmit.className = 'w-full flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-base font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 hover:from-emerald-300 hover:to-teal-200 shadow-xl shadow-emerald-900/40 hover:shadow-emerald-600/30 cursor-pointer active:scale-95 transition-all duration-300';
-        
+        btnSubmit.className = 'w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded text-sm font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white cursor-pointer shadow-sm transition-all duration-200';
         if (btnSubmitLabel) btnSubmitLabel.textContent = 'Dispatch Surplus Food to Relief Network (Gate Cleared)';
-        if (btnSubmitIcon) {
-          btnSubmitIcon.setAttribute('data-lucide', 'send');
-          btnSubmitIcon.className = 'w-5 h-5 text-slate-950';
-        }
 
         if (gateLockMsg) {
-          gateLockMsg.className = 'p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs text-emerald-300 flex items-center gap-2';
-          gateLockMsg.innerHTML = `
-            <i data-lucide="check-circle" class="w-4 h-4 shrink-0 text-emerald-400"></i>
-            <span><strong>100% Hygiene Gate Cleared.</strong> Food is certified safe for immediate courier pickup.</span>
-          `;
+          gateLockMsg.className = 'p-3 rounded bg-[#E8F3EE] border border-[#A3C9B8] text-xs text-[#1B4332] font-mono';
+          gateLockMsg.innerHTML = '✓ <strong>100% Hygiene Gate Cleared.</strong> Certified safe for immediate courier pickup.';
         }
       } else {
         btnSubmit.disabled = true;
-        btnSubmit.className = 'w-full flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-base font-bold text-white bg-slate-800 cursor-not-allowed opacity-60 transition-all duration-300';
-        
+        btnSubmit.className = 'w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded text-sm font-semibold uppercase tracking-wider bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] cursor-not-allowed opacity-70 transition-all duration-200';
         if (btnSubmitLabel) btnSubmitLabel.textContent = `Unlock By Completing Hygiene Checklist (${checkedCount}/3)`;
-        if (btnSubmitIcon) {
-          btnSubmitIcon.setAttribute('data-lucide', 'lock');
-          btnSubmitIcon.className = 'w-5 h-5 text-slate-400';
-        }
 
         if (gateLockMsg) {
-          gateLockMsg.className = 'p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center gap-2';
-          gateLockMsg.innerHTML = `
-            <i data-lucide="lock" class="w-4 h-4 shrink-0 text-amber-400"></i>
-            <span>All 3 safety gates must be checked to unlock community courier dispatch.</span>
-          `;
+          gateLockMsg.className = 'p-3 rounded bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#B45309] font-mono';
+          gateLockMsg.innerHTML = 'All 3 safety gates must be checked to unlock community courier dispatch.';
         }
-      }
-
-      if (global.lucide && typeof global.lucide.createIcons === 'function') {
-        global.lucide.createIcons();
       }
     }
   }
 
   // ==========================================
-  // 3. Leaflet Interactive Mini-Map Coordinate Picker
+  // 3. Leaflet Mini Map (Key-Free OpenStreetMap)
   // ==========================================
   function initDonorMap() {
     const mapContainer = document.getElementById('donor-map');
@@ -207,25 +161,24 @@
         scrollWheelZoom: false
       });
 
-      // CartoDB Voyager / OpenStreetMap standard tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+      // Key-Free OpenStreetMap Tiles with warm CSS filter
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 18
       }).addTo(donorMap);
 
-      // Custom Pin Marker
       const pinIcon = L.divIcon({
         className: 'bhoj-pin-wrapper',
         html: `
-          <div class="bhoj-pin-body" style="background: linear-gradient(135deg, #059669, #10b981); border: 2px solid #ffffff;">
+          <div class="bhoj-pin-body pin-available">
             <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
         `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 36],
-        popupAnchor: [0, -32]
+        iconSize: [36, 36],
+        iconAnchor: [18, 32],
+        popupAnchor: [0, -30]
       });
 
       donorMarker = L.marker([DEFAULT_LAT, DEFAULT_LNG], {
@@ -233,21 +186,18 @@
         icon: pinIcon
       }).addTo(donorMap);
 
-      donorMarker.bindPopup('<strong>Pickup Dispatch Dock</strong><br>Drag pin or click map to move').openPopup();
+      donorMarker.bindPopup('<strong>Pickup Dock</strong><br>Drag pin or click map to move');
 
-      // Listen to marker drag
       donorMarker.on('dragend', function (e) {
         const coord = e.target.getLatLng();
         setCoordinates(coord.lat, coord.lng);
       });
 
-      // Listen to map click
       donorMap.on('click', function (e) {
         donorMarker.setLatLng(e.latlng);
         setCoordinates(e.latlng.lat, e.latlng.lng);
       });
 
-      // Quick location presets
       const presetContainer = document.getElementById('location-presets');
       if (presetContainer) {
         presetContainer.addEventListener('click', function (e) {
@@ -261,7 +211,7 @@
           if (lat && lng) {
             setCoordinates(lat, lng, addr);
             donorMarker.setLatLng([lat, lng]);
-            donorMap.flyTo([lat, lng], 13, { duration: 1.2 });
+            donorMap.flyTo([lat, lng], 13, { duration: 1 });
           }
         });
       }
@@ -291,15 +241,12 @@
 
     if (previewAddr) {
       const currentAddr = addrInput ? addrInput.value : `${formattedLat}, ${formattedLng}`;
-      previewAddr.innerHTML = `
-        <svg class="w-3 h-3 text-slate-500 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-        <span>${currentAddr}</span>
-      `;
+      previewAddr.textContent = currentAddr;
     }
   }
 
   // ==========================================
-  // 4. Real-Time Live Feed Preview Card
+  // 4. Live Feed Preview Card
   // ==========================================
   function setupLivePreview() {
     const donorNameInput = document.getElementById('donor-name');
@@ -321,12 +268,7 @@
     if (addressInput) {
       addressInput.addEventListener('input', function () {
         const previewAddr = document.getElementById('preview-address');
-        if (previewAddr) {
-          previewAddr.innerHTML = `
-            <svg class="w-3 h-3 text-slate-500 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-            <span>${this.value.trim() || 'Barakhamba Road, Connaught Place, New Delhi'}</span>
-          `;
-        }
+        if (previewAddr) previewAddr.textContent = this.value.trim() || 'Barakhamba Road, Connaught Place, New Delhi';
       });
     }
 
@@ -342,36 +284,36 @@
       });
     }
 
-    // Food Type radio card listener
     const foodTypeRadios = document.querySelectorAll('input[name="foodType"]');
     foodTypeRadios.forEach((radio) => {
       radio.addEventListener('change', function () {
         if (previewType) {
           previewType.textContent = this.value;
           if (this.value === 'Cooked Meals') {
-            previewType.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+            previewType.className = 'px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]';
           } else {
-            previewType.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30';
+            previewType.className = 'px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]';
           }
         }
 
-        // Highlight selected radio card
         document.querySelectorAll('.bhoj-radio-card').forEach((card) => {
-          card.classList.remove('border-emerald-500/40', 'bg-emerald-950/20');
-          card.classList.add('border-slate-800', 'bg-slate-900/60');
+          card.className = 'bhoj-radio-card cursor-pointer p-4 rounded border border-[#DCD9D0] bg-white transition-all flex items-start gap-3';
         });
 
         const parentCard = this.closest('.bhoj-radio-card');
         if (parentCard) {
-          parentCard.classList.remove('border-slate-800', 'bg-slate-900/60');
-          parentCard.classList.add('border-emerald-500/40', 'bg-emerald-950/20');
+          if (this.value === 'Cooked Meals') {
+            parentCard.className = 'bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#1B4332] bg-[#E8F3EE] transition-all flex items-start gap-3';
+          } else {
+            parentCard.className = 'bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#C84B31] bg-[#FEF3C7] transition-all flex items-start gap-3';
+          }
         }
       });
     });
   }
 
   // ==========================================
-  // 5. Recent Submissions Feed in Right Column
+  // 5. Recent Submissions Feed
   // ==========================================
   function renderRecentSubmissions() {
     if (!global.BhojStore) return;
@@ -384,7 +326,7 @@
 
     if (recent.length === 0) {
       listContainer.innerHTML = `
-        <div class="text-center py-4 text-xs text-slate-500 font-mono">
+        <div class="text-center py-3 text-xs text-[#525B55] font-mono">
           No dispatches submitted yet in this session.
         </div>
       `;
@@ -398,18 +340,19 @@
         if (item.status === 'Delivered') statusBadge = 'status-delivered';
 
         return `
-          <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-3 text-xs">
+          <div class="p-3 rounded bg-[#FAF9F6] border border-[#DCD9D0] flex items-center justify-between gap-3 text-xs">
             <div>
-              <div class="flex items-center gap-1.5">
-                <span class="font-mono font-bold text-emerald-400">${item.id}</span>
-                <span class="text-slate-400">•</span>
-                <span class="font-medium text-slate-200 truncate max-w-[140px]">${item.donorName}</span>
+              <div class="flex items-center gap-1.5 font-mono">
+                <span class="font-bold text-[#141E18]">${item.id}</span>
+                <span class="text-[#DCD9D0]">•</span>
+                <span class="font-sans font-medium text-[#141E18] truncate max-w-[150px]">${item.donorName}</span>
               </div>
-              <div class="text-[11px] text-slate-400 mt-0.5">
+              <div class="text-[11px] text-[#525B55] font-mono mt-0.5">
                 ${item.servings} serv • ${item.foodType}
               </div>
             </div>
-            <span class="status-pill ${statusBadge} text-[10px] py-0.5 px-2">
+            <span class="status-pill ${statusBadge}">
+              <span class="status-dot"></span>
               <span>${item.status}</span>
             </span>
           </div>
@@ -419,7 +362,7 @@
   }
 
   // ==========================================
-  // 6. Form Submission & Validation Handling
+  // 6. Form Submission
   // ==========================================
   function setupFormSubmission() {
     const form = document.getElementById('dispatch-form');
@@ -428,20 +371,18 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      // Check hygiene gates
       const chkTemp = document.getElementById('chk-temp-check');
       const chkPackaging = document.getElementById('chk-packaging');
       const chkSpoilage = document.getElementById('chk-no-spoilage');
 
       if (!chkTemp.checked || !chkPackaging.checked || !chkSpoilage.checked) {
         if (global.BhojToast) {
-          global.BhojToast.error('Mandatory Hygiene Gate: You must verify all 3 food safety checks before dispatch.');
+          global.BhojToast.error('Mandatory Hygiene Gate: Verify all 3 safety checks before dispatch.');
         }
         document.getElementById('hygiene-gate-container')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
 
-      // Collect form fields
       const donorName = (document.getElementById('donor-name')?.value || '').trim();
       const donorCategory = document.getElementById('donor-category')?.value || 'Wedding Banquet';
       const dietType = document.getElementById('diet-type')?.value || 'Vegetarian';
@@ -462,24 +403,22 @@
       const lng = parseFloat(document.getElementById('donor-lng')?.value || DEFAULT_LNG);
       const address = (document.getElementById('donor-address')?.value || 'Central Delhi Hub, New Delhi').trim();
 
-      // Field validation
       if (!donorName) {
-        if (global.BhojToast) global.BhojToast.warning('Please enter the establishment or donor organization name.');
+        if (global.BhojToast) global.BhojToast.warning('Please enter the establishment or organization name.');
         document.getElementById('donor-name')?.focus();
         return;
       }
       if (!contactPhone) {
-        if (global.BhojToast) global.BhojToast.warning('Please provide a direct contact phone number for the courier.');
+        if (global.BhojToast) global.BhojToast.warning('Please provide a direct contact phone number.');
         document.getElementById('contact-phone')?.focus();
         return;
       }
       if (!foodDescription) {
-        if (global.BhojToast) global.BhojToast.warning('Please describe the food items and dishes.');
+        if (global.BhojToast) global.BhojToast.warning('Please describe the food items.');
         document.getElementById('food-items-desc')?.focus();
         return;
       }
 
-      // Construct payload for BhojStore
       const payload = {
         donorName,
         donorCategory,
@@ -509,15 +448,12 @@
       try {
         const newDispatch = global.BhojStore.addDispatch(payload);
 
-        // Success Feedback
         if (global.BhojToast) {
-          global.BhojToast.success(`Surplus food dispatched! Unique ID: ${newDispatch.id}`);
+          global.BhojToast.success(`Surplus food dispatched! ID: ${newDispatch.id}`);
         }
 
-        // Show Success Modal
         showSuccessModal(newDispatch);
 
-        // Reset Form
         form.reset();
         document.getElementById('servings-input').value = 120;
         document.getElementById('shelf-life').value = 4;
@@ -529,7 +465,7 @@
       } catch (err) {
         console.error('[BhojDonate] Error adding dispatch:', err);
         if (global.BhojToast) {
-          global.BhojToast.error('Failed to submit dispatch. Please check your inputs.');
+          global.BhojToast.error('Failed to submit dispatch.');
         }
       }
     });
@@ -544,15 +480,9 @@
     document.getElementById('modal-success-zone').textContent = dispatch.address;
 
     const btnFeed = document.getElementById('btn-view-on-feed');
-    if (btnFeed) {
-      btnFeed.href = `volunteer.html?claim=${dispatch.id}`;
-    }
+    if (btnFeed) btnFeed.href = `volunteer.html?claim=${dispatch.id}`;
 
     modal.classList.remove('hidden');
-
-    if (global.lucide && typeof global.lucide.createIcons === 'function') {
-      global.lucide.createIcons();
-    }
   }
 
   function setupModalDismiss() {
@@ -560,29 +490,21 @@
     const dismissBtn = document.getElementById('btn-modal-dismiss');
 
     if (dismissBtn && modal) {
-      dismissBtn.onclick = function () {
-        modal.classList.add('hidden');
-      };
+      dismissBtn.onclick = () => modal.classList.add('hidden');
     }
-
     if (modal) {
-      modal.onclick = function (e) {
+      modal.onclick = (e) => {
         if (e.target === modal) modal.classList.add('hidden');
       };
     }
   }
 
-  // ==========================================
-  // 7. Initialization & Event Bindings
-  // ==========================================
   function initDonate() {
-    // Set initial datetime-local to right now
     const preparedTimeInput = document.getElementById('prepared-time');
     if (preparedTimeInput && !preparedTimeInput.value) {
       preparedTimeInput.value = getLocalDateTimeString();
     }
 
-    // Quick prepared time button handlers
     const btnNow = document.getElementById('btn-cooked-just-now');
     const btn1hr = document.getElementById('btn-cooked-1hr');
     const btn2hr = document.getElementById('btn-cooked-2hr');
@@ -591,7 +513,6 @@
     if (btn1hr) btn1hr.onclick = () => { if (preparedTimeInput) preparedTimeInput.value = getLocalDateTimeString(1); };
     if (btn2hr) btn2hr.onclick = () => { if (preparedTimeInput) preparedTimeInput.value = getLocalDateTimeString(2); };
 
-    // Preset servings buttons
     document.querySelectorAll('.btn-preset-servings').forEach((btn) => {
       btn.addEventListener('click', function () {
         const val = this.getAttribute('data-servings');
@@ -603,36 +524,26 @@
       });
     });
 
-    // Servings & Shelf-Life input listeners
     const servingsInput = document.getElementById('servings-input');
     const shelfLifeInput = document.getElementById('shelf-life');
 
     if (servingsInput) servingsInput.addEventListener('input', updateCalculations);
     if (shelfLifeInput) shelfLifeInput.addEventListener('input', updateCalculations);
 
-    // Hygiene Gate Checkboxes listeners
     ['chk-temp-check', 'chk-packaging', 'chk-no-spoilage'].forEach((id) => {
       const chk = document.getElementById(id);
       if (chk) chk.addEventListener('change', updateHygieneGate);
     });
 
-    // Initialize Map, Preview, Submissions & Form
     initDonorMap();
     setupLivePreview();
     renderRecentSubmissions();
     setupFormSubmission();
     setupModalDismiss();
 
-    // Initial calculations
     updateCalculations();
     updateHygieneGate();
 
-    // Render Lucide icons
-    if (global.lucide && typeof global.lucide.createIcons === 'function') {
-      global.lucide.createIcons();
-    }
-
-    // Store sync listener for recent submissions
     if (global.BhojStore && typeof global.BhojStore.subscribe === 'function') {
       global.BhojStore.subscribe(function () {
         renderRecentSubmissions();
@@ -640,7 +551,6 @@
     }
   }
 
-  // Self-mount on DOM readiness
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDonate);
   } else {

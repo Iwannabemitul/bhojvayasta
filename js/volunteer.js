@@ -2,26 +2,19 @@
  * BhojVayasta - Live Volunteer Courier Pickup Feed & Interactive Distance Map Logic
  * File: js/volunteer.js
  * 
- * Features:
- * - Real-time Haversine distance calculations from volunteer position to food recovery donors
- * - Dynamic route plotting (Courier -> Donor -> Receiving Shelter)
- * - Draggable courier marker with instant multi-card distance recalculation
- * - Interactive pickup acceptance and shelter assignment workflow
- * - Verified delivery completion logging to the community impact ledger
- * - Real-time cross-tab synchronization with BroadcastChannel and BhojStore
+ * Theme: Warm Editorial & Civic Logistics
+ * Preserves 100% of Haversine distance math, BhojStore state & BroadcastChannel sync
  */
 
 (function (global) {
   'use strict';
 
-  // Map & Route State
   let reliefMap = null;
   let courierMarker = null;
-  let donorMarkerMap = new Map(); // id -> L.marker
+  let donorMarkerMap = new Map();
   let shelterMarkerList = [];
   let routeLayerGroup = null;
 
-  // Simulator & Filter State
   let courierCoords = { lat: 28.6139, lng: 77.2090 }; // Connaught Place default
   let volunteerName = 'Arjun Mehta (Verified Courier)';
   let currentStatusFilter = 'all';
@@ -48,17 +41,13 @@
     return parseFloat((R * c).toFixed(1));
   }
 
-  /**
-   * Estimates urban travel time in minutes based on two-wheeler courier speed (~28 km/h).
-   */
   function estimateTravelTimeMinutes(distanceKm) {
     if (!distanceKm || distanceKm <= 0) return 3;
-    // Base 3 mins pickup overhead + ~2.2 mins per km
     return Math.max(3, Math.round(3 + distanceKm * 2.2));
   }
 
   // ==========================================
-  // 2. Map Initialization & Custom Markers
+  // 2. Map Initialization (Key-Free OpenStreetMap)
   // ==========================================
   function initReliefMap() {
     const mapEl = document.getElementById('relief-map');
@@ -72,21 +61,16 @@
         scrollWheelZoom: true
       });
 
-      // CartoDB Voyager tiles for modern high-contrast aesthetic
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> & BhojVayasta',
+      // Key-Free OpenStreetMap Standard Tiles with Warm CSS Filter
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 18
       }).addTo(reliefMap);
 
       routeLayerGroup = L.layerGroup().addTo(reliefMap);
 
-      // Create Courier Marker (Draggable Blue Marker)
       createCourierMarker();
-
-      // Plot the 4 Fixed Shelters
       plotShelterHubs();
-
-      // Plot All Donor Dispatches
       refreshDonorMarkers();
 
     } catch (e) {
@@ -94,25 +78,21 @@
     }
   }
 
-  /**
-   * Creates the draggable courier marker representing the volunteer.
-   */
   function createCourierMarker() {
     if (!reliefMap) return;
 
     const courierIcon = L.divIcon({
       className: 'bhoj-pin-wrapper',
       html: `
-        <div class="active-beacon-ring" style="border-color: #3b82f6;"></div>
-        <div class="bhoj-pin-body" style="background: linear-gradient(135deg, #1d4ed8, #3b82f6); border: 2px solid #ffffff;">
+        <div class="bhoj-pin-body" style="background: #1d4ed8; border: 2px solid #FFFFFF;">
           <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
           </svg>
         </div>
       `,
-      iconSize: [40, 40],
-      iconAnchor: [20, 36],
-      popupAnchor: [0, -32]
+      iconSize: [36, 36],
+      iconAnchor: [18, 32],
+      popupAnchor: [0, -30]
     });
 
     courierMarker = L.marker([courierCoords.lat, courierCoords.lng], {
@@ -123,12 +103,11 @@
 
     courierMarker.bindPopup(`
       <div class="text-xs space-y-1">
-        <strong class="text-blue-400">Volunteer Courier Location</strong>
-        <p class="text-slate-300">Drag this marker across Delhi/NCR to test real-time distance recalculation.</p>
+        <strong class="text-[#1d4ed8]">Courier Location</strong>
+        <p class="text-[#525B55]">Drag this pin anywhere in Delhi/NCR to test live Haversine distance recalculation.</p>
       </div>
     `);
 
-    // Drag Listener: updates distances across feed and active route
     courierMarker.on('drag', function (e) {
       const pos = e.target.getLatLng();
       courierCoords.lat = pos.lat;
@@ -140,10 +119,8 @@
       courierCoords.lat = pos.lat;
       courierCoords.lng = pos.lng;
 
-      // Recalculate feed
       renderFeed();
 
-      // If a route is active, redraw it
       if (activeSelectedDispatchId) {
         const item = global.BhojStore ? global.BhojStore.getDispatchById(activeSelectedDispatchId) : null;
         if (item) drawRoute(item);
@@ -155,9 +132,6 @@
     });
   }
 
-  /**
-   * Plots the 4 fixed receiving shelters on the map with custom purple/indigo pins.
-   */
   function plotShelterHubs() {
     if (!reliefMap || !global.BhojStore) return;
 
@@ -169,34 +143,29 @@
       const shelterIcon = L.divIcon({
         className: 'bhoj-pin-wrapper',
         html: `
-          <div class="bhoj-pin-body pin-shelter" style="background: linear-gradient(135deg, #0284c7, #38bdf8); border: 2px solid #ffffff;">
+          <div class="bhoj-pin-body pin-shelter">
             <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
             </svg>
           </div>
         `,
-        iconSize: [38, 38],
-        iconAnchor: [19, 34],
-        popupAnchor: [0, -30]
+        iconSize: [34, 34],
+        iconAnchor: [17, 30],
+        popupAnchor: [0, -28]
       });
 
       const marker = L.marker([shelter.lat, shelter.lng], { icon: shelterIcon }).addTo(reliefMap);
 
       marker.bindPopup(`
-        <div class="space-y-1.5 text-xs">
-          <div class="flex items-center gap-1.5">
-            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
-              ${shelter.category}
-            </span>
-          </div>
-          <h4 class="font-bold text-white text-sm leading-tight">${shelter.name}</h4>
-          <p class="text-slate-300">${shelter.address}</p>
-          <div class="pt-1 border-t border-slate-700/80 flex items-center justify-between text-[11px] font-mono">
-            <span class="text-slate-400">Daily Demand:</span>
-            <span class="text-emerald-400 font-bold">${shelter.mealDemand} portions</span>
-          </div>
-          <div class="text-[11px] text-slate-400">
-            Contact: ${shelter.contactPerson} (${shelter.phone})
+        <div class="space-y-1 text-xs">
+          <span class="font-mono text-[10px] uppercase font-bold text-[#0284C7] px-1.5 py-0.5 bg-[#F0F9FF] border border-[#BAE6FD] rounded">
+            ${shelter.category}
+          </span>
+          <h4 class="font-bold text-[#141E18] text-sm mt-1">${shelter.name}</h4>
+          <p class="text-[#525B55]">${shelter.address}</p>
+          <div class="pt-1 border-t border-[#DCD9D0] flex items-center justify-between text-[11px] font-mono">
+            <span class="text-[#525B55]">Daily Demand:</span>
+            <span class="text-[#1B4332] font-bold">${shelter.mealDemand} portions</span>
           </div>
         </div>
       `);
@@ -205,13 +174,9 @@
     });
   }
 
-  /**
-   * Refreshes and color-codes all donor dispatch markers.
-   */
   function refreshDonorMarkers() {
     if (!reliefMap || !global.BhojStore) return;
 
-    // Clear existing donor markers
     donorMarkerMap.forEach((m) => reliefMap.removeLayer(m));
     donorMarkerMap.clear();
 
@@ -221,17 +186,13 @@
       const expiry = global.BhojStore.getExpiryStatus(item);
       const isUrgent = expiry.isUrgent && item.status === 'Available';
 
-      // Determine visual theme based on status & urgency
       let pinThemeClass = 'pin-available';
       let pulseRingHtml = '';
 
       if (item.status === 'Available') {
         if (isUrgent) {
           pinThemeClass = 'pin-urgent';
-          pulseRingHtml = `
-            <div class="urgent-pulse-ring"></div>
-            <div class="urgent-pulse-ring urgent-pulse-ring-delayed"></div>
-          `;
+          pulseRingHtml = `<div class="urgent-pulse-ring"></div>`;
         } else {
           pinThemeClass = 'pin-available';
         }
@@ -251,51 +212,50 @@
             </svg>
           </div>
         `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 36],
-        popupAnchor: [0, -32]
+        iconSize: [36, 36],
+        iconAnchor: [18, 32],
+        popupAnchor: [0, -30]
       });
 
       const marker = L.marker([item.lat, item.lng], { icon: donorIcon }).addTo(reliefMap);
 
       const distanceToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
 
-      // Popup Content
       marker.bindPopup(`
         <div class="space-y-2 text-xs">
           <div class="flex items-center justify-between gap-2">
-            <span class="font-mono font-bold text-emerald-400">${item.id}</span>
-            <span class="status-pill ${item.status === 'Available' ? 'status-available' : item.status === 'In-Transit' ? 'status-intransit' : 'status-delivered'} text-[10px] py-0.5 px-2">
+            <span class="font-mono font-bold text-[#141E18]">${item.id}</span>
+            <span class="status-pill ${item.status === 'Available' ? 'status-available' : item.status === 'In-Transit' ? 'status-intransit' : 'status-delivered'} text-[10px] py-0.5 px-1.5">
               ${item.status}
             </span>
           </div>
 
           <div>
-            <h4 class="font-bold text-white text-sm">${item.donorName}</h4>
-            <p class="text-slate-300 text-[11px] truncate max-w-xs">${item.address}</p>
+            <h4 class="font-bold text-[#141E18] text-sm">${item.donorName}</h4>
+            <p class="text-[#525B55] text-[11px] truncate max-w-xs">${item.address}</p>
           </div>
 
-          <div class="grid grid-cols-2 gap-1.5 p-2 rounded-lg bg-slate-900 font-mono text-[11px]">
+          <div class="grid grid-cols-2 gap-1 p-2 rounded bg-[#F7F5F0] border border-[#DCD9D0] font-mono text-[11px]">
             <div>
-              <span class="text-slate-400">Quantity:</span>
-              <div class="text-white font-bold">${item.servings} portions</div>
+              <span class="text-[#525B55]">Quantity:</span>
+              <div class="text-[#141E18] font-bold">${item.servings} portions</div>
             </div>
             <div>
-              <span class="text-slate-400">Distance:</span>
-              <div class="text-emerald-400 font-bold">${distanceToDonor} km</div>
+              <span class="text-[#525B55]">Distance:</span>
+              <div class="text-[#1B4332] font-bold">${distanceToDonor} km</div>
             </div>
           </div>
 
           ${
             item.status === 'Available'
-              ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="w-full py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 shadow cursor-pointer">
+              ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="w-full py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#C84B31] hover:bg-[#A83820] cursor-pointer">
                   Accept Pickup Now
                 </button>`
               : item.status === 'In-Transit'
-              ? `<button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="w-full py-1.5 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow cursor-pointer">
+              ? `<button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="w-full py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
                   Complete Delivery
                 </button>`
-              : `<div class="text-center text-slate-400 text-[11px]">Delivered to ${item.targetShelter || 'Shelter'}</div>`
+              : `<div class="text-center text-[#525B55] font-mono text-[11px]">Delivered to ${item.targetShelter || 'Shelter'}</div>`
           }
         </div>
       `);
@@ -316,7 +276,6 @@
 
     routeLayerGroup.clearLayers();
 
-    // Determine target shelter (assigned shelter, or nearest available shelter)
     const shelters = global.BhojStore.getShelters();
     let targetShelter = null;
 
@@ -324,7 +283,6 @@
       targetShelter = shelters.find((s) => s.name.toLowerCase().includes(dispatch.targetShelter.toLowerCase().substring(0, 6)));
     }
     if (!targetShelter) {
-      // Find nearest shelter to donor
       let minShelterDist = Infinity;
       shelters.forEach((s) => {
         const d = calculateDistanceKm(dispatch.lat, dispatch.lng, s.lat, s.lng);
@@ -337,57 +295,53 @@
 
     if (!targetShelter) targetShelter = shelters[0];
 
-    // Leg 1: Courier -> Donor
     const courierPoint = [courierCoords.lat, courierCoords.lng];
     const donorPoint = [dispatch.lat, dispatch.lng];
     const shelterPoint = [targetShelter.lat, targetShelter.lng];
 
     const distCourierToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, dispatch.lat, dispatch.lng);
     const timeCourierToDonor = estimateTravelTimeMinutes(distCourierToDonor);
-
     const distDonorToShelter = calculateDistanceKm(dispatch.lat, dispatch.lng, targetShelter.lat, targetShelter.lng);
 
-    // Draw Leg 1: Blue Dashed Polyline
+    // Leg 1: Blue dashed polyline (Courier -> Donor)
     const leg1Line = L.polyline([courierPoint, donorPoint], {
-      color: '#3b82f6',
-      weight: 4,
-      opacity: 0.85,
-      dashArray: '8, 8'
-    }).addTo(routeLayerGroup);
-
-    // Draw Leg 2: Amber Dashed Polyline
-    const leg2Line = L.polyline([donorPoint, shelterPoint], {
-      color: '#f59e0b',
-      weight: 4,
+      color: '#1d4ed8',
+      weight: 3.5,
       opacity: 0.85,
       dashArray: '6, 6'
     }).addTo(routeLayerGroup);
 
-    // Fit map bounds to show complete trip
-    const group = L.featureGroup([leg1Line, leg2Line]);
-    reliefMap.fitBounds(group.getBounds(), { padding: [50, 50], maxZoom: 14 });
+    // Leg 2: Terracotta dashed polyline (Donor -> Shelter)
+    const leg2Line = L.polyline([donorPoint, shelterPoint], {
+      color: '#C84B31',
+      weight: 3.5,
+      opacity: 0.85,
+      dashArray: '6, 6'
+    }).addTo(routeLayerGroup);
 
-    // Update Floating Summary Box
+    const group = L.featureGroup([leg1Line, leg2Line]);
+    reliefMap.fitBounds(group.getBounds(), { padding: [40, 40], maxZoom: 14 });
+
     const overlay = document.getElementById('route-summary-overlay');
     if (overlay) {
       document.getElementById('route-donor-name').textContent = dispatch.donorName;
       document.getElementById('route-courier-dist').textContent = `${distCourierToDonor} km`;
-      document.getElementById('route-courier-time').textContent = `~${timeCourierToDonor} mins`;
-      document.getElementById('route-shelter-dist').textContent = `${distDonorToShelter} km to ${targetShelter.name}`;
+      document.getElementById('route-courier-time').textContent = `${timeCourierToDonor} mins`;
+      document.getElementById('route-shelter-dist').textContent = `Donor ➔ ${targetShelter.name}: ${distDonorToShelter} km`;
 
       const actionBtn = document.getElementById('btn-route-action');
       if (actionBtn) {
         if (dispatch.status === 'Available') {
           actionBtn.textContent = 'Accept Pickup';
-          actionBtn.className = 'px-4 py-2 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 shadow-md cursor-pointer';
+          actionBtn.className = 'btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-wider shrink-0 cursor-pointer';
           actionBtn.onclick = () => openShelterAssignModal(dispatch.id);
         } else if (dispatch.status === 'In-Transit') {
           actionBtn.textContent = 'Complete Delivery';
-          actionBtn.className = 'px-4 py-2 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow-md cursor-pointer';
+          actionBtn.className = 'px-4 py-2 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] shrink-0 cursor-pointer';
           actionBtn.onclick = () => completeDelivery(dispatch.id);
         } else {
           actionBtn.textContent = 'Delivered';
-          actionBtn.className = 'px-4 py-2 rounded-lg text-xs font-bold text-slate-400 bg-slate-800 cursor-default';
+          actionBtn.className = 'btn-secondary px-4 py-2 text-xs font-semibold text-[#525B55] shrink-0 cursor-default';
           actionBtn.onclick = null;
         }
       }
@@ -396,9 +350,6 @@
     }
   }
 
-  // ==========================================
-  // 4. Focus on Specific Dispatch (Feed & Map Sync)
-  // ==========================================
   function focusOnDispatch(id, scrollFeed = true) {
     if (!id || !global.BhojStore) return;
 
@@ -406,20 +357,18 @@
     const item = global.BhojStore.getDispatchById(id);
     if (!item) return;
 
-    // Highlight card in feed
     document.querySelectorAll('.courier-card').forEach((c) => {
-      c.classList.remove('ring-2', 'ring-emerald-500', 'bg-slate-900/90');
+      c.classList.remove('bg-[#F0FDF4]', 'border-l-4', 'border-l-[#1B4332]');
     });
 
     const targetCard = document.getElementById(`card-${item.id}`);
     if (targetCard) {
-      targetCard.classList.add('ring-2', 'ring-emerald-500', 'bg-slate-900/90');
+      targetCard.classList.add('bg-[#F0FDF4]', 'border-l-4', 'border-l-[#1B4332]');
       if (scrollFeed) {
         targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
-    // Open marker popup & draw route
     const marker = donorMarkerMap.get(item.id);
     if (marker && reliefMap) {
       marker.openPopup();
@@ -428,16 +377,18 @@
     drawRoute(item);
   }
 
-  // Global triggers so Leaflet popups can invoke functions
   global.BhojVolunteerTriggerAccept = function (id) {
     openShelterAssignModal(id);
   };
   global.BhojVolunteerTriggerComplete = function (id) {
     completeDelivery(id);
   };
+  global.BhojFocusDispatch = function (id) {
+    focusOnDispatch(id, true);
+  };
 
   // ==========================================
-  // 5. Courier Feed Rendering
+  // 4. Courier Feed Rendering
   // ==========================================
   function renderFeed() {
     if (!global.BhojStore) return;
@@ -449,7 +400,6 @@
 
     if (!feedContainer) return;
 
-    // Filter counts for tabs
     const countAll = dispatches.length;
     const countAvailable = dispatches.filter((d) => d.status === 'Available').length;
     const countInTransit = dispatches.filter((d) => d.status === 'In-Transit').length;
@@ -460,17 +410,13 @@
     document.getElementById('count-status-intransit').textContent = countInTransit;
     document.getElementById('count-status-delivered').textContent = countDelivered;
 
-    // Filter
     let filtered = dispatches.filter((item) => {
-      // Status
       if (currentStatusFilter !== 'all' && item.status.toLowerCase() !== currentStatusFilter.toLowerCase()) {
         return false;
       }
-      // Type
       if (currentTypeFilter !== 'all' && item.foodType.toLowerCase() !== currentTypeFilter.toLowerCase()) {
         return false;
       }
-      // Search
       if (currentSearchQuery.trim()) {
         const q = currentSearchQuery.toLowerCase().trim();
         const matchId = (item.id || '').toLowerCase().includes(q);
@@ -481,7 +427,6 @@
       return true;
     });
 
-    // Sorting
     filtered.sort((a, b) => {
       const distA = calculateDistanceKm(courierCoords.lat, courierCoords.lng, a.lat, a.lng);
       const distB = calculateDistanceKm(courierCoords.lat, courierCoords.lng, b.lat, b.lng);
@@ -519,108 +464,91 @@
 
         const isCooked = (item.foodType || '').toLowerCase().includes('cooked');
         const typeBadge = isCooked
-          ? `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">Cooked Meals</span>`
-          : `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Raw Produce</span>`;
+          ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">Cooked Meals</span>`
+          : `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">Raw Produce</span>`;
 
         let statusPillClass = 'status-available';
-        let statusDotClass = 'bg-emerald-400';
-        if (item.status === 'In-Transit') {
-          statusPillClass = 'status-intransit';
-          statusDotClass = 'bg-amber-400';
-        } else if (item.status === 'Delivered') {
-          statusPillClass = 'status-delivered';
-          statusDotClass = 'bg-indigo-400';
-        }
+        if (item.status === 'In-Transit') statusPillClass = 'status-intransit';
+        if (item.status === 'Delivered') statusPillClass = 'status-delivered';
 
         const isSelected = item.id === activeSelectedDispatchId;
 
         return `
-          <div id="card-${item.id}" class="courier-card glass-card p-5 rounded-2xl space-y-3.5 transition-all duration-200 cursor-pointer ${
-            isSelected ? 'ring-2 ring-emerald-500 bg-slate-900/90' : 'hover:border-slate-700'
+          <div id="card-${item.id}" class="courier-card p-4 sm:p-5 space-y-3 transition-colors cursor-pointer bg-white ${
+            isSelected ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332]' : 'hover:bg-[#FAF9F6]'
           }" onclick="window.BhojFocusDispatch('${item.id}')">
             
-            <!-- Card Header: ID, Donor, Status -->
             <div class="flex items-start justify-between gap-3">
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="font-mono font-bold text-emerald-400 text-xs">${item.id}</span>
-                  <span class="text-slate-600">•</span>
+                  <span class="font-mono font-bold text-[#141E18] text-xs">${item.id}</span>
+                  <span class="text-[#DCD9D0]">•</span>
                   ${typeBadge}
                   ${expiry.isUrgent && item.status === 'Available'
-                    ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">Urgent (&lt;2h)</span>`
+                    ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF2F2] text-[#C84B31] border border-[#FCA5A5]">Urgent (&lt;2h)</span>`
                     : ''}
                 </div>
-                <h3 class="text-base font-bold text-white mt-1 group-hover:text-emerald-300 transition-colors">
+                <h3 class="text-sm sm:text-base font-bold text-[#141E18] mt-1">
                   ${item.donorName}
                 </h3>
-                <div class="text-xs text-slate-400 truncate max-w-xs flex items-center gap-1 mt-0.5">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
-                  <span class="truncate">${item.address || 'Delhi/NCR'}</span>
+                <div class="text-xs text-[#525B55] truncate max-w-xs mt-0.5">
+                  ${item.address || 'Delhi/NCR'}
                 </div>
               </div>
 
               <span class="status-pill ${statusPillClass} text-[10px] shrink-0">
-                <span class="status-dot ${statusDotClass}"></span>
+                <span class="status-dot"></span>
                 <span>${item.status}</span>
               </span>
             </div>
 
-            <!-- Description / Items Summary -->
-            <p class="text-xs text-slate-300 line-clamp-2 italic font-sans">
+            <p class="text-xs text-[#525B55] line-clamp-2 italic font-sans">
               "${item.itemsDescription || item.foodTitle}"
             </p>
 
-            <!-- Metrics Matrix: Servings, Weight, Safe Window, Distance -->
-            <div class="grid grid-cols-3 gap-2 pt-1 font-mono text-center text-xs">
-              <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
-                <div class="text-[10px] text-slate-400">Servings</div>
-                <div class="font-bold text-white">${item.servings} <span class="text-[10px] font-normal text-slate-400">serv</span></div>
-                <div class="text-[10px] text-slate-400">~${weightKg} kg</div>
+            <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs">
+              <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+                <div class="text-[10px] text-[#525B55]">Servings</div>
+                <div class="font-bold text-[#141E18]">${item.servings}</div>
+                <div class="text-[10px] text-[#525B55]">~${weightKg} kg</div>
               </div>
 
-              <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
-                <div class="text-[10px] text-slate-400">Safe Window</div>
-                <div class="font-bold ${expiry.isUrgent ? 'text-rose-400' : 'text-emerald-400'}">${expiry.formattedText}</div>
-                <div class="text-[10px] text-slate-400">${item.storageTemp || 'Temp OK'}</div>
+              <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+                <div class="text-[10px] text-[#525B55]">Safe Window</div>
+                <div class="font-bold ${expiry.isUrgent ? 'text-[#C84B31]' : 'text-[#1B4332]'}">${expiry.formattedText}</div>
+                <div class="text-[10px] text-[#525B55]">${item.storageTemp || 'Temp OK'}</div>
               </div>
 
-              <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
-                <div class="text-[10px] text-slate-400">Haversine Dist</div>
-                <div class="font-bold text-blue-400">${distKm} km</div>
-                <div class="text-[10px] text-slate-400">~${travelMins} mins away</div>
+              <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+                <div class="text-[10px] text-[#525B55]">Haversine</div>
+                <div class="font-bold text-[#1d4ed8]">${distKm} km</div>
+                <div class="text-[10px] text-[#525B55]">~${travelMins} mins</div>
               </div>
             </div>
 
-            <!-- Hygiene Verification Badge -->
-            <div class="flex items-center gap-1.5 text-[11px] text-emerald-300 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
-              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
-              <span>✓ Temp Checked • ✓ Clean Food-Grade Packaging • ✓ Unspoiled</span>
+            <div class="text-[11px] font-mono text-[#1B4332] bg-[#E8F3EE] border border-[#A3C9B8] px-2 py-1 rounded">
+              ✓ Temp Checked • ✓ Clean Food-Grade Packaging • ✓ Unspoiled
             </div>
 
-            <!-- Card Actions -->
-            <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
-              <button type="button" onclick="window.BhojFocusDispatch('${item.id}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors flex items-center gap-1 cursor-pointer">
-                <i data-lucide="map" class="w-3.5 h-3.5 text-blue-400"></i>
-                <span>Locate Route</span>
+            <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+              <button type="button" onclick="window.BhojFocusDispatch('${item.id}')" class="px-3 py-1.5 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] transition-colors cursor-pointer">
+                Locate Route
               </button>
 
               ${
                 item.status === 'Available'
-                  ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 shadow-md shadow-emerald-900/30 flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all">
-                      <i data-lucide="check" class="w-3.5 h-3.5 text-slate-950"></i>
-                      <span>Accept Pickup</span>
+                  ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="btn-primary px-4 py-1.5 text-xs uppercase tracking-wider cursor-pointer">
+                      Accept Pickup
                     </button>`
                   : item.status === 'In-Transit'
                   ? `<div class="flex items-center gap-2">
-                      <span class="text-[11px] font-mono text-amber-400 hidden sm:inline">➔ ${item.targetShelter || 'Shelter'}</span>
-                      <button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all">
-                        <i data-lucide="package-check" class="w-3.5 h-3.5"></i>
-                        <span>Complete Delivery</span>
+                      <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">➔ ${item.targetShelter || 'Shelter'}</span>
+                      <button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
+                        Complete Delivery
                       </button>
                     </div>`
-                  : `<span class="text-xs font-bold font-mono text-indigo-300 flex items-center gap-1">
-                      <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-indigo-400"></i>
-                      <span>Delivered & Logged</span>
+                  : `<span class="text-xs font-mono font-bold text-[#525B55]">
+                      ✓ Delivered & Logged
                     </span>`
               }
             </div>
@@ -629,19 +557,10 @@
         `;
       })
       .join('');
-
-    // Re-render Lucide icons
-    if (global.lucide && typeof global.lucide.createIcons === 'function') {
-      global.lucide.createIcons();
-    }
   }
 
-  global.BhojFocusDispatch = function (id) {
-    focusOnDispatch(id, true);
-  };
-
   // ==========================================
-  // 6. Shelter Selection & Pickup Acceptance Modal
+  // 5. Shelter Assignment & Acceptance Modal
   // ==========================================
   let pendingAcceptDispatchId = null;
 
@@ -655,13 +574,11 @@
     const modal = document.getElementById('shelter-assign-modal');
     if (!modal) return;
 
-    // Populate batch details
     document.getElementById('assign-modal-id').textContent = dispatch.id;
     document.getElementById('assign-modal-donor').textContent = dispatch.donorName;
     document.getElementById('assign-modal-servings').textContent = `${dispatch.servings} portions (~${((dispatch.servings * 0.45).toFixed(1))} kg)`;
     document.getElementById('assign-modal-volunteer-name').textContent = volunteerName;
 
-    // Populate shelter hubs radio list
     const shelters = global.BhojStore.getShelters();
     const optionsContainer = document.getElementById('shelter-options-list');
 
@@ -672,19 +589,19 @@
           const isNearest = idx === 0;
 
           return `
-            <label class="p-3 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-900 cursor-pointer flex items-start gap-3 transition-colors group">
-              <input type="radio" name="targetShelter" value="${s.name}" ${idx === 0 ? 'checked' : ''} class="mt-1 text-emerald-500 focus:ring-emerald-500">
+            <label class="p-3 rounded border border-[#DCD9D0] bg-[#FAF9F6] hover:bg-white cursor-pointer flex items-start gap-3 transition-colors">
+              <input type="radio" name="targetShelter" value="${s.name}" ${idx === 0 ? 'checked' : ''} class="mt-1 accent-[#1B4332]">
               <div class="flex-1 space-y-0.5 text-xs">
                 <div class="flex items-center justify-between">
-                  <span class="font-bold text-white group-hover:text-emerald-300 transition-colors">${s.name}</span>
-                  <span class="font-mono text-emerald-400 font-bold">${distFromDonor} km away</span>
+                  <span class="font-bold text-[#141E18]">${s.name}</span>
+                  <span class="font-mono text-[#1B4332] font-bold">${distFromDonor} km away</span>
                 </div>
-                <p class="text-[11px] text-slate-400">${s.address}</p>
-                <div class="flex items-center gap-3 pt-1 text-[10px] font-mono text-slate-400">
-                  <span>Capacity: <strong class="text-slate-200">${s.currentOccupancy}/${s.mealDemand}</strong></span>
+                <p class="text-[11px] text-[#525B55]">${s.address}</p>
+                <div class="flex items-center gap-3 pt-1 text-[10px] font-mono text-[#525B55]">
+                  <span>Capacity: <strong class="text-[#141E18]">${s.currentOccupancy}/${s.mealDemand}</strong></span>
                   <span>•</span>
                   <span>Contact: ${s.contactPerson}</span>
-                  ${isNearest ? `<span class="ml-auto px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">Recommended Nearest Hub</span>` : ''}
+                  ${isNearest ? `<span class="ml-auto px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-bold">Nearest Hub</span>` : ''}
                 </div>
               </div>
             </label>
@@ -694,10 +611,6 @@
     }
 
     modal.classList.remove('hidden');
-
-    if (global.lucide && typeof global.lucide.createIcons === 'function') {
-      global.lucide.createIcons();
-    }
   }
 
   function setupShelterAssignModal() {
@@ -732,7 +645,7 @@
           close();
 
           if (global.BhojToast) {
-            global.BhojToast.success(`Pickup accepted! Delivery route assigned to ${chosenShelter}`);
+            global.BhojToast.success(`Pickup accepted! Route plotted to ${chosenShelter}`);
           }
 
           renderFeed();
@@ -748,7 +661,7 @@
   }
 
   // ==========================================
-  // 7. Complete Delivery to Shelter Workflow
+  // 6. Complete Delivery Workflow
   // ==========================================
   function completeDelivery(id) {
     if (!id || !global.BhojStore) return;
@@ -764,18 +677,17 @@
         dispatch.targetShelter || 'Asha Child Care Shelter'
       );
 
-      // Open celebration modal
       const modal = document.getElementById('delivery-celebrate-modal');
       if (modal) {
         document.getElementById('celebrate-volunteer-name').textContent = volunteerName;
-        document.getElementById('celebrate-meals-count').textContent = `${updated.servings} portions`;
+        document.getElementById('celebrate-meals-count').textContent = `${updated.servings} serv`;
         document.getElementById('celebrate-kg-count').textContent = `~${(updated.servings * 0.45).toFixed(1)} kg`;
         modal.classList.remove('hidden');
       }
 
       if (global.BhojToast) {
         global.BhojToast.success(
-          `🎉 Delivery Completed! ${updated.servings} meals (~${(updated.servings * 0.45).toFixed(1)} kg) delivered to ${updated.targetShelter}!`
+          `Delivery complete! ${updated.servings} meals handed over to ${updated.targetShelter}.`
         );
       }
 
@@ -804,19 +716,17 @@
   }
 
   // ==========================================
-  // 8. Toolbar Listeners & URL Query Claims
+  // 7. Toolbar & URL Query Handlers
   // ==========================================
   function setupToolbarListeners() {
-    // Volunteer Name Input
     const nameInput = document.getElementById('courier-name-input');
     if (nameInput) {
       nameInput.addEventListener('change', function () {
         volunteerName = this.value.trim() || 'Arjun Mehta (Verified Courier)';
-        if (global.BhojToast) global.BhojToast.info(`Courier active identity set to: ${volunteerName}`);
+        if (global.BhojToast) global.BhojToast.info(`Active courier identity: ${volunteerName}`);
       });
     }
 
-    // Courier Location Preset Selector
     const locSelect = document.getElementById('courier-location-select');
     if (locSelect) {
       locSelect.addEventListener('change', function () {
@@ -838,13 +748,10 @@
             const item = global.BhojStore.getDispatchById(activeSelectedDispatchId);
             if (item) drawRoute(item);
           }
-
-          if (global.BhojToast) global.BhojToast.info(`Courier location moved to ${locSelect.options[locSelect.selectedIndex].text}`);
         }
       });
     }
 
-    // Status Filter Buttons
     const statusContainer = document.getElementById('feed-status-filters');
     if (statusContainer) {
       statusContainer.addEventListener('click', function (e) {
@@ -854,16 +761,15 @@
         currentStatusFilter = btn.getAttribute('data-status');
 
         statusContainer.querySelectorAll('.feed-filter-btn').forEach((b) => {
-          b.className = 'feed-filter-btn px-3 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950 text-slate-300 hover:bg-slate-800 border border-slate-800 shrink-0';
+          b.className = 'feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0';
         });
 
-        btn.className = 'feed-filter-btn px-3 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-600 text-white shadow-md shadow-emerald-900/30 shrink-0';
+        btn.className = 'feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0';
 
         renderFeed();
       });
     }
 
-    // Food Type Filter Dropdown
     const typeSelect = document.getElementById('feed-type-filter');
     if (typeSelect) {
       typeSelect.addEventListener('change', function () {
@@ -872,7 +778,6 @@
       });
     }
 
-    // Sort Dropdown
     const sortSelect = document.getElementById('feed-sort-select');
     if (sortSelect) {
       sortSelect.addEventListener('change', function () {
@@ -881,7 +786,6 @@
       });
     }
 
-    // Search Input
     const searchInput = document.getElementById('feed-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', function () {
@@ -891,9 +795,6 @@
     }
   }
 
-  /**
-   * Checks if URL contains ?claim=BV-XXXX from donate.html or index.html
-   */
   function checkUrlClaim() {
     const params = new URLSearchParams(window.location.search);
     const claimId = params.get('claim') || params.get('id');
@@ -911,21 +812,17 @@
     }
   }
 
-  // ==========================================
-  // 9. Cross-Tab Store Subscriptions
-  // ==========================================
   function setupStoreSync() {
     if (!global.BhojStore) return;
 
     global.BhojStore.subscribe(function (event) {
-      console.log('[BhojVolunteer] Real-time sync event:', event.type);
       renderFeed();
       refreshDonorMarkers();
 
       if (event.type === 'DISPATCH_ADDED' && event.payload) {
         if (global.BhojToast) {
           global.BhojToast.warning(
-            `🔔 New Pickup Alert: ${event.payload.donorName} (${event.payload.servings} portions). Pin added to map!`
+            `🔔 New Pickup: ${event.payload.donorName} (${event.payload.servings} portions). Pin added to map.`
           );
         }
       }
@@ -944,9 +841,6 @@
     });
   }
 
-  // ==========================================
-  // 10. Initialization
-  // ==========================================
   function initVolunteer() {
     if (global.BhojStore && typeof global.BhojStore.initStore === 'function') {
       global.BhojStore.initStore();
@@ -960,13 +854,8 @@
 
     renderFeed();
     checkUrlClaim();
-
-    if (global.lucide && typeof global.lucide.createIcons === 'function') {
-      global.lucide.createIcons();
-    }
   }
 
-  // Mount on DOM readiness
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initVolunteer);
   } else {

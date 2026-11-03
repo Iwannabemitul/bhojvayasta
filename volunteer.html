@@ -7,38 +7,44 @@
   <meta name="description" content="Live volunteer courier pickup feed with interactive Haversine distance map, real-time donor routing, and shelter delivery workflow across Delhi/NCR.">
 
   <!-- Favicon SVG -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C84B31' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
 
-  <!-- Google Fonts: Inter & Plus Jakarta Sans & JetBrains Mono -->
+  <!-- Google Fonts: Fraunces, Plus Jakarta Sans, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800;9..144,900&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Fraunces"', 'Georgia', 'serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            emerald: {
-              850: '#064e3b',
-              900: '#064e3b',
-              950: '#022c22',
+            paper: '#F7F5F0',
+            surface: '#FFFFFF',
+            well: '#EFECE6',
+            ink: '#141E18',
+            muted: '#525B55',
+            hairline: '#DCD9D0',
+            terracotta: {
+              DEFAULT: '#C84B31',
+              hover: '#A83820',
             },
-            amber: {
-              850: '#78350f',
-              950: '#451a03',
+            botanical: {
+              DEFAULT: '#1B4332',
+              surface: '#E8F3EE',
+              border: '#A3C9B8',
             },
-            slate: {
-              850: '#151f32',
-              950: '#020617',
+            ochre: {
+              DEFAULT: '#B45309',
+              surface: '#FEF3C7',
+              border: '#FDE68A',
             }
           }
         }
@@ -56,296 +62,231 @@
   <!-- Core Custom Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950 min-h-screen flex flex-col">
+<body class="bg-[#F7F5F0] text-[#141E18] antialiased selection:bg-[#C84B31] selection:text-white min-h-screen flex flex-col">
 
   <!-- Sticky Dynamic Navigation Bar (Mounted via js/navbar.js) -->
   <div id="navbar-root"></div>
 
-  <main class="flex-grow flex flex-col">
+  <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex-grow flex flex-col">
     
     <!-- ====================================================================
-         TOP CONTROL BAR: COURIER SIMULATOR & FILTER / SORT TOOLBAR
+         1. STATIC TOP CONTROL BAR (Zero mid-screen sticky collisions)
          ==================================================================== -->
-    <section class="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-20 z-30 py-3 shadow-md">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+    <section class="card-surface p-4 mb-6 rounded space-y-3">
+      
+      <!-- Top Row: Simulator Controls -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#DCD9D0]">
         
-        <!-- Row 1: Courier Simulator Profile & Current Location Selector -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2 border-b border-slate-800/80">
-          
-          <!-- Courier Identity -->
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-400 flex items-center justify-center shrink-0">
-              <i data-lucide="bike" class="w-5 h-5"></i>
-            </div>
-            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-mono uppercase text-slate-400 font-semibold">Active Courier:</span>
-                <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Change simulated volunteer name" class="bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1 text-xs font-bold text-white focus:outline-none focus:border-blue-400 w-52 sm:w-60 font-sans">
-              </div>
-              <span class="hidden sm:inline text-slate-700">•</span>
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-                <span>GPS Simulator Active</span>
-              </span>
-            </div>
-          </div>
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div class="font-mono text-xs uppercase text-[#525B55] font-semibold">Active Courier:</div>
+          <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Simulated courier name" class="bhoj-input text-xs font-bold text-[#141E18] w-52 sm:w-60 py-1 px-2.5">
+          <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
+            GPS Simulator Active
+          </span>
+        </div>
 
-          <!-- Courier Simulated Location Selector -->
-          <div class="flex items-center gap-2 self-start md:self-auto">
-            <span class="text-xs font-mono text-slate-400 uppercase font-semibold flex items-center gap-1">
-              <i data-lucide="navigation" class="w-3.5 h-3.5 text-blue-400"></i>
-              <span>Courier Base:</span>
-            </span>
-            <select id="courier-location-select" class="bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-400 font-sans">
-              <option value="28.6139,77.2090" selected>📍 Connaught Place (Central Delhi)</option>
-              <option value="28.5355,77.3910">📍 Sector 62 (Noida / NCR Hub)</option>
-              <option value="28.4950,77.0890">📍 DLF CyberCity (Gurugram)</option>
-              <option value="28.5680,77.2430">📍 Lajpat Nagar (South Delhi)</option>
-              <option value="28.6650,77.2320">📍 Kashmere Gate (North Delhi)</option>
-              <option value="28.7150,77.1210">📍 Rohini Sector 11 (NW Delhi)</option>
+        <div class="flex items-center gap-2 self-start md:self-auto">
+          <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Courier Hub:</span>
+          <select id="courier-location-select" class="bhoj-input text-xs font-medium text-[#141E18] py-1 px-2.5 bg-white cursor-pointer w-auto">
+            <option value="28.6139,77.2090" selected>📍 Connaught Place (Central)</option>
+            <option value="28.5355,77.3910">📍 Sector 62 (Noida)</option>
+            <option value="28.4950,77.0890">📍 DLF CyberCity (Gurugram)</option>
+            <option value="28.5680,77.2430">📍 Lajpat Nagar (South Delhi)</option>
+            <option value="28.6650,77.2320">📍 Kashmere Gate (North Delhi)</option>
+            <option value="28.7150,77.1210">📍 Rohini Sector 11 (NW Delhi)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Bottom Row: Filter & Sort Controls -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        
+        <!-- Status Tabs -->
+        <div class="flex items-center gap-1.5 overflow-x-auto" id="feed-status-filters">
+          <button data-status="all" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0">
+            All (<span id="count-status-all">0</span>)
+          </button>
+          <button data-status="Available" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
+            Available (<span id="count-status-available">0</span>)
+          </button>
+          <button data-status="In-Transit" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
+            In-Transit (<span id="count-status-intransit">0</span>)
+          </button>
+          <button data-status="Delivered" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
+            Delivered (<span id="count-status-delivered">0</span>)
+          </button>
+        </div>
+
+        <!-- Secondary Filters & Search -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px]">Type:</span>
+            <select id="feed-type-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
+              <option value="all">All Types</option>
+              <option value="Cooked Meals">Cooked Meals</option>
+              <option value="Raw Produce">Raw Produce</option>
             </select>
           </div>
 
-        </div>
-
-        <!-- Row 2: Filter Tabs, Food Type Filter, Sort Selector & Search -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          
-          <!-- Status Filter Tabs -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0" id="feed-status-filters">
-            <button data-status="all" class="feed-filter-btn px-3 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-600 text-white shadow-md shadow-emerald-900/30 shrink-0">
-              All (<span id="count-status-all">0</span>)
-            </button>
-            <button data-status="Available" class="feed-filter-btn px-3 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950 text-slate-300 hover:bg-slate-800 border border-slate-800 shrink-0">
-              Available (<span id="count-status-available">0</span>)
-            </button>
-            <button data-status="In-Transit" class="feed-filter-btn px-3 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950 text-slate-300 hover:bg-slate-800 border border-slate-800 shrink-0">
-              In-Transit (<span id="count-status-intransit">0</span>)
-            </button>
-            <button data-status="Delivered" class="feed-filter-btn px-3 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950 text-slate-300 hover:bg-slate-800 border border-slate-800 shrink-0">
-              Delivered (<span id="count-status-delivered">0</span>)
-            </button>
+          <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px]">Sort:</span>
+            <select id="feed-sort-select" class="bg-transparent text-[#C84B31] font-semibold focus:outline-none cursor-pointer">
+              <option value="nearest">Nearest Distance First</option>
+              <option value="urgent">Most Urgent Expiry</option>
+              <option value="servings">Highest Servings</option>
+            </select>
           </div>
 
-          <!-- Secondary Filters: Food Type, Sort & Search -->
-          <div class="flex flex-wrap items-center gap-2 text-xs">
-            
-            <!-- Food Type Filter Dropdown -->
-            <div class="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1">
-              <span class="text-slate-400 font-mono text-[11px]">Type:</span>
-              <select id="feed-type-filter" class="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer">
-                <option value="all">All Types</option>
-                <option value="Cooked Meals">Cooked Meals</option>
-                <option value="Raw Produce">Raw Produce</option>
-              </select>
-            </div>
-
-            <!-- Sort By Dropdown -->
-            <div class="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1">
-              <span class="text-slate-400 font-mono text-[11px]">Sort:</span>
-              <select id="feed-sort-select" class="bg-transparent text-amber-300 font-semibold focus:outline-none cursor-pointer">
-                <option value="nearest">Nearest Distance First</option>
-                <option value="urgent">Most Urgent Expiry</option>
-                <option value="servings">Highest Servings</option>
-              </select>
-            </div>
-
-            <!-- Search Field -->
-            <div class="relative w-44 sm:w-52">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
-              <input id="feed-search-input" type="text" placeholder="Search listing or donor..." class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-2.5 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-            </div>
-
+          <div class="w-44 sm:w-52">
+            <input id="feed-search-input" type="text" placeholder="Search listing or donor..." class="bhoj-input py-1 px-2.5 text-xs">
           </div>
-
         </div>
 
       </div>
+
     </section>
 
     <!-- ====================================================================
-         SPLIT-SCREEN WORKSPACE: FEED (LEFT) + INTERACTIVE MAP (RIGHT)
+         2. SPLIT WORKSPACE: LEFT FEED + RIGHT MAP (Model B App-Shell)
          ==================================================================== -->
-    <div class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 border border-[#DCD9D0] bg-white rounded shadow-sm overflow-hidden flex-grow">
+      
+      <!-- LEFT PANE: Scrollable Feed Container (lg:h-[700px]) -->
+      <div class="lg:col-span-5 lg:h-[700px] flex flex-col border-b lg:border-b-0 lg:border-r border-[#DCD9D0] bg-[#FAF9F6]">
         
-        <!-- ==================================================================
-             LEFT PANE: LIVE COURIER PICKUP FEED (Col-span-5)
-             ================================================================== -->
-        <div class="lg:col-span-5 space-y-4">
-          
-          <!-- Feed Header Status Info -->
-          <div class="flex items-center justify-between px-1">
-            <div class="flex items-center gap-2">
-              <h2 class="text-base font-bold font-display text-white">Live Pickup Requests</h2>
-              <span id="feed-total-badge" class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                0 Live
-              </span>
-            </div>
-            <div class="text-xs text-slate-400 font-mono flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>Haversine Live Sync</span>
-            </div>
+        <!-- Feed Sub-Header -->
+        <div class="p-3.5 border-b border-[#DCD9D0] bg-white flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-[#141E18]">Live Recovery Feed</span>
+            <span id="feed-total-badge" class="px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] text-[10px]">
+              0 Live
+            </span>
           </div>
-
-          <!-- Scrollable Feed Container -->
-          <div id="courier-feed" class="space-y-4 max-h-[calc(100vh-17rem)] overflow-y-auto pr-1">
-            <!-- Dynamically populated by js/volunteer.js -->
-          </div>
-
-          <!-- Empty Feed State -->
-          <div id="feed-empty-state" class="hidden glass-card p-10 rounded-2xl text-center space-y-3">
-            <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mx-auto">
-              <i data-lucide="package-x" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-base font-bold text-white">No listings match your filter</h3>
-            <p class="text-xs text-slate-400 max-w-xs mx-auto">
-              Try switching your status filter to "All" or choosing another simulated location.
-            </p>
-          </div>
-
+          <span class="text-[#525B55] text-[11px]">Haversine Proximity Grid</span>
         </div>
 
-        <!-- ==================================================================
-             RIGHT PANE: STICKY INTERACTIVE LEAFLET DISTANCE MAP (Col-span-7)
-             ================================================================== -->
-        <div class="lg:col-span-7">
-          <div class="sticky top-44 space-y-3">
-            
-            <!-- Map Container with Route Overlay Box -->
-            <div class="relative rounded-2xl overflow-hidden border border-slate-700/80 shadow-2xl bg-slate-900">
-              
-              <!-- Leaflet Map Element -->
-              <div id="relief-map" class="h-[560px] sm:h-[620px] w-full"></div>
+        <!-- Scrollable Feed -->
+        <div id="courier-feed" class="flex-grow overflow-y-auto divide-y divide-[#DCD9D0]">
+          <!-- Dynamically populated by js/volunteer.js -->
+        </div>
 
-              <!-- Floating Map Legend Overlay (Top Left) -->
-              <div class="absolute top-3 left-3 z-[400] glass-panel px-3 py-2 rounded-xl text-[11px] font-mono space-y-1.5 shadow-lg max-w-[210px] hidden sm:block">
-                <div class="font-bold text-slate-200 uppercase tracking-wider text-[10px] border-b border-slate-700/80 pb-1">
-                  Delhi/NCR Relief Map Key
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-blue-500 border border-white shrink-0"></span>
-                  <span class="text-slate-300">Courier Location (You)</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
-                  <span class="text-slate-300">Available Surplus Food</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shrink-0"></span>
-                  <span class="text-slate-300">In-Transit Pickup</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-sky-500 border border-white shrink-0"></span>
-                  <span class="text-slate-300">Receiving Hunger Shelter</span>
-                </div>
+        <!-- Empty State -->
+        <div id="feed-empty-state" class="hidden p-8 text-center space-y-2">
+          <div class="font-display text-sm font-bold text-[#141E18]">No Listings Found</div>
+          <p class="text-xs text-[#525B55]">Try switching the status filter or choosing another courier hub location.</p>
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANE: Interactive Leaflet Map (h-[480px] lg:h-[700px]) -->
+      <div class="lg:col-span-7 h-[480px] lg:h-[700px] relative bg-[#EFECE6]">
+        
+        <!-- Map Canvas -->
+        <div id="relief-map" class="w-full h-full z-10"></div>
+
+        <!-- Map Key (Top Left) -->
+        <div class="absolute top-3 left-3 z-[400] bg-white/95 border border-[#DCD9D0] p-2.5 rounded text-[10px] font-mono space-y-1 shadow-sm hidden sm:block">
+          <div class="font-bold text-[#141E18] uppercase tracking-wider border-b border-[#DCD9D0] pb-1">
+            Map Legend
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#1d4ed8] shrink-0"></span>
+            <span class="text-[#525B55]">Courier (Drag to relocate)</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#1B4332] shrink-0"></span>
+            <span class="text-[#525B55]">Available Surplus</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#B45309] shrink-0"></span>
+            <span class="text-[#525B55]">In-Transit Batch</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0284C7] shrink-0"></span>
+            <span class="text-[#525B55]">Receiving Shelter Hub</span>
+          </div>
+        </div>
+
+        <!-- Floating Route Summary Overlay (Bottom) -->
+        <div id="route-summary-overlay" class="absolute bottom-4 left-4 right-4 z-[400] bg-white border border-[#DCD9D0] p-3 rounded shadow-lg hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-[10px] uppercase font-bold text-[#1B4332] px-1.5 py-0.5 bg-[#E8F3EE] border border-[#A3C9B8] rounded">
+                  Active Route
+                </span>
+                <span id="route-donor-name" class="font-bold text-[#141E18]">Grand Imperial Wedding Banquet</span>
               </div>
-
-              <!-- Floating Route & Distance Summary Overlay (Bottom Center/Right) -->
-              <div id="route-summary-overlay" class="absolute bottom-4 left-4 right-4 z-[400] glass-panel p-3.5 rounded-xl border border-emerald-500/40 shadow-2xl transition-all duration-300 hidden">
-                <div class="flex items-center justify-between gap-3 text-xs">
-                  <div class="space-y-0.5">
-                    <div class="flex items-center gap-2">
-                      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                        Selected Route
-                      </span>
-                      <span id="route-donor-name" class="font-bold text-white text-sm">Grand Imperial Wedding Banquet</span>
-                    </div>
-                    <div class="text-[11px] text-slate-300 flex items-center gap-2 font-mono">
-                      <span>Courier ➔ Donor: <strong id="route-courier-dist" class="text-emerald-400">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
-                      <span>•</span>
-                      <span>Donor ➔ Shelter: <strong id="route-shelter-dist" class="text-amber-400">0.0 km</strong></span>
-                    </div>
-                  </div>
-
-                  <button id="btn-route-action" type="button" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 shadow-md transition-all shrink-0">
-                    Accept Pickup
-                  </button>
-                </div>
+              <div class="text-[11px] text-[#525B55] font-mono flex items-center gap-2">
+                <span>Courier ➔ Donor: <strong id="route-courier-dist" class="text-[#141E18]">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
+                <span>•</span>
+                <span id="route-shelter-dist">Donor ➔ Shelter: 0.0 km</span>
               </div>
-
             </div>
 
-            <!-- Map Instruction Tip -->
-            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
-              <span class="flex items-center gap-1.5">
-                <i data-lucide="mouse-pointer" class="w-3.5 h-3.5 text-blue-400"></i>
-                <span>Drag the <strong>blue courier marker</strong> on the map to test live distance recalculation</span>
-              </span>
-              <a href="donate.html" class="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1">
-                <span>Report Surplus</span>
-                <i data-lucide="arrow-right" class="w-3 h-3"></i>
-              </a>
-            </div>
-
+            <button id="btn-route-action" type="button" class="btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-wider shrink-0">
+              Accept Pickup
+            </button>
           </div>
         </div>
 
       </div>
+
     </div>
+
   </main>
 
   <!-- ====================================================================
        MODAL: SHELTER SELECTION & PICKUP ACCEPTANCE CONFIRMATION
        ==================================================================== -->
-  <div id="shelter-assign-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 sm:p-8 space-y-6 border border-emerald-500/40 shadow-2xl">
+  <div id="shelter-assign-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+    <div class="bg-white border border-[#DCD9D0] w-full max-w-lg rounded p-6 sm:p-8 space-y-5 shadow-2xl">
       
-      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+      <div class="flex items-start justify-between border-b border-[#DCD9D0] pb-3">
         <div>
-          <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          <span class="font-mono text-xs font-bold text-[#B45309] px-2 py-0.5 rounded bg-[#FEF3C7] border border-[#FDE68A]">
             Courier Claim Gate
           </span>
-          <h3 class="text-xl font-bold font-display text-white mt-1">Accept Food Recovery Pickup</h3>
-          <p class="text-xs text-slate-400">
-            Confirm your assignment and select the target hunger relief center.
-          </p>
+          <h3 class="font-display text-xl font-bold text-[#141E18] mt-1">Accept Surplus Recovery Pickup</h3>
+          <p class="text-xs text-[#525B55]">Select the target receiving shelter for this dispatch.</p>
         </div>
-        <button id="modal-shelter-close" type="button" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button id="modal-shelter-close" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm font-mono p-1">✕</button>
       </div>
 
-      <!-- Batch Details Summary -->
-      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1 text-xs font-mono">
+      <!-- Batch Summary -->
+      <div class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-1 text-xs font-mono">
         <div class="flex justify-between">
-          <span class="text-slate-400">Dispatch ID:</span>
-          <span id="assign-modal-id" class="text-emerald-400 font-bold">BV-0000</span>
+          <span class="text-[#525B55]">Dispatch ID:</span>
+          <span id="assign-modal-id" class="text-[#141E18] font-bold">BV-0000</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-slate-400">Donor:</span>
-          <span id="assign-modal-donor" class="text-white font-bold">Establishment</span>
+          <span class="text-[#525B55]">Donor:</span>
+          <span id="assign-modal-donor" class="text-[#141E18] font-bold">Establishment</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-slate-400">Quantity:</span>
-          <span id="assign-modal-servings" class="text-amber-400 font-bold">0 Servings</span>
+          <span class="text-[#525B55]">Quantity:</span>
+          <span id="assign-modal-servings" class="text-[#C84B31] font-bold">0 Servings</span>
         </div>
       </div>
 
       <!-- Shelter Hub Radio Selector -->
-      <div class="space-y-3">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-slate-300 uppercase tracking-wider font-mono">Select Receiving Hunger Shelter</span>
-          <span class="text-emerald-400 text-[11px] font-mono">4 Verified Hubs</span>
-        </div>
-
+      <div class="space-y-2">
+        <div class="font-mono text-xs uppercase font-bold text-[#525B55]">Select Receiving Hunger Shelter</div>
         <div class="space-y-2 max-h-56 overflow-y-auto pr-1" id="shelter-options-list">
-          <!-- Dynamically filled with the 4 fixed shelters by js/volunteer.js -->
+          <!-- Dynamically filled with 4 shelters -->
         </div>
       </div>
 
-      <!-- Courier Confirmation -->
-      <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 flex items-center gap-2">
-        <i data-lucide="shield-check" class="w-4 h-4 shrink-0 text-blue-400"></i>
-        <span>Courier Claim: Assigned to <strong id="assign-modal-volunteer-name" class="text-white font-bold">Arjun Mehta</strong></span>
+      <div class="p-2.5 bg-[#FAF9F6] border border-[#DCD9D0] rounded text-xs text-[#525B55]">
+        Assigned Courier: <strong id="assign-modal-volunteer-name" class="text-[#141E18]">Arjun Mehta</strong>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-800">
-        <button id="btn-cancel-shelter-assign" type="button" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-slate-700">
+      <div class="flex items-center justify-end gap-3 pt-2 border-t border-[#DCD9D0]">
+        <button id="btn-cancel-shelter-assign" type="button" class="btn-secondary px-4 py-2 text-xs font-semibold">
           Cancel
         </button>
-        <button id="btn-confirm-pickup" type="button" class="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 shadow-lg shadow-emerald-900/40">
+        <button id="btn-confirm-pickup" type="button" class="btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-wider">
           Confirm & Begin Transit
         </button>
       </div>
@@ -354,46 +295,43 @@
   </div>
 
   <!-- ====================================================================
-       MODAL: DELIVERY CELEBRATION & IMPACT CONTRIBUTION
+       MODAL: DELIVERY CELEBRATION
        ==================================================================== -->
-  <div id="delivery-celebrate-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-    <div class="glass-panel w-full max-w-md rounded-2xl p-6 sm:p-8 space-y-6 border border-emerald-500/40 shadow-2xl text-center">
+  <div id="delivery-celebrate-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+    <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl text-center">
       
-      <div class="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-900/40 animate-bounce">
-        <i data-lucide="heart" class="w-8 h-8"></i>
+      <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto text-xl font-bold font-mono">
+        ✓
       </div>
 
-      <div class="space-y-1.5">
-        <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-          Handover Complete & Verified
+      <div class="space-y-1">
+        <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-semibold">
+          Handover Verified
         </span>
-        <h3 class="text-2xl font-black font-display text-white">
+        <h3 class="font-display text-2xl font-bold text-[#141E18]">
           Food Delivered to Shelter!
         </h3>
-        <p class="text-xs text-slate-300">
-          Thank you, <span id="celebrate-volunteer-name" class="font-bold text-emerald-400">Arjun Mehta</span>! Your rapid rescue run directly nourished community members and prevented food waste.
+        <p class="text-xs text-[#525B55]">
+          Thank you, <span id="celebrate-volunteer-name" class="font-bold text-[#141E18]">Arjun Mehta</span>! This batch has been logged directly to the community impact ledger.
         </p>
       </div>
 
-      <!-- Impact Stats Box -->
-      <div class="grid grid-cols-2 gap-3 p-4 rounded-xl bg-slate-900 border border-slate-800 font-mono text-left">
+      <div class="grid grid-cols-2 gap-2 p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded font-mono text-left text-xs">
         <div>
-          <span class="text-[10px] text-slate-400 uppercase">Meals Delivered</span>
-          <div id="celebrate-meals-count" class="text-lg font-bold text-emerald-400">180 portions</div>
+          <span class="text-[10px] text-[#525B55] uppercase">Meals Delivered</span>
+          <div id="celebrate-meals-count" class="text-base font-bold text-[#141E18]">180 serv</div>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 uppercase">Diverted From Landfill</span>
-          <div id="celebrate-kg-count" class="text-lg font-bold text-amber-400">~81.0 kg</div>
+          <span class="text-[10px] text-[#525B55] uppercase">Landfill Avoided</span>
+          <div id="celebrate-kg-count" class="text-base font-bold text-[#C84B31]">~81.0 kg</div>
         </div>
       </div>
 
-      <!-- Actions -->
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
-        <a href="index.html" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700">
-          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
-          <span>View Updated Dashboard</span>
+        <a href="index.html" class="flex-1 btn-secondary py-2.5 text-xs text-center">
+          View Impact Ledger
         </a>
-        <button id="btn-celebrate-dismiss" type="button" class="flex-1 px-5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 shadow-md">
+        <button id="btn-celebrate-dismiss" type="button" class="flex-1 btn-primary py-2.5 text-xs uppercase tracking-wider">
           Back to Live Feed
         </button>
       </div>

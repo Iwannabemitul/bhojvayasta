@@ -4,41 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BhojVayasta - Surplus Food Recovery & Community Hunger Relief Network</title>
-  <meta name="description" content="Hyper-local surplus food recovery platform connecting wedding banquets, corporate dining halls, and supermarkets with urban slums and childcare shelters across Delhi/NCR.">
+  <meta name="description" content="Civil logistics platform connecting commercial banquet and corporate food surplus with Delhi/NCR hunger relief centers within sub-2-hour safety windows.">
 
   <!-- Favicon SVG -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C84B31' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'/><path d='M3 14c0 3.866 4.03 7 9 7s9-3.134 9-7'/></svg>">
 
-  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <!-- Google Fonts: Fraunces (Editorial Display), Plus Jakarta Sans (Interface), JetBrains Mono (Telemetry) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800;9..144,900&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Fraunces"', 'Georgia', 'serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            emerald: {
-              850: '#064e3b',
-              900: '#064e3b',
-              950: '#022c22',
+            paper: '#F7F5F0',
+            surface: '#FFFFFF',
+            well: '#EFECE6',
+            ink: '#141E18',
+            muted: '#525B55',
+            hairline: '#DCD9D0',
+            terracotta: {
+              DEFAULT: '#C84B31',
+              hover: '#A83820',
             },
-            amber: {
-              850: '#78350f',
-              950: '#451a03',
+            botanical: {
+              DEFAULT: '#1B4332',
+              surface: '#E8F3EE',
+              border: '#A3C9B8',
             },
-            slate: {
-              850: '#151f32',
-              950: '#020617',
+            ochre: {
+              DEFAULT: '#B45309',
+              surface: '#FEF3C7',
+              border: '#FDE68A',
             }
           }
         }
@@ -55,7 +61,7 @@
   <!-- Core Custom Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950 min-h-screen flex flex-col">
+<body class="bg-[#F7F5F0] text-[#141E18] antialiased selection:bg-[#C84B31] selection:text-white min-h-screen flex flex-col">
 
   <!-- Sticky Dynamic Navigation Bar (Mounted via js/navbar.js) -->
   <div id="navbar-root"></div>
@@ -65,80 +71,60 @@
     <!-- ====================================================================
          1. HERO SECTION & LIVE RECOVERY TICKER
          ==================================================================== -->
-    <section class="relative pt-6 pb-20 sm:pt-10 sm:pb-28 overflow-hidden">
-      <!-- Ambient Gradient Glow Effects -->
-      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-emerald-600/15 rounded-full blur-[140px] pointer-events-none -z-10"></div>
-      <div class="absolute top-1/3 right-10 w-[400px] h-[300px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
-
+    <section class="border-b border-[#DCD9D0] bg-[#F7F5F0] pt-10 pb-16 sm:pt-16 sm:pb-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Live Alert / Ticker Strip -->
-        <div class="flex justify-center mb-6">
-          <div id="live-hero-ticker" class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900/90 border border-slate-700/70 text-slate-300 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-emerald-500/40">
-            <span class="flex h-2.5 w-2.5 relative">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        <div class="flex justify-start mb-6">
+          <div id="live-hero-ticker" class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#DCD9D0] rounded text-xs text-[#525B55]">
+            <span class="flex h-2 w-2 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1B4332] opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-[#1B4332]"></span>
             </span>
-            <span id="hero-ticker-text" class="font-mono text-emerald-400">
-              Synchronizing Delhi/NCR Hunger Relief Node...
+            <span id="hero-ticker-text" class="font-mono text-xs text-[#141E18]">
+              Connecting Delhi/NCR Relief Grid...
             </span>
           </div>
         </div>
 
-        <!-- Main Hero Content -->
-        <div class="text-center max-w-4xl mx-auto space-y-6">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-            <span>FSSAI Hygiene Guarded • Rapid Zero-Waste Rescue</span>
+        <!-- Main Headline -->
+        <div class="max-w-4xl space-y-6">
+          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">
+            Civil Surplus Food Recovery & Rapid Logistics Infrastructure
           </div>
 
-          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black font-display tracking-tight text-white leading-[1.1]">
-            Turn Commercial Surplus Into <br class="hidden sm:inline">
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">
-              Dignified Community Meals
-            </span>
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight text-[#141E18] leading-[1.08]">
+            Turning Commercial Surplus Into Dignified Community Meals
           </h1>
 
-          <p class="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-            Connecting Delhi/NCR’s wedding banquets, corporate dining halls, and supermarkets with urban slum relief camps and childcare homes within <strong class="text-white">sub-2-hour safety windows</strong>.
+          <p class="text-base sm:text-xl text-[#525B55] max-w-2xl font-normal leading-relaxed">
+            Bridging wedding banquets, corporate dining halls, and supermarkets with urban slum relief camps and childcare homes within <strong class="text-[#141E18] font-semibold">sub-2-hour safety windows</strong>.
           </p>
 
           <!-- Action CTA Buttons -->
-          <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             
-            <!-- Primary Donor CTA -->
-            <a href="donate.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl text-base font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 hover:from-emerald-300 hover:to-teal-200 shadow-xl shadow-emerald-900/40 hover:shadow-emerald-600/30 transition-all duration-200 active:scale-95 group">
-              <i data-lucide="plus-circle" class="w-5 h-5 text-slate-950 group-hover:rotate-90 transition-transform duration-200"></i>
+            <a href="donate.html" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white transition-colors rounded shadow-sm">
               <span>Report Surplus Food</span>
+              <span class="text-xs">→</span>
             </a>
 
-            <!-- Secondary Courier Feed CTA -->
-            <a href="volunteer.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl text-base font-bold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 shadow-xl transition-all duration-200 active:scale-95 group">
-              <i data-lucide="navigation" class="w-5 h-5 text-amber-400 group-hover:translate-x-0.5 transition-transform duration-200"></i>
+            <a href="volunteer.html" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-[#141E18] bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] transition-colors rounded">
               <span>Join Courier Pickup Feed</span>
-              <span id="hero-badge-count" class="ml-1 px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              <span id="hero-badge-count" class="font-mono text-xs px-2 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#F59E0B]/40">
                 ...
               </span>
             </a>
 
           </div>
 
-          <!-- Quick Proof Pill Highlights -->
-          <div class="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-medium">
-            <div class="flex items-center gap-2">
-              <i data-lucide="clock" class="w-4 h-4 text-emerald-400"></i>
-              <span>Average Rescue Time: <strong>48 Minutes</strong></span>
-            </div>
-            <span class="text-slate-700 hidden sm:inline">•</span>
-            <div class="flex items-center gap-2">
-              <i data-lucide="thermometer" class="w-4 h-4 text-amber-400"></i>
-              <span>Hot Chain Gate: <strong>&gt;65°C Verified</strong></span>
-            </div>
-            <span class="text-slate-700 hidden sm:inline">•</span>
-            <div class="flex items-center gap-2">
-              <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
-              <span>Receiving Hubs: <strong>4 Fixed Delhi Shelters</strong></span>
-            </div>
+          <!-- Editorial Metric Highlights -->
+          <div class="pt-4 flex flex-wrap items-center gap-6 text-xs text-[#525B55] font-mono border-t border-[#DCD9D0]">
+            <div>Average Rescue Time: <strong class="text-[#141E18]">48 Mins</strong></div>
+            <span class="text-[#DCD9D0]">•</span>
+            <div>Holding Temperature Gate: <strong class="text-[#141E18]">&gt;60°C Verified</strong></div>
+            <span class="text-[#DCD9D0]">•</span>
+            <div>Target Relief Centers: <strong class="text-[#141E18]">4 Verified Hubs</strong></div>
           </div>
 
         </div>
@@ -149,116 +135,87 @@
     <!-- ====================================================================
          2. COMMUNITY HUNGER RELIEF IMPACT DASHBOARD
          ==================================================================== -->
-    <section id="impact-dashboard" class="py-12 bg-slate-900/40 border-y border-slate-800/80 relative">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="impact-dashboard" class="py-12 bg-[#F7F5F0]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        <!-- Section Title & Live Refresh Trigger -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#DCD9D0] pb-4">
           <div>
-            <div class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 mb-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Live Telemetry & Field Audit
+            <div class="font-mono text-xs uppercase tracking-wider text-[#1B4332] font-bold">
+              Field Telemetry & Audit Ledger
             </div>
-            <h2 class="text-2xl sm:text-4xl font-extrabold font-display tracking-tight text-white">
+            <h2 class="text-2xl sm:text-3xl font-bold font-display text-[#141E18] mt-1">
               Community Hunger Relief Impact Dashboard
             </h2>
-            <p class="text-sm text-slate-400 max-w-2xl mt-1">
-              Synchronized cross-tab impact ledger. Every batch diverted from local landfills is tracked until received by hunger relief centers.
-            </p>
           </div>
 
           <div class="flex items-center gap-3">
-            <span class="text-xs font-mono text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-400 animate-pulse"></i>
+            <span class="text-xs font-mono text-[#525B55] flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#1B4332]"></span>
               <span id="last-sync-time">Synchronized</span>
             </span>
-            <button id="btn-manual-sync" type="button" title="Refresh Live Data" class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors">
-              <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+            <button id="btn-manual-sync" type="button" title="Refresh Live Data" class="p-1.5 rounded border border-[#DCD9D0] bg-white text-[#525B55] hover:text-[#141E18] transition-colors">
+              <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         </div>
 
-        <!-- 4 KPI METRIC CARDS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- 4 KPI METRIC CARDS (White on Paper Grid) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          <!-- KPI 1: Total Meals Served -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-15 group-hover:opacity-30 group-hover:scale-110 transition-all duration-300 text-emerald-400">
-              <i data-lucide="utensils" class="w-16 h-16"></i>
-            </div>
-            <div class="flex items-center gap-2.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <i data-lucide="utensils" class="w-4 h-4"></i>
-              </div>
-              <span>Total Meals Served</span>
+          <!-- KPI 1 -->
+          <div class="card-surface p-6 rounded space-y-2">
+            <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
+              Total Meals Served
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="kpi-meals-served" class="metric-value text-3xl sm:text-4xl font-black text-white font-mono">0</span>
-              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wide">Servings</span>
+              <span id="kpi-meals-served" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0</span>
+              <span class="text-xs font-bold text-[#1B4332] uppercase">Servings</span>
             </div>
-            <p class="text-xs text-slate-400 mt-2 font-medium">
-              12,400 baseline offset + live delivered batches.
+            <p class="text-xs text-[#525B55]">
+              12,400 established baseline meals + verified live drop-offs.
             </p>
           </div>
 
-          <!-- KPI 2: Food Diverted (Metric Tons) -->
-          <div class="glass-card glass-card-amber-hover p-6 rounded-2xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-15 group-hover:opacity-30 group-hover:scale-110 transition-all duration-300 text-amber-400">
-              <i data-lucide="scale" class="w-16 h-16"></i>
-            </div>
-            <div class="flex items-center gap-2.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                <i data-lucide="scale" class="w-4 h-4"></i>
-              </div>
-              <span>Landfill Diversion</span>
+          <!-- KPI 2 -->
+          <div class="card-surface p-6 rounded space-y-2">
+            <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
+              Landfill Diversion (MT)
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="kpi-tons-diverted" class="metric-value text-3xl sm:text-4xl font-black text-white font-mono">0.00</span>
-              <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">MT</span>
+              <span id="kpi-tons-diverted" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0.00</span>
+              <span class="text-xs font-bold text-[#B45309] uppercase">MT</span>
             </div>
-            <p class="text-xs text-slate-400 mt-2 font-medium">
-              Metric Tons diverted (1 serving ≈ 0.45 kg).
+            <p class="text-xs text-[#525B55]">
+              Metric tons diverted (1 serving ≈ 0.45 kg edible food).
             </p>
           </div>
 
-          <!-- KPI 3: Active Recovery Dispatches -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-15 group-hover:opacity-30 group-hover:scale-110 transition-all duration-300 text-teal-400">
-              <i data-lucide="truck" class="w-16 h-16"></i>
-            </div>
-            <div class="flex items-center gap-2.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              <div class="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
-                <i data-lucide="truck" class="w-4 h-4"></i>
-              </div>
-              <span>Active Dispatches</span>
+          <!-- KPI 3 -->
+          <div class="card-surface p-6 rounded space-y-2">
+            <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
+              Active Dispatches
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="kpi-active-pickups" class="metric-value text-3xl sm:text-4xl font-black text-white font-mono">0</span>
-              <span class="text-xs font-bold text-teal-400 uppercase tracking-wide">Batches</span>
+              <span id="kpi-active-pickups" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0</span>
+              <span class="text-xs font-bold text-[#C84B31] uppercase">Batches</span>
             </div>
-            <p class="text-xs text-slate-400 mt-2 font-medium flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
-              <span>Available & In-Transit right now.</span>
+            <p class="text-xs text-[#525B55]">
+              Surplus food currently available or in-transit on the map.
             </p>
           </div>
 
-          <!-- KPI 4: CO₂ Emissions Prevented -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-15 group-hover:opacity-30 group-hover:scale-110 transition-all duration-300 text-emerald-400">
-              <i data-lucide="leaf" class="w-16 h-16"></i>
-            </div>
-            <div class="flex items-center gap-2.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <i data-lucide="leaf" class="w-4 h-4"></i>
-              </div>
-              <span>CO₂e Avoided</span>
+          <!-- KPI 4 -->
+          <div class="card-surface p-6 rounded space-y-2">
+            <div class="font-mono text-xs uppercase text-[#525B55] font-semibold tracking-wider">
+              CO₂e Avoided
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="kpi-co2-saved" class="metric-value text-3xl sm:text-4xl font-black text-white font-mono">0</span>
-              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wide">kg CO₂e</span>
+              <span id="kpi-co2-saved" class="metric-tabular text-3xl sm:text-4xl font-bold text-[#141E18]">0</span>
+              <span class="text-xs font-bold text-[#1B4332] uppercase">kg CO₂e</span>
             </div>
-            <p class="text-xs text-slate-400 mt-2 font-medium">
-              1.12 kg greenhouse gases avoided per meal.
+            <p class="text-xs text-[#525B55]">
+              ~1.12 kg greenhouse gases eliminated per recovered meal.
             </p>
           </div>
 
@@ -269,74 +226,62 @@
              ==================================================================== -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <!-- Left Chart: Food Recovery Composition (Doughnut) -->
-          <div class="lg:col-span-5 glass-card p-6 rounded-2xl flex flex-col justify-between">
+          <!-- Left Chart: Composition -->
+          <div class="lg:col-span-5 card-surface p-6 rounded flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i>
-                  <h3 class="text-base font-bold text-white">Food Recovery Composition</h3>
-                </div>
-                <span id="chart-total-servings-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <div class="flex items-center justify-between pb-3 border-b border-[#DCD9D0]">
+                <h3 class="font-display text-base font-bold text-[#141E18]">Surplus Food Composition</h3>
+                <span id="chart-total-servings-badge" class="font-mono text-xs px-2 py-0.5 bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] rounded">
                   ... Servings
                 </span>
               </div>
-              <p class="text-xs text-slate-400 mt-2 mb-4">
-                Proportion of hot cooked meals vs. raw farm produce salvaged across active and historic batches.
+              <p class="text-xs text-[#525B55] mt-2 mb-4">
+                Cooked meals (hot chain) vs. raw farm produce salvaged across active and historic batches.
               </p>
             </div>
 
-            <!-- Canvas Container -->
+            <!-- Chart.js Enclosed Wrapper -->
             <div class="relative h-64 sm:h-72 w-full flex items-center justify-center my-auto">
               <canvas id="foodTypeChart"></canvas>
             </div>
 
-            <!-- Custom Doughnut Legend -->
-            <div class="pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-2 text-xs">
+            <div class="pt-4 border-t border-[#DCD9D0] grid grid-cols-2 gap-2 text-xs font-mono">
               <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-emerald-500 shrink-0"></span>
-                <span class="text-slate-300">Cooked Meals</span>
-                <span id="legend-cooked-count" class="ml-auto font-mono text-emerald-400 font-bold">0</span>
+                <span class="w-3 h-3 rounded-full bg-[#1B4332] shrink-0"></span>
+                <span class="text-[#525B55]">Cooked Meals:</span>
+                <span id="legend-cooked-count" class="font-bold text-[#141E18]">0</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-amber-500 shrink-0"></span>
-                <span class="text-slate-300">Raw Produce</span>
-                <span id="legend-raw-count" class="ml-auto font-mono text-amber-400 font-bold">0</span>
+                <span class="w-3 h-3 rounded-full bg-[#C84B31] shrink-0"></span>
+                <span class="text-[#525B55]">Raw Produce:</span>
+                <span id="legend-raw-count" class="font-bold text-[#141E18]">0</span>
               </div>
             </div>
           </div>
 
-          <!-- Right Chart: Relief Distribution by Receiving Shelter (Bar) -->
-          <div class="lg:col-span-7 glass-card p-6 rounded-2xl flex flex-col justify-between">
+          <!-- Right Chart: Distribution -->
+          <div class="lg:col-span-7 card-surface p-6 rounded flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-400"></i>
-                  <h3 class="text-base font-bold text-white">Relief Distribution Across Shelters</h3>
-                </div>
-                <span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  Delhi/NCR Relief Hubs
+              <div class="flex items-center justify-between pb-3 border-b border-[#DCD9D0]">
+                <h3 class="font-display text-base font-bold text-[#141E18]">Relief Distribution Across Shelters</h3>
+                <span class="font-mono text-xs px-2 py-0.5 bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8] rounded">
+                  4 Receiving Hubs
                 </span>
               </div>
-              <p class="text-xs text-slate-400 mt-2 mb-4">
-                Cumulative food portions delivered directly to the 4 verified partner shelters and slum relief camps.
+              <p class="text-xs text-[#525B55] mt-2 mb-4">
+                Cumulative food portions delivered directly to partner shelters and slum relief camps.
               </p>
             </div>
 
-            <!-- Canvas Container -->
+            <!-- Chart.js Enclosed Wrapper -->
             <div class="relative h-64 sm:h-72 w-full">
               <canvas id="shelterDistChart"></canvas>
             </div>
 
-            <!-- Shelter Legend Footnote -->
-            <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <div class="flex items-center gap-1.5">
-                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i>
-                <span>4 Receiving Shelters Active</span>
-              </div>
-              <a href="volunteer.html" class="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1">
-                <span>View Map Coordinates</span>
-                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            <div class="pt-4 border-t border-[#DCD9D0] flex items-center justify-between text-xs text-[#525B55]">
+              <span>Verified receiving shelters across North, South, Central & West NCR</span>
+              <a href="volunteer.html" class="text-[#C84B31] hover:underline font-semibold font-mono text-[11px]">
+                Open Map View →
               </a>
             </div>
           </div>
@@ -346,89 +291,76 @@
         <!-- ====================================================================
              4. LIVE NETWORK ACTIVITY LEDGER
              ==================================================================== -->
-        <div id="activity-ledger" class="glass-card rounded-2xl overflow-hidden scroll-mt-24">
+        <div id="activity-ledger" class="card-surface rounded overflow-hidden">
           
-          <!-- Ledger Header & Filter Controls -->
-          <div class="p-6 border-b border-slate-800 space-y-4">
+          <div class="p-6 border-b border-[#DCD9D0] space-y-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <div class="flex items-center gap-2">
-                  <i data-lucide="list-filter" class="w-5 h-5 text-emerald-400"></i>
-                  <h3 class="text-xl font-bold font-display text-white">Live Network Activity Ledger</h3>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
-                  Real-time audit log of surplus food recovery dispatches, courier handovers, and delivery status.
+                <h3 class="font-display text-xl font-bold text-[#141E18]">Live Network Activity Ledger</h3>
+                <p class="text-xs text-[#525B55] mt-0.5">
+                  Synchronized audit log of surplus food recovery dispatches, courier claims, and verified shelter handovers.
                 </p>
               </div>
 
               <!-- Quick Search Input -->
-              <div class="w-full md:w-72 relative">
-                <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                <input id="ledger-search-input" type="text" placeholder="Search donor, ID, or shelter..." class="w-full pl-9 pr-4 py-2 rounded-xl text-xs bg-slate-900 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+              <div class="w-full md:w-72">
+                <input id="ledger-search-input" type="text" placeholder="Search donor, ID, or shelter..." class="bhoj-input text-xs font-sans">
               </div>
             </div>
 
             <!-- Status Filter Tabs -->
             <div class="flex flex-wrap items-center gap-2 pt-1" id="ledger-filter-buttons">
-              <button data-filter="all" class="ledger-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold font-mono transition-all duration-150 bg-emerald-600 text-white shadow-md shadow-emerald-900/30">
+              <button data-filter="all" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-[#141E18] text-white">
                 All (<span id="filter-count-all">0</span>)
               </button>
-              <button data-filter="Available" class="ledger-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold font-mono transition-all duration-150 bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800">
+              <button data-filter="Available" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0]">
                 Available (<span id="filter-count-available">0</span>)
               </button>
-              <button data-filter="In-Transit" class="ledger-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold font-mono transition-all duration-150 bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800">
+              <button data-filter="In-Transit" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0]">
                 In-Transit (<span id="filter-count-intransit">0</span>)
               </button>
-              <button data-filter="Delivered" class="ledger-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold font-mono transition-all duration-150 bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800">
+              <button data-filter="Delivered" class="ledger-filter-btn px-3 py-1 text-xs font-mono font-bold rounded bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0]">
                 Delivered (<span id="filter-count-delivered">0</span>)
               </button>
             </div>
           </div>
 
-          <!-- Responsive Table Container -->
+          <!-- Table Container -->
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="bg-slate-900/70 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-mono">
+                <tr class="bg-[#EFECE6] border-b border-[#DCD9D0] text-[11px] uppercase tracking-wider text-[#525B55] font-mono">
                   <th class="py-3 px-4 sm:px-6">Dispatch ID</th>
                   <th class="py-3 px-4">Donor / Commercial Source</th>
-                  <th class="py-3 px-4">Food Type & Title</th>
+                  <th class="py-3 px-4">Food Particulars</th>
                   <th class="py-3 px-4">Quantity / Weight</th>
                   <th class="py-3 px-4">Hygiene Gate</th>
                   <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4">Assigned Courier & Destination</th>
-                  <th class="py-3 px-4 text-right">Details</th>
+                  <th class="py-3 px-4">Assigned Logistics</th>
+                  <th class="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody id="ledger-table-body" class="divide-y divide-slate-800/80">
+              <tbody id="ledger-table-body" class="divide-y divide-[#DCD9D0] bg-white">
                 <!-- Dynamically populated by js/dashboard.js -->
               </tbody>
             </table>
           </div>
 
-          <!-- Empty State Container -->
-          <div id="ledger-empty-state" class="hidden py-16 px-4 text-center">
-            <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mx-auto mb-3">
-              <i data-lucide="inbox" class="w-6 h-6"></i>
-            </div>
-            <h4 class="text-base font-bold text-white">No dispatches match the selected filter</h4>
-            <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-              Try switching your status filter or clearing your search term to see more food recovery listings.
-            </p>
+          <!-- Empty State -->
+          <div id="ledger-empty-state" class="hidden py-12 px-4 text-center">
+            <h4 class="text-sm font-bold text-[#141E18]">No dispatches match the selected filter</h4>
+            <p class="text-xs text-[#525B55] mt-1">Try switching status filters or clearing your search term.</p>
           </div>
 
-          <!-- Ledger Table Footer -->
-          <div class="p-4 border-t border-slate-800/80 bg-slate-950/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <!-- Footer -->
+          <div class="p-4 border-t border-[#DCD9D0] bg-[#FAF9F6] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#525B55]">
             <span id="ledger-pagination-summary">Showing 0 listings</span>
-            <div class="flex items-center gap-3">
-              <a href="volunteer.html" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
-                <span>View Live Courier Map</span>
-                <i data-lucide="map" class="w-3.5 h-3.5"></i>
+            <div class="flex items-center gap-4 font-mono text-[11px]">
+              <a href="volunteer.html" class="text-[#141E18] hover:text-[#C84B31] font-semibold">
+                Open Courier Map →
               </a>
-              <span class="text-slate-700">|</span>
-              <a href="donate.html" class="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1">
-                <span>Report New Surplus</span>
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <a href="donate.html" class="text-[#C84B31] hover:underline font-semibold">
+                Report New Batch +
               </a>
             </div>
           </div>
@@ -439,153 +371,101 @@
     </section>
 
     <!-- ====================================================================
-         5. THREE-STEP RECOVERY WORKFLOW (HOW BHOJVAYASTA WORKS)
+         5. ARCHITECTURAL 1PX BORDERED LEDGER STRIP (Replacing Slop 01/02/03)
          ==================================================================== -->
-    <section class="py-16 sm:py-24 border-b border-slate-800/80">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div class="text-center max-w-2xl mx-auto space-y-2">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Field Operational Process</span>
-          <h2 class="text-3xl font-extrabold font-display text-white">The Sub-2-Hour Food Recovery Workflow</h2>
-          <p class="text-sm text-slate-400">
-            Preventing safe edible food from reaching landfills through strict hygiene checks, GPS courier mobilization, and shelter coordination.
+    <section class="border-y border-[#DCD9D0] bg-white my-12">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#DCD9D0]">
+        
+        <!-- Phase 1 -->
+        <div class="p-8 space-y-2">
+          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Phase 01 // Ingestion & Safety</div>
+          <h3 class="font-display text-xl font-bold text-[#141E18]">Mandatory FSSAI Hygiene Gate</h3>
+          <p class="text-sm text-[#525B55] leading-relaxed">
+            Commercial kitchens log cooking timestamp, holding temperature (&gt;60°C), and food-grade packaging integrity before dispatch unlocks on the courier network.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <!-- Step 1 -->
-          <div class="glass-card p-6 rounded-2xl relative">
-            <span class="absolute top-4 right-4 text-3xl font-black font-mono text-slate-800">01</span>
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
-              <i data-lucide="clipboard-check" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-1">Donor Hygiene Gate</h3>
-            <p class="text-xs text-slate-400 leading-relaxed mb-4">
-              Commercial kitchens, wedding halls, and caterers submit surplus quantity, time cooked, and pass mandatory FSSAI safety checks (&gt;65°C hot holding, sanitary packaging).
-            </p>
-            <a href="donate.html" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1">
-              <span>Report Surplus Food</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-            </a>
-          </div>
-
-          <!-- Step 2 -->
-          <div class="glass-card p-6 rounded-2xl relative">
-            <span class="absolute top-4 right-4 text-3xl font-black font-mono text-slate-800">02</span>
-            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
-              <i data-lucide="bike" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-1">Live Courier Dispatch</h3>
-            <p class="text-xs text-slate-400 leading-relaxed mb-4">
-              Nearby registered volunteers receive instant live notifications. Using the interactive Leaflet map and Haversine distance, they claim pickups and navigate to the venue.
-            </p>
-            <a href="volunteer.html" class="text-xs font-bold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1">
-              <span>Open Courier Map</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-            </a>
-          </div>
-
-          <!-- Step 3 -->
-          <div class="glass-card p-6 rounded-2xl relative">
-            <span class="absolute top-4 right-4 text-3xl font-black font-mono text-slate-800">03</span>
-            <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center mb-4">
-              <i data-lucide="heart-handshake" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-1">Direct Shelter Handover</h3>
-            <p class="text-xs text-slate-400 leading-relaxed mb-4">
-              Food is delivered directly to verified receiving shelters (orphanages, elder care, and slum relief camps). Status transitions to Delivered and updates the public impact ledger.
-            </p>
-            <a href="#activity-ledger" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1">
-              <span>Audit Recent Deliveries</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-            </a>
-          </div>
-
+        <!-- Phase 2 -->
+        <div class="p-8 space-y-2">
+          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Phase 02 // Rapid Mobilization</div>
+          <h3 class="font-display text-xl font-bold text-[#141E18]">Haversine Proximity Dispatch</h3>
+          <p class="text-sm text-[#525B55] leading-relaxed">
+            Nearby registered couriers claim pickups on the interactive map. Turn-by-turn routes connect donor loading docks directly to recipient hunger relief shelters.
+          </p>
         </div>
+
+        <!-- Phase 3 -->
+        <div class="p-8 space-y-2">
+          <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Phase 03 // Verified Handover</div>
+          <h3 class="font-display text-xl font-bold text-[#141E18]">Direct Shelter Delivery Audit</h3>
+          <p class="text-sm text-[#525B55] leading-relaxed">
+            Food batches are transferred directly to verified orphanages and slum relief camps. Handovers log immediately to the publicly verifiable impact ledger.
+          </p>
+        </div>
+
       </div>
     </section>
 
   </main>
 
   <!-- ====================================================================
-       MODAL: DISPATCH FULL DETAILS DIALOG
+       MODAL: DISPATCH AUDIT & DETAILS
        ==================================================================== -->
-  <div id="dispatch-detail-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-    <div class="glass-panel w-full max-w-xl rounded-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl">
-      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+  <div id="dispatch-detail-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+    <div class="bg-white border border-[#DCD9D0] w-full max-w-lg rounded p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div class="flex items-start justify-between border-b border-[#DCD9D0] pb-3">
         <div>
           <div class="flex items-center gap-2">
-            <span id="modal-dispatch-id" class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">BV-0000</span>
+            <span id="modal-dispatch-id" class="font-mono font-bold text-xs px-2 py-0.5 bg-[#EFECE6] text-[#141E18] border border-[#DCD9D0] rounded">BV-0000</span>
             <span id="modal-dispatch-status" class="status-pill status-available">Available</span>
           </div>
-          <h3 id="modal-donor-title" class="text-lg sm:text-xl font-bold text-white mt-1">Donor Name</h3>
-          <p id="modal-donor-address" class="text-xs text-slate-400">Donor Address</p>
+          <h3 id="modal-donor-title" class="font-display text-xl font-bold text-[#141E18] mt-1">Donor Name</h3>
+          <p id="modal-donor-address" class="text-xs text-[#525B55]">Donor Address</p>
         </div>
-        <button id="modal-close-btn" type="button" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button id="modal-close-btn" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm font-mono p-1">✕</button>
       </div>
 
-      <!-- Detail Body -->
       <div class="space-y-4 text-xs">
         <div>
-          <h4 class="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-1">Food Items Description</h4>
-          <p id="modal-food-desc" class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 leading-relaxed font-sans">
+          <div class="font-mono uppercase text-[#525B55] font-semibold text-[10px] mb-1">Food Particulars</div>
+          <p id="modal-food-desc" class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded text-[#141E18] leading-relaxed">
             Description...
           </p>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px]">Servings</span>
-            <div id="modal-servings" class="text-base font-bold font-mono text-white mt-0.5">0 portions</div>
+        <div class="grid grid-cols-3 gap-2 text-center font-mono">
+          <div class="p-2.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+            <span class="text-[10px] text-[#525B55] uppercase">Servings</span>
+            <div id="modal-servings" class="font-bold text-sm text-[#141E18] mt-0.5">0</div>
           </div>
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px]">Storage Temp</span>
-            <div id="modal-temperature" class="text-base font-bold font-mono text-amber-400 mt-0.5">65°C</div>
+          <div class="p-2.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+            <span class="text-[10px] text-[#525B55] uppercase">Holding Temp</span>
+            <div id="modal-temperature" class="font-bold text-sm text-[#B45309] mt-0.5">65°C</div>
           </div>
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px]">Expiry Timer</span>
-            <div id="modal-expiry" class="text-base font-bold font-mono text-emerald-400 mt-0.5">2h 30m left</div>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-1.5">FSSAI Hygiene & Safety Gates Verified</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-              <span>Hot Chain Safety (&gt;65°C / Ambient)</span>
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-              <span>Clean Sealed Food-Grade Packaging</span>
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-              <span>Visual Spoilage / Sensory Inspection Passed</span>
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-              <span>Safe Food Share FSSAI Compliance</span>
-            </div>
+          <div class="p-2.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+            <span class="text-[10px] text-[#525B55] uppercase">Safe Window</span>
+            <div id="modal-expiry" class="font-bold text-sm text-[#1B4332] mt-0.5">4h left</div>
           </div>
         </div>
 
-        <div id="modal-logistics-box" class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-          <span class="text-slate-500 uppercase tracking-wider text-[10px]">Logistics Assignment</span>
-          <div id="modal-logistics-text" class="text-slate-300 font-medium">
+        <div class="p-3 bg-[#E8F3EE] border border-[#A3C9B8] rounded text-[#1B4332] space-y-1">
+          <div class="font-bold font-mono text-[11px]">✓ FSSAI Safe Food Sharing Verified</div>
+          <div class="text-[11px] leading-snug">Visual inspection passed, leak-proof food-grade containers verified, hot-chain compliance checked.</div>
+        </div>
+
+        <div class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-0.5">
+          <div class="font-mono text-[10px] text-[#525B55] uppercase">Logistics Status</div>
+          <div id="modal-logistics-text" class="text-[#141E18] font-medium text-xs">
             Awaiting Courier
           </div>
         </div>
       </div>
 
-      <!-- Modal Footer -->
-      <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
-        <button id="modal-close-footer-btn" type="button" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-slate-700">
+      <div class="pt-3 border-t border-[#DCD9D0] flex items-center justify-end gap-3">
+        <button id="modal-close-footer-btn" type="button" class="btn-secondary px-4 py-2 text-xs font-semibold">
           Close
         </button>
-        <a id="modal-action-cta" href="volunteer.html" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 shadow-md">
+        <a id="modal-action-cta" href="volunteer.html" class="btn-primary px-5 py-2 text-xs font-semibold">
           Open on Courier Map
         </a>
       </div>
@@ -595,7 +475,7 @@
   <!-- Shared Dynamic Community Footer (Mounted via js/navbar.js) -->
   <div id="footer-root"></div>
 
-  <!-- Foundational Scripts (Engine, Nav, Dashboard Logic) -->
+  <!-- Foundational Scripts -->
   <script src="js/store.js"></script>
   <script src="js/navbar.js"></script>
   <script src="js/dashboard.js"></script>
