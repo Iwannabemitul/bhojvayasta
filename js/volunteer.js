@@ -61,11 +61,20 @@
         scrollWheelZoom: true
       });
 
-      // Key-Free OpenStreetMap Standard Tiles with Warm CSS Filter
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      // Reliable Key-Free Map Tiles: Esri World Street Map (Enterprise CDN, No API key, No 403 blocks on file:/// or localhost)
+      const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &bull; Map &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 18
-      }).addTo(reliefMap);
+      });
+
+      primaryTiles.on('tileerror', function (err) {
+        if (err && err.tile && err.coords) {
+          // Automatic fallback to OpenStreetMap France mirror
+          err.tile.src = `https://a.tile.openstreetmap.fr/osmfr/${err.coords.z}/${err.coords.x}/${err.coords.y}.png`;
+        }
+      });
+
+      primaryTiles.addTo(reliefMap);
 
       routeLayerGroup = L.layerGroup().addTo(reliefMap);
 

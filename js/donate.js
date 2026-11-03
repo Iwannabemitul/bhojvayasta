@@ -161,11 +161,19 @@
         scrollWheelZoom: false
       });
 
-      // Key-Free OpenStreetMap Tiles with warm CSS filter
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      // Reliable Key-Free Map Tiles: Esri World Street Map (Enterprise CDN, No API key, No 403 blocks on file:/// or localhost)
+      const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &bull; Map &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 18
-      }).addTo(donorMap);
+      });
+
+      primaryTiles.on('tileerror', function (err) {
+        if (err && err.tile && err.coords) {
+          err.tile.src = `https://a.tile.openstreetmap.fr/osmfr/${err.coords.z}/${err.coords.x}/${err.coords.y}.png`;
+        }
+      });
+
+      primaryTiles.addTo(donorMap);
 
       const pinIcon = L.divIcon({
         className: 'bhoj-pin-wrapper',
