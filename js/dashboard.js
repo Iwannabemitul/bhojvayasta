@@ -185,7 +185,7 @@
     }
 
     // Chart 2: Distribution by Shelter Hub (Bar)
-    const shelterLabels = shelters.map((s) => s.name.replace(' Shelter', '').replace(' Orphanage', '').replace(' Home', ''));
+    const shelterLabels = ['Asha Child Care', 'Seva Slum Camp', 'Bal Vikas Home', 'Samarpan Elders'];
     const baselineShares = [3850, 4900, 2150, 1500];
 
     const shelterDeliveries = shelters.map((s, idx) => {
@@ -213,7 +213,8 @@
           ],
           borderColor: '#DCD9D0',
           borderWidth: 1,
-          borderRadius: 3,
+          borderRadius: 4,
+          maxBarThickness: 38,
           barPercentage: 0.6
         }]
       };
@@ -272,6 +273,7 @@
 
     const dispatches = global.BhojStore.getDispatches();
     const tableBody = document.getElementById('ledger-table-body');
+    const mobileCardsContainer = document.getElementById('ledger-cards-mobile');
     const emptyState = document.getElementById('ledger-empty-state');
     const paginationSummary = document.getElementById('ledger-pagination-summary');
 
@@ -311,12 +313,14 @@
 
     if (filtered.length === 0) {
       tableBody.innerHTML = '';
+      if (mobileCardsContainer) mobileCardsContainer.innerHTML = '';
       if (emptyState) emptyState.classList.remove('hidden');
       return;
     }
 
     if (emptyState) emptyState.classList.add('hidden');
 
+    // 1. Populate Desktop/Tablet Table
     tableBody.innerHTML = filtered
       .map((item) => {
         const expiry = global.BhojStore.getExpiryStatus(item);
@@ -417,6 +421,78 @@
         `;
       })
       .join('');
+
+    // 2. Populate Mobile Cards Container (< 768px)
+    if (mobileCardsContainer) {
+      mobileCardsContainer.innerHTML = filtered
+        .map((item) => {
+          let statusPillClass = 'status-available';
+          let statusText = 'Waiting for Courier';
+          if (item.status === 'In-Transit') {
+            statusPillClass = 'status-intransit';
+            statusText = 'On the Way';
+          } else if (item.status === 'Delivered') {
+            statusPillClass = 'status-delivered';
+            statusText = 'Delivered';
+          }
+
+          const isCooked = (item.foodType || '').toLowerCase().includes('cooked');
+          const foodTypeBadge = isCooked
+            ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">Cooked Food</span>`
+            : `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">Raw Produce</span>`;
+
+          const weightKg = ((parseInt(item.servings, 10) || 0) * 0.45).toFixed(1);
+
+          return `
+            <div class="p-4 space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-1.5 font-mono text-xs">
+                    <span class="font-bold text-[#141E18]">${item.id}</span>
+                    <span class="text-[#DCD9D0]">•</span>
+                    ${foodTypeBadge}
+                  </div>
+                  <h4 class="font-bold text-[#141E18] text-sm mt-0.5">${item.donorName}</h4>
+                  <div class="text-[11px] text-[#525B55] truncate max-w-xs">${item.address || 'Delhi/NCR'}</div>
+                </div>
+                <span class="status-pill ${statusPillClass} text-[10px] shrink-0">
+                  <span class="status-dot"></span>
+                  <span>${statusText}</span>
+                </span>
+              </div>
+
+              <div class="text-xs text-[#525B55] italic bg-[#FAF9F6] p-2 rounded border border-[#DCD9D0]">
+                ${item.itemsDescription || item.foodTitle}
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+                  <span class="text-[10px] text-[#525B55]">Total Food</span>
+                  <div class="font-bold text-[#141E18]">${item.servings} meals <span class="text-[#525B55] font-normal">(~${weightKg} kg)</span></div>
+                </div>
+                <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
+                  <span class="text-[10px] text-[#525B55]">Safety Check</span>
+                  <div class="font-bold text-[#1B4332]">✓ Passed (${item.storageTemp || 'Fresh'})</div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1 text-xs">
+                <div>
+                  ${
+                    item.status === 'Available'
+                      ? `<a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] font-semibold hover:underline">Claim on Map →</a>`
+                      : `<span class="text-[#525B55]">➔ ${item.targetShelter || 'Shelter'}</span>`
+                  }
+                </div>
+                <button type="button" data-action="view-modal" data-id="${item.id}" class="px-3 py-1 text-xs font-medium border border-[#DCD9D0] bg-white rounded text-[#141E18] hover:bg-[#EFECE6]">
+                  Details
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
 
     if (global.lucide && typeof global.lucide.createIcons === 'function') {
       global.lucide.createIcons();

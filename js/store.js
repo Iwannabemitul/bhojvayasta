@@ -723,6 +723,17 @@
         };
       }
 
+      if (dispatch.status === 'Delivered') {
+        return {
+          totalMinutes: 0,
+          hours: 0,
+          minutes: 0,
+          isExpired: false,
+          isUrgent: false,
+          formattedText: 'Delivered on Time'
+        };
+      }
+
       const expiryMs = new Date(dispatch.expiryTime).getTime();
       const diffMs = expiryMs - Date.now();
 

@@ -308,6 +308,22 @@
             parentCard.className = 'bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#C84B31] bg-[#FEF3C7] transition-all flex items-start gap-3';
           }
         }
+
+        // Context-aware defaults for temperature, packaging, and safe window
+        const tempInput = document.getElementById('temperature-input');
+        const packSelect = document.getElementById('packaging-type');
+        const shelfInput = document.getElementById('shelf-life');
+
+        if (this.value === 'Raw Produce') {
+          if (tempInput) tempInput.value = '22°C (Ambient)';
+          if (packSelect) packSelect.value = 'Commercial Ventilated Plastic Crates';
+          if (shelfInput) shelfInput.value = 24;
+        } else {
+          if (tempInput) tempInput.value = '68°C';
+          if (packSelect) packSelect.value = 'Sealed Aluminum Food-Grade Trays';
+          if (shelfInput) shelfInput.value = 4;
+        }
+        updateCalculations();
       });
     });
   }

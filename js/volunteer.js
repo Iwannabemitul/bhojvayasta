@@ -369,6 +369,10 @@
       }
     }
 
+    if (window.innerWidth < 1024 && typeof global.BhojVolunteerSwitchToMap === 'function') {
+      global.BhojVolunteerSwitchToMap();
+    }
+
     const marker = donorMarkerMap.get(item.id);
     if (marker && reliefMap) {
       marker.openPopup();
@@ -719,6 +723,60 @@
   // 7. Toolbar & URL Query Handlers
   // ==========================================
   function setupToolbarListeners() {
+    // Mobile / Tablet Segregated View Switcher (< 1024px)
+    const btnListView = document.getElementById('btn-toggle-list-view');
+    const btnMapView = document.getElementById('btn-toggle-map-view');
+    const feedPane = document.getElementById('volunteer-feed-pane');
+    const mapPane = document.getElementById('volunteer-map-pane');
+
+    function switchToMapView() {
+      if (feedPane && mapPane) {
+        feedPane.classList.add('hidden');
+        feedPane.classList.remove('flex');
+        mapPane.classList.remove('hidden');
+        mapPane.classList.add('block');
+      }
+      if (btnMapView && btnListView) {
+        btnMapView.className = 'flex-1 py-2 text-xs font-bold rounded bg-white text-[#141E18] shadow-sm flex items-center justify-center gap-1.5 transition-all';
+        btnListView.className = 'flex-1 py-2 text-xs font-bold rounded text-[#525B55] hover:text-[#141E18] flex items-center justify-center gap-1.5 transition-all';
+      }
+      if (reliefMap) {
+        setTimeout(() => reliefMap.invalidateSize(), 150);
+      }
+    }
+
+    function switchToListView() {
+      if (feedPane && mapPane) {
+        mapPane.classList.add('hidden');
+        mapPane.classList.remove('block');
+        feedPane.classList.remove('hidden');
+        feedPane.classList.add('flex');
+      }
+      if (btnListView && btnMapView) {
+        btnListView.className = 'flex-1 py-2 text-xs font-bold rounded bg-white text-[#141E18] shadow-sm flex items-center justify-center gap-1.5 transition-all';
+        btnMapView.className = 'flex-1 py-2 text-xs font-bold rounded text-[#525B55] hover:text-[#141E18] flex items-center justify-center gap-1.5 transition-all';
+      }
+    }
+
+    if (btnListView) btnListView.onclick = switchToListView;
+    if (btnMapView) btnMapView.onclick = switchToMapView;
+    global.BhojVolunteerSwitchToMap = switchToMapView;
+    global.BhojVolunteerSwitchToList = switchToListView;
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth >= 1024) {
+        if (feedPane) {
+          feedPane.classList.remove('hidden');
+          feedPane.classList.add('flex');
+        }
+        if (mapPane) {
+          mapPane.classList.remove('hidden');
+          mapPane.classList.add('block');
+        }
+        if (reliefMap) reliefMap.invalidateSize();
+      }
+    });
+
     const nameInput = document.getElementById('courier-name-input');
     if (nameInput) {
       nameInput.addEventListener('change', function () {

@@ -137,8 +137,8 @@
           <span class="font-display text-xl font-bold tracking-tight text-[#141E18]">
             Bhoj<span class="text-[#C84B31]">Vayasta</span>
           </span>
-          <span class="hidden sm:inline-block font-mono text-[11px] px-2 py-0.5 bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] rounded">
-            NCR_GRID
+          <span class="hidden sm:inline-block text-[11px] font-medium px-2 py-0.5 bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] rounded">
+            Delhi / NCR
           </span>
         </a>
 
@@ -297,13 +297,8 @@
                 <span class="font-display text-lg font-bold text-[#141E18]">BhojVayasta</span>
               </div>
               <p class="text-xs text-[#525B55] leading-relaxed">
-                Connecting wedding banquets, office cafeterias, and grocery stores with nearby child care homes and community shelters across Delhi/NCR.
+                Connecting wedding banquets, office cafeterias, and grocery stores with nearby child care homes and community shelters across Delhi/NCR in support of Zero Hunger.
               </p>
-              <div class="pt-1">
-                <span class="font-mono text-[10px] px-2 py-0.5 bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8] rounded">
-                  SDG 2: Zero Hunger Network
-                </span>
-              </div>
             </div>
 
             <!-- Col 2: Navigation -->

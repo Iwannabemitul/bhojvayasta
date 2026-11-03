@@ -118,12 +118,19 @@
           </div>
 
           <!-- 3 Plain Facts -->
-          <div class="pt-4 flex flex-wrap items-center gap-5 text-xs text-[#525B55] font-mono border-t border-[#DCD9D0]">
-            <div>Average Delivery Time: <strong class="text-[#141E18]">48 Mins</strong></div>
-            <span class="text-[#DCD9D0]">•</span>
-            <div>Safety Checked: <strong class="text-[#141E18]">Hot (&gt;60°C) & Fresh</strong></div>
-            <span class="text-[#DCD9D0]">•</span>
-            <div>Partner Shelters: <strong class="text-[#141E18]">4 Delhi Hubs</strong></div>
+          <div class="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#525B55] border-t border-[#DCD9D0]">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#1B4332] shrink-0"></span>
+              <span>Avg. Delivery: <strong class="text-[#141E18]">48 Mins</strong></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#1B4332] shrink-0"></span>
+              <span>Safety Checked: <strong class="text-[#141E18]">Hot (&gt;60°C) & Fresh</strong></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#1B4332] shrink-0"></span>
+              <span>Partner Shelters: <strong class="text-[#141E18]">4 Delhi Hubs</strong></span>
+            </div>
           </div>
 
         </div>
@@ -240,7 +247,7 @@
             </div>
 
             <!-- Canvas Container -->
-            <div class="relative h-64 sm:h-72 w-full flex items-center justify-center my-auto">
+            <div class="relative h-56 w-56 sm:h-64 sm:w-64 mx-auto flex items-center justify-center my-auto">
               <canvas id="foodTypeChart"></canvas>
             </div>
 
@@ -278,9 +285,9 @@
               <canvas id="shelterDistChart"></canvas>
             </div>
 
-            <div class="pt-4 border-t border-[#DCD9D0] flex items-center justify-between text-xs text-[#525B55]">
+            <div class="pt-4 border-t border-[#DCD9D0] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#525B55]">
               <span>Delivered to shelters in Central, North, South, and West Delhi</span>
-              <a href="volunteer.html" class="text-[#C84B31] hover:underline font-semibold font-mono text-[11px]">
+              <a href="volunteer.html" class="text-[#C84B31] hover:underline font-semibold font-mono text-[11px] whitespace-nowrap">
                 See on Live Map →
               </a>
             </div>
@@ -325,8 +332,8 @@
             </div>
           </div>
 
-          <!-- Table -->
-          <div class="overflow-x-auto">
+          <!-- Desktop / Tablet Table View -->
+          <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="bg-[#EFECE6] border-b border-[#DCD9D0] text-[11px] uppercase tracking-wider text-[#525B55] font-mono">
@@ -344,6 +351,11 @@
                 <!-- Populated dynamically by js/dashboard.js -->
               </tbody>
             </table>
+          </div>
+
+          <!-- Mobile Card View (Screens < 768px) -->
+          <div id="ledger-cards-mobile" class="block md:hidden divide-y divide-[#DCD9D0] bg-white">
+            <!-- Populated dynamically by js/dashboard.js -->
           </div>
 
           <!-- Empty State -->
@@ -383,7 +395,7 @@
           
           <!-- Step 1 -->
           <div class="p-6 sm:p-8 space-y-2">
-            <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Step 1 // Donor Reports Food</div>
+            <div class="text-xs uppercase tracking-wider text-[#C84B31] font-bold">01. Report Extra Food</div>
             <h3 class="font-display text-lg font-bold text-[#141E18]">Confirm Food is Safe & Packaged</h3>
             <p class="text-xs sm:text-sm text-[#525B55] leading-relaxed">
               Kitchens and banquet halls enter how many meals they have, when it was cooked, and verify it is hot (&gt;60°C) and sealed cleanly.
@@ -392,7 +404,7 @@
 
           <!-- Step 2 -->
           <div class="p-6 sm:p-8 space-y-2">
-            <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Step 2 // Volunteer Claims It</div>
+            <div class="text-xs uppercase tracking-wider text-[#C84B31] font-bold">02. Nearby Pickup</div>
             <h3 class="font-display text-lg font-bold text-[#141E18]">Pickup on the Live Map</h3>
             <p class="text-xs sm:text-sm text-[#525B55] leading-relaxed">
               Nearby volunteers see the food alert on their map with driving distance. One click claims the pickup and sets the route.
@@ -401,7 +413,7 @@
 
           <!-- Step 3 -->
           <div class="p-6 sm:p-8 space-y-2">
-            <div class="font-mono text-xs uppercase tracking-widest text-[#C84B31] font-bold">Step 3 // Direct Shelter Delivery</div>
+            <div class="text-xs uppercase tracking-wider text-[#C84B31] font-bold">03. Delivery to Shelters</div>
             <h3 class="font-display text-lg font-bold text-[#141E18]">Delivered to Children & Elders</h3>
             <p class="text-xs sm:text-sm text-[#525B55] leading-relaxed">
               The volunteer delivers directly to a verified orphanage or slum relief camp. The meals are logged to the community dashboard.

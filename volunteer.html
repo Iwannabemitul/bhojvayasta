@@ -147,13 +147,25 @@
 
     </section>
 
+    <!-- Mobile / Tablet View Switcher (< 1024px) -->
+    <div class="lg:hidden flex items-center bg-[#EFECE6] p-1 rounded border border-[#DCD9D0] mb-4">
+      <button id="btn-toggle-list-view" type="button" class="flex-1 py-2 text-xs font-bold rounded bg-white text-[#141E18] shadow-sm flex items-center justify-center gap-1.5 transition-all">
+        <span>📋</span>
+        <span>Pickup Feed</span>
+      </button>
+      <button id="btn-toggle-map-view" type="button" class="flex-1 py-2 text-xs font-bold rounded text-[#525B55] hover:text-[#141E18] flex items-center justify-center gap-1.5 transition-all">
+        <span>🗺️</span>
+        <span>Interactive Map</span>
+      </button>
+    </div>
+
     <!-- ====================================================================
          2. SPLIT WORKSPACE: LEFT FEED + RIGHT MAP (Model B App-Shell)
          ==================================================================== -->
     <div class="grid grid-cols-1 lg:grid-cols-12 border border-[#DCD9D0] bg-white rounded shadow-sm overflow-hidden flex-grow">
       
       <!-- LEFT PANE: Scrollable Feed Container (lg:h-[700px]) -->
-      <div class="lg:col-span-5 lg:h-[700px] flex flex-col border-b lg:border-b-0 lg:border-r border-[#DCD9D0] bg-[#FAF9F6]">
+      <div id="volunteer-feed-pane" class="lg:col-span-5 lg:h-[700px] flex flex-col border-b lg:border-b-0 lg:border-r border-[#DCD9D0] bg-[#FAF9F6]">
         
         <!-- Feed Sub-Header -->
         <div class="p-3.5 border-b border-[#DCD9D0] bg-white flex items-center justify-between text-xs font-mono">
@@ -180,7 +192,7 @@
       </div>
 
       <!-- RIGHT PANE: Interactive Leaflet Map (h-[480px] lg:h-[700px]) -->
-      <div class="lg:col-span-7 h-[480px] lg:h-[700px] relative bg-[#EFECE6]">
+      <div id="volunteer-map-pane" class="hidden lg:block lg:col-span-7 h-[500px] lg:h-[700px] relative bg-[#EFECE6]">
         
         <!-- Map Canvas -->
         <div id="relief-map" class="w-full h-full z-10"></div>

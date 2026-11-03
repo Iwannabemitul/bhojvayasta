@@ -184,8 +184,8 @@
                 </label>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="food-type-selector">
                   
-                  <label class="bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#1B4332] bg-[#E8F3EE] transition-all flex items-start gap-3">
-                    <input type="radio" name="foodType" value="Cooked Meals" checked class="mt-1 accent-[#1B4332]">
+                  <label class="bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#1B4332] bg-[#E8F3EE] transition-all flex items-start gap-3" for="radio-food-cooked">
+                    <input id="radio-food-cooked" type="radio" name="foodType" value="Cooked Meals" checked aria-label="Cooked Meals" class="mt-1 accent-[#1B4332]">
                     <div class="space-y-1">
                       <div class="flex items-center gap-2">
                         <span class="text-sm font-bold text-[#141E18]">Cooked Meals</span>
@@ -197,8 +197,8 @@
                     </div>
                   </label>
 
-                  <label class="bhoj-radio-card cursor-pointer p-4 rounded border border-[#DCD9D0] bg-white transition-all flex items-start gap-3">
-                    <input type="radio" name="foodType" value="Raw Produce" class="mt-1 accent-[#C84B31]">
+                  <label class="bhoj-radio-card cursor-pointer p-4 rounded border border-[#DCD9D0] bg-white transition-all flex items-start gap-3" for="radio-food-raw">
+                    <input id="radio-food-raw" type="radio" name="foodType" value="Raw Produce" aria-label="Raw Produce and Staples" class="mt-1 accent-[#C84B31]">
                     <div class="space-y-1">
                       <div class="flex items-center gap-2">
                         <span class="text-sm font-bold text-[#141E18]">Raw Produce & Staples</span>
@@ -455,7 +455,7 @@
         <!-- ====================================================================
              RIGHT COLUMN: LIVE FEED PREVIEW & RECENT SUBMISSIONS (Col-span-5)
              ==================================================================== -->
-        <div class="lg:col-span-5 space-y-6">
+        <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24 self-start">
           
           <div class="space-y-6">
             
