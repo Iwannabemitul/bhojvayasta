@@ -130,10 +130,7 @@
       <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
         <!-- Brand Identity -->
-        <a href="index.html" class="flex items-center gap-3 shrink-0 text-decoration-none">
-          <div class="w-8 h-8 bg-[#1B4332] text-white flex items-center justify-center font-mono text-xs font-bold rounded">
-            BV
-          </div>
+        <a href="index.html" class="flex items-center gap-2.5 shrink-0 text-decoration-none">
           <span class="font-display text-xl font-bold tracking-tight text-[#141E18]">
             Bhoj<span class="text-[#C84B31]">Vayasta</span>
           </span>
@@ -177,7 +174,7 @@
           </button>
 
           <a href="donate.html" class="whitespace-nowrap text-xs font-semibold uppercase tracking-wider bg-[#C84B31] hover:bg-[#A83820] text-white px-4 py-2 rounded transition-colors shadow-sm">
-            Donate Food →
+            Donate Food
           </a>
         </div>
 
@@ -317,7 +314,7 @@
                 Hot meals are kept at safe temperatures (&gt;60°C) and sealed in clean food-grade packaging before being handed over to registered shelters.
               </p>
               <div class="font-mono text-[11px] text-[#1B4332] font-semibold">
-                ✓ Protected by Good Samaritan Law
+                Protected by Good Samaritan Law
               </div>
             </div>
 

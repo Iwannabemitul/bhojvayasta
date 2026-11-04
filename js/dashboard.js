@@ -346,19 +346,19 @@
         if (item.status === 'Delivered') {
           logisticsHtml = `
             <div class="text-[#141E18] font-medium">Delivered by <strong>${item.volunteer || 'Volunteer'}</strong></div>
-            <div class="text-[11px] text-[#525B55] mt-0.5">➔ ${item.targetShelter || 'Shelter'}</div>
+            <div class="text-[11px] text-[#525B55] mt-0.5">To: ${item.targetShelter || 'Shelter'}</div>
           `;
         } else if (item.status === 'In-Transit') {
           logisticsHtml = `
             <div class="text-[#B45309] font-medium">Picked up by <strong>${item.volunteer || 'Courier'}</strong></div>
-            <div class="text-[11px] text-[#525B55] mt-0.5">➔ Going to: ${item.targetShelter || 'Asha Shelter'}</div>
+            <div class="text-[11px] text-[#525B55] mt-0.5">To: ${item.targetShelter || 'Asha Shelter'}</div>
           `;
         } else {
           logisticsHtml = `
             <div class="text-[#1B4332] font-semibold">Waiting for volunteer</div>
             <div class="text-[11px]">
               <a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] hover:underline font-semibold font-mono">
-                Claim on Map →
+                Claim on Map
               </a>
             </div>
           `;
@@ -393,7 +393,7 @@
 
             <td class="py-3.5 px-4">
               <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
-                <span>✓ Safe & Clean</span>
+                <span>Safe & Verified</span>
               </div>
               <div class="text-[10px] font-mono text-[#525B55] mt-0.5">
                 ${item.storageTemp || 'Fresh'}
@@ -472,7 +472,7 @@
                 </div>
                 <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
                   <span class="text-[10px] text-[#525B55]">Safety Check</span>
-                  <div class="font-bold text-[#1B4332]">✓ Passed (${item.storageTemp || 'Fresh'})</div>
+                  <div class="font-bold text-[#1B4332]">Verified (${item.storageTemp || 'Fresh'})</div>
                 </div>
               </div>
 
@@ -480,8 +480,8 @@
                 <div>
                   ${
                     item.status === 'Available'
-                      ? `<a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] font-semibold hover:underline">Claim on Map →</a>`
-                      : `<span class="text-[#525B55]">➔ ${item.targetShelter || 'Shelter'}</span>`
+                      ? `<a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] font-semibold hover:underline">Claim on Map</a>`
+                      : `<span class="text-[#525B55]">To: ${item.targetShelter || 'Shelter'}</span>`
                   }
                 </div>
                 <button type="button" data-action="view-modal" data-id="${item.id}" class="px-3 py-1 text-xs font-medium border border-[#DCD9D0] bg-white rounded text-[#141E18] hover:bg-[#EFECE6]">

@@ -90,29 +90,34 @@
             <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Location:</span>
             <select id="courier-location-select" class="bhoj-input text-xs font-medium text-[#141E18] py-1 px-2.5 bg-white cursor-pointer w-auto">
               <optgroup label="Jalandhar / Phagwara Region">
-                <option value="31.2554,75.7050" selected>📍 LPU Campus / Phagwara Highway</option>
-                <option value="31.3260,75.5762">📍 Model Town / BMC Chowk (Jalandhar)</option>
-                <option value="31.3340,75.5680">📍 Jyoti Chowk / Civil Lines (Jalandhar)</option>
+                <option value="31.2554,75.7050" selected>LPU Campus / Phagwara Highway</option>
+                <option value="31.3260,75.5762">Model Town / BMC Chowk (Jalandhar)</option>
+                <option value="31.3340,75.5680">Jyoti Chowk / Civil Lines (Jalandhar)</option>
               </optgroup>
               <optgroup label="Delhi / NCR Region">
-                <option value="28.6139,77.2090">📍 Connaught Place (Central Delhi)</option>
-                <option value="28.5355,77.3910">📍 Sector 62 (Noida)</option>
-                <option value="28.4950,77.0890">📍 DLF CyberCity (Gurugram)</option>
-                <option value="28.5680,77.2430">📍 Lajpat Nagar (South Delhi)</option>
-                <option value="28.6650,77.2320">📍 Kashmere Gate (North Delhi)</option>
-                <option value="28.7150,77.1210">📍 Rohini Sector 11 (NW Delhi)</option>
+                <option value="28.6139,77.2090">Connaught Place (Central Delhi)</option>
+                <option value="28.5355,77.3910">Sector 62 (Noida)</option>
+                <option value="28.4950,77.0890">DLF CyberCity (Gurugram)</option>
+                <option value="28.5680,77.2430">Lajpat Nagar (South Delhi)</option>
+                <option value="28.6650,77.2320">Kashmere Gate (North Delhi)</option>
+                <option value="28.7150,77.1210">Rohini Sector 11 (NW Delhi)</option>
               </optgroup>
             </select>
           </div>
 
           <button id="btn-use-live-gps" type="button" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm" title="Detect your actual browser GPS location">
-            <span>🎯</span>
-            <span id="btn-use-live-gps-text">Use My Live GPS</span>
+            <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="8" stroke-width="2"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+            </svg>
+            <span id="btn-use-live-gps-text">Use Live GPS</span>
           </button>
 
-          <button id="btn-spawn-near-me" type="button" class="px-2.5 py-1 text-xs font-mono font-bold rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] hover:bg-[#FDE68A] flex items-center gap-1 shrink-0 cursor-pointer transition-colors" title="Dynamically shift 3 active pickups within 1.2 - 3.5 km of your position">
-            <span>⚡</span>
-            <span>Spawn Pickups Near Me</span>
+          <button id="btn-spawn-near-me" type="button" class="px-2.5 py-1 text-xs font-mono font-bold rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] hover:bg-[#FDE68A] flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors" title="Dynamically shift 3 active pickups within 1.2 - 3.5 km of your position">
+            <svg class="w-3.5 h-3.5 text-[#B45309] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Spawn Local Pickups</span>
           </button>
         </div>
 
@@ -144,6 +149,16 @@
 
         <!-- Secondary Filters & Search -->
         <div class="flex flex-wrap items-center gap-2 text-xs">
+          <!-- Operational Proximity Radius Filter -->
+          <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px]">Radius:</span>
+            <select id="feed-radius-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
+              <option value="25">Within 25 km</option>
+              <option value="50" selected>Within 50 km</option>
+              <option value="all">All Locations</option>
+            </select>
+          </div>
+
           <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
             <span class="text-[#525B55] font-mono text-[11px]">Type:</span>
             <select id="feed-type-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
@@ -173,12 +188,12 @@
 
     <!-- Mobile / Tablet View Switcher (< 1024px) -->
     <div class="lg:hidden flex items-center bg-[#EFECE6] p-1 rounded border border-[#DCD9D0] mb-4">
-      <button id="btn-toggle-list-view" type="button" class="flex-1 py-2 text-xs font-bold rounded bg-white text-[#141E18] shadow-sm flex items-center justify-center gap-1.5 transition-all">
-        <span>📋</span>
+      <button id="btn-toggle-list-view" type="button" class="flex-1 py-2 text-xs font-bold rounded bg-white text-[#141E18] shadow-sm flex items-center justify-center gap-2 transition-all">
+        <svg class="w-4 h-4 text-[#141E18]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
         <span>Pickup Feed</span>
       </button>
-      <button id="btn-toggle-map-view" type="button" class="flex-1 py-2 text-xs font-bold rounded text-[#525B55] hover:text-[#141E18] flex items-center justify-center gap-1.5 transition-all">
-        <span>🗺️</span>
+      <button id="btn-toggle-map-view" type="button" class="flex-1 py-2 text-xs font-bold rounded text-[#525B55] hover:text-[#141E18] flex items-center justify-center gap-2 transition-all">
+        <svg class="w-4 h-4 text-[#525B55]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
         <span>Interactive Map</span>
       </button>
     </div>
@@ -281,10 +296,10 @@
                 </span>
                 <span id="route-donor-name" class="font-bold text-[#141E18]">Grand Imperial Banquet</span>
               </div>
-              <div class="text-[11px] text-[#525B55] font-mono flex items-center gap-2">
-                <span>To Pickup: <strong id="route-courier-dist" class="text-[#141E18]">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
-                <span>•</span>
-                <span id="route-shelter-dist">To Shelter: 0.0 km</span>
+              <div class="text-[11px] text-[#525B55] font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span class="whitespace-nowrap">To Pickup: <strong id="route-courier-dist" class="text-[#141E18]">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
+                <span class="hidden sm:inline">&bull;</span>
+                <span id="route-shelter-dist" class="whitespace-nowrap">To Shelter: 0.0 km</span>
               </div>
             </div>
 
@@ -363,8 +378,10 @@
   <div id="delivery-celebrate-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
     <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl text-center">
       
-      <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto text-xl font-bold font-mono">
-        ✓
+      <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto">
+        <svg class="w-6 h-6 text-[#1B4332]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+        </svg>
       </div>
 
       <div class="space-y-1">

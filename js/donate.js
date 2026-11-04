@@ -131,7 +131,7 @@
 
         if (gateLockMsg) {
           gateLockMsg.className = 'p-3 rounded bg-[#E8F3EE] border border-[#A3C9B8] text-xs text-[#1B4332] font-mono';
-          gateLockMsg.innerHTML = '✓ <strong>All 3 safety checks passed.</strong> Ready for volunteer pickup.';
+          gateLockMsg.innerHTML = '<strong>All 3 safety checks verified.</strong> Ready for volunteer pickup.';
         }
       } else {
         btnSubmit.disabled = true;

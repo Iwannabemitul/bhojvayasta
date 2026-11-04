@@ -228,84 +228,68 @@ body {
 }
 
 /* ==========================================================================
-   6. Map Marker Pins & Urgency Rings
+   6. Precision SVG Map Pins & Anchors (Zero Drift at Any Zoom)
    ========================================================================== */
-.bhoj-pin-wrapper {
+.bhoj-svg-pin-wrapper {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.bhoj-pin-body {
-  width: 28px;
-  height: 28px;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(20, 30, 24, 0.25);
-  z-index: 2;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(20, 30, 24, 0.28));
   transition: transform 0.15s ease;
 }
 
-.bhoj-pin-wrapper:hover .bhoj-pin-body {
-  transform: rotate(-45deg) scale(1.15);
+.bhoj-svg-pin-wrapper:hover {
+  transform: translateY(-2px) scale(1.12);
+  z-index: 1000 !important;
 }
 
-.bhoj-pin-icon {
-  transform: rotate(45deg);
-  width: 14px;
-  height: 14px;
+.bhoj-svg-pin-wrapper.active-route-pin {
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px rgba(200, 75, 49, 0.65));
+  z-index: 1100 !important;
+}
+
+/* Selected Pin Floating Label (Only visible on active selected route pin) */
+.bhoj-active-pin-badge {
+  position: absolute;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #141E18;
   color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 1200;
 }
 
-.pin-available .bhoj-pin-body {
-  background: var(--color-botanical);
-  border: 2px solid #FFFFFF;
-}
-
-.pin-intransit .bhoj-pin-body {
-  background: var(--color-ochre);
-  border: 2px solid #FFFFFF;
-}
-
-.pin-delivered .bhoj-pin-body {
-  background: var(--color-ink-muted);
-  border: 2px solid #FFFFFF;
-}
-
-.pin-shelter .bhoj-pin-body {
-  background: #0284C7;
-  border: 2px solid #FFFFFF;
-}
-
-.pin-urgent .bhoj-pin-body {
-  background: var(--color-terracotta);
-  border: 2px solid #FFFFFF;
-}
-
-/* Courier Specific Precision Marker Body & Compass */
-.bhoj-courier-pin-body {
+/* Circular Courier Beacon */
+.bhoj-courier-beacon {
+  position: relative;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #1d4ed8;
+  background: #1D4ED8;
   border: 2.5px solid #FFFFFF;
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.35);
-  z-index: 5;
-  position: relative;
-  transition: transform 0.2s ease;
+  cursor: grab;
 }
 
-.bhoj-pin-wrapper:hover .bhoj-courier-pin-body {
-  transform: scale(1.15);
+.bhoj-courier-beacon:active {
+  cursor: grabbing;
 }
 
 /* Pulsing Radar Ring for Active Courier */
@@ -317,7 +301,7 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid #1d4ed8;
+  border: 2px solid #1D4ED8;
   background-color: rgba(29, 78, 216, 0.2);
   animation: courierRadar 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   pointer-events: none;
@@ -326,55 +310,28 @@ body {
 
 @keyframes courierRadar {
   0% {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     opacity: 0.95;
   }
   100% {
-    width: 68px;
-    height: 68px;
+    width: 64px;
+    height: 64px;
     opacity: 0;
   }
-}
-
-/* Floating Mini Badge above Map Markers */
-.bhoj-pin-badge {
-  position: absolute;
-  bottom: 34px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #FFFFFF;
-  border: 1px solid var(--color-border-hairline);
-  border-radius: 4px;
-  padding: 1px 5px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--color-ink-primary);
-  white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(20, 30, 24, 0.12);
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* Dimmed State for Inactive Markers During Inspection Mode */
-.marker-dimmed {
-  opacity: 0.35 !important;
-  filter: grayscale(40%) !important;
-  transition: opacity 0.25s ease, filter 0.25s ease;
 }
 
 /* Pulsing Ripple for Urgent Food */
 .urgent-pulse-ring {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 14px;
+  left: 15px;
   transform: translate(-50%, -50%);
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 2px solid var(--color-terracotta);
-  background-color: rgba(200, 75, 49, 0.18);
+  border: 2px solid #DC2626;
+  background-color: rgba(220, 38, 38, 0.2);
   animation: urgentPulse 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   pointer-events: none;
   z-index: 1;
@@ -382,13 +339,13 @@ body {
 
 @keyframes urgentPulse {
   0% {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
     opacity: 0.9;
   }
   100% {
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
     opacity: 0;
   }
 }

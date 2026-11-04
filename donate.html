@@ -333,16 +333,19 @@
                     Quick Region Presets or Click on Map:
                   </div>
                   <button type="button" id="btn-donor-gps" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shadow-sm">
-                    <span>🎯</span>
-                    <span id="btn-donor-gps-text">Use My Current GPS Location</span>
+                    <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="8" stroke-width="2"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+                    </svg>
+                    <span id="btn-donor-gps-text">Use Live GPS Location</span>
                   </button>
                 </div>
                 <div class="flex flex-wrap gap-2" id="location-presets">
                   <button type="button" data-lat="31.2554" data-lng="75.7050" data-addr="GT Road, Near LPU Main Gate, Phagwara-Jalandhar Highway" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
-                    📍 LPU Campus / Phagwara
+                    LPU Campus / Phagwara
                   </button>
                   <button type="button" data-lat="31.3185" data-lng="75.5842" data-addr="EH-178, Civil Lines, BMC Chowk, Jalandhar, Punjab" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
-                    📍 Jalandhar BMC Chowk
+                    Jalandhar BMC Chowk
                   </button>
                   <button type="button" data-lat="28.6280" data-lng="77.2190" data-addr="Barakhamba Road, Connaught Place, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
                     CP Hub (Central Delhi)
@@ -531,7 +534,10 @@
                 </div>
 
                 <div class="pt-2 flex items-center justify-between text-[11px] font-mono text-[#525B55]">
-                  <span>✓ Safety Verified</span>
+                  <span class="flex items-center gap-1 text-[#1B4332] font-semibold">
+                    <svg class="w-3.5 h-3.5 text-[#1B4332]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    Safety Verified
+                  </span>
                   <span class="font-semibold text-[#1B4332]">Ready for Pickup</span>
                 </div>
               </div>
@@ -548,7 +554,7 @@
                   Recent Donations
                 </h3>
                 <a href="volunteer.html" class="font-mono text-xs text-[#C84B31] hover:underline">
-                  View Map →
+                  View Courier Map
                 </a>
               </div>
 
@@ -582,8 +588,10 @@
   <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
     <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl text-center">
       
-      <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto text-xl font-bold font-mono">
-        ✓
+      <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto">
+        <svg class="w-6 h-6 text-[#1B4332]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+        </svg>
       </div>
 
       <div class="space-y-1">

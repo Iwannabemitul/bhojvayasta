@@ -4,6 +4,7 @@
  * 
  * Theme: Warm Editorial & Civic Logistics
  * Preserves 100% of Haversine distance math, BhojStore state & BroadcastChannel sync
+ * Precision-anchored SVG pins with zero zoom drift and operational radius gating
  */
 
 (function (global) {
@@ -22,6 +23,7 @@
   let currentTypeFilter = 'all';
   let currentSortBy = 'nearest';
   let currentSearchQuery = '';
+  let currentRadiusFilter = '50'; // Default: 50 km local operations radius
   let activeSelectedDispatchId = null;
 
   // ==========================================
@@ -48,7 +50,90 @@
   }
 
   // ==========================================
-  // 2. Map Initialization (Key-Free OpenStreetMap)
+  // 2. High-Contrast Precision SVG Pin Generators
+  // Tip is mathematically locked at bottom-center (15, 37) of 30x38 viewBox
+  // ==========================================
+  function getDonorSvgPin(status, foodType, isUrgent, isSelected, servings) {
+    let pinColor = '#1B4332'; // Botanical forest green
+    let innerIcon = `
+      <g transform="translate(9, 8)" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M2 3v4a2 2 0 0 0 4 0V3M4 9v3M10 3v9M7 3h3" />
+      </g>
+    `;
+
+    if (status === 'Available') {
+      if (isUrgent) {
+        pinColor = '#DC2626'; // High-alert crimson
+        innerIcon = `
+          <g transform="translate(9, 8)" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <circle cx="6" cy="6" r="5" />
+            <polyline points="6 3.5 6 6 8 7.5" />
+          </g>
+        `;
+      } else if (foodType && foodType.toLowerCase().includes('raw')) {
+        pinColor = '#B45309'; // Warm amber ochre for raw produce
+        innerIcon = `
+          <g transform="translate(9, 8)" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M6 2c-1.5 0-3 1.5-3 3 0 3 4 6 4 6s4-3 4-6c0-1.5-1.5-3-3-3-1 0-1.5.5-2 1-.5-.5-1-1-2-1z" />
+            <path d="M6 2V0.5" />
+          </g>
+        `;
+      } else {
+        pinColor = '#1B4332'; // Botanical forest green
+      }
+    } else if (status === 'In-Transit') {
+      pinColor = '#2563EB'; // Royal logistic blue
+      innerIcon = `
+        <g transform="translate(8.5, 8.5)" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <rect x="1" y="2" width="7" height="6" rx="1" />
+          <path d="M8 5h3l2 2v2h-5z" />
+          <circle cx="3.5" cy="9.5" r="1.2" />
+          <circle cx="10.5" cy="9.5" r="1.2" />
+        </g>
+      `;
+    } else {
+      pinColor = '#475569'; // Muted slate charcoal for delivered
+      innerIcon = `
+        <g transform="translate(9, 8)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <polyline points="2.5 6 5 8.5 9.5 3.5" />
+        </g>
+      `;
+    }
+
+    const pulseRingHtml = (status === 'Available' && isUrgent) ? `<div class="urgent-pulse-ring"></div>` : '';
+    const activeBadgeHtml = isSelected ? `<div class="bhoj-active-pin-badge">${servings} serv</div>` : '';
+    const activeClass = isSelected ? 'active-route-pin' : '';
+
+    return `
+      <div class="bhoj-svg-pin-wrapper ${activeClass}">
+        ${pulseRingHtml}
+        ${activeBadgeHtml}
+        <svg width="30" height="38" viewBox="0 0 30 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 37C15 37 28 24.5 28 14C28 6.82 22.18 1 15 1C7.82 1 2 6.82 2 14C2 24.5 15 37 15 37Z" fill="${pinColor}" stroke="#FFFFFF" stroke-width="1.8"/>
+          <circle cx="15" cy="14" r="8.5" fill="rgba(255,255,255,0.2)"/>
+          ${innerIcon}
+        </svg>
+      </div>
+    `;
+  }
+
+  function getShelterSvgPin() {
+    return `
+      <div class="bhoj-svg-pin-wrapper">
+        <svg width="30" height="38" viewBox="0 0 30 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 37C15 37 28 24.5 28 14C28 6.82 22.18 1 15 1C7.82 1 2 6.82 2 14C2 24.5 15 37 15 37Z" fill="#0284C7" stroke="#FFFFFF" stroke-width="1.8"/>
+          <circle cx="15" cy="14" r="8.5" fill="rgba(255,255,255,0.2)"/>
+          <g transform="translate(9.5, 8.5)" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M1 10V5l4.5-3.5L10 5v5"/>
+            <path d="M3.5 10V6.5h4V10"/>
+          </g>
+        </svg>
+      </div>
+    `;
+  }
+
+  // ==========================================
+  // 3. Map Initialization (Key-Free Enterprise CDN)
   // ==========================================
   function initReliefMap() {
     const mapEl = document.getElementById('relief-map');
@@ -57,12 +142,12 @@
     try {
       reliefMap = L.map('relief-map', {
         center: [courierCoords.lat, courierCoords.lng],
-        zoom: 11,
+        zoom: 12,
         zoomControl: true,
         scrollWheelZoom: true
       });
 
-      // Reliable Key-Free Map Tiles: Esri World Street Map (Enterprise CDN, No API key, No 403 blocks on file:/// or localhost)
+      // Key-Free Enterprise CDN: Esri World Street Map (No 403 blocks on file:/// or localhost)
       const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &bull; Map &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 18
@@ -70,8 +155,8 @@
 
       primaryTiles.on('tileerror', function (err) {
         if (err && err.tile && err.coords) {
-          // Automatic fallback to OpenStreetMap France mirror
-          err.tile.src = `https://a.tile.openstreetmap.fr/osmfr/${err.coords.z}/${err.coords.x}/${err.coords.y}.png`;
+          // Automatic mirror fallback
+          err.tile.src = `https://tile.openstreetmap.de/${err.coords.z}/${err.coords.x}/${err.coords.y}.png`;
         }
       });
 
@@ -91,20 +176,18 @@
   function createCourierMarker() {
     if (!reliefMap) return;
 
-    // Precision Anchored SVG Navigation Arrow with Pulsing Radar Ring
+    // Circular Radar Beacon for Courier (Center-anchored at 16, 16)
     const courierIcon = L.divIcon({
-      className: 'bhoj-pin-wrapper',
+      className: 'bhoj-courier-beacon',
       html: `
         <div class="courier-radar-ring"></div>
-        <div class="bhoj-courier-pin-body">
-          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
-          </svg>
-        </div>
+        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+        </svg>
       `,
-      iconSize: [36, 36],
-      iconAnchor: [18, 18],
-      popupAnchor: [0, -18]
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      popupAnchor: [0, -16]
     });
 
     courierMarker = L.marker([courierCoords.lat, courierCoords.lng], {
@@ -115,8 +198,8 @@
 
     courierMarker.bindPopup(`
       <div class="text-xs space-y-1">
-        <strong class="text-[#1d4ed8]">Your Courier Position</strong>
-        <p class="text-[#525B55]">Drag this pin anywhere or click "Use My Live GPS" to track local relief logistics.</p>
+        <strong class="text-[#1D4ED8] font-bold">Your Courier Position</strong>
+        <p class="text-[#525B55]">Drag this pin or click "Use Live GPS" to track local relief dispatches.</p>
       </div>
     `);
 
@@ -162,19 +245,21 @@
     shelterMarkerList.forEach((m) => reliefMap.removeLayer(m));
     shelterMarkerList = [];
 
-    shelters.forEach((shelter) => {
+    // Filter shelters within relevant regional range (100 km) to prevent distant clutter
+    const relevantShelters = shelters.filter((shelter) => {
+      const dist = calculateDistanceKm(courierCoords.lat, courierCoords.lng, shelter.lat, shelter.lng);
+      return currentRadiusFilter === 'all' || dist <= 85;
+    });
+
+    const displayShelters = relevantShelters.length > 0 ? relevantShelters : shelters;
+
+    displayShelters.forEach((shelter) => {
       const shelterIcon = L.divIcon({
-        className: 'bhoj-pin-wrapper',
-        html: `
-          <div class="bhoj-pin-body pin-shelter">
-            <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-          </div>
-        `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -18]
+        className: 'bhoj-pin-divicon',
+        html: getShelterSvgPin(),
+        iconSize: [30, 38],
+        iconAnchor: [15, 37],
+        popupAnchor: [0, -37]
       });
 
       const marker = L.marker([shelter.lat, shelter.lng], { icon: shelterIcon }).addTo(reliefMap);
@@ -209,7 +294,14 @@
     const dispatches = global.BhojStore.getDispatches();
 
     dispatches.forEach((item) => {
-      // 1. Context-Aware Filter Gate: Only show pins matching active status & food type filters
+      const distanceToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
+
+      // Operational Proximity Gate (hides distant cross-state items e.g. Delhi to Jalandhar)
+      if (currentRadiusFilter !== 'all' && distanceToDonor > parseFloat(currentRadiusFilter)) {
+        return;
+      }
+
+      // Filter Gate: Status and Food Type
       if (currentStatusFilter !== 'all' && item.status.toLowerCase() !== currentStatusFilter.toLowerCase()) {
         return;
       }
@@ -219,40 +311,15 @@
 
       const expiry = global.BhojStore.getExpiryStatus(item);
       const isUrgent = expiry.isUrgent && item.status === 'Available';
+      const isSelected = item.id === activeSelectedDispatchId;
 
-      let pinThemeClass = 'pin-available';
-      let pulseRingHtml = '';
-
-      if (item.status === 'Available') {
-        if (isUrgent) {
-          pinThemeClass = 'pin-urgent';
-          pulseRingHtml = `<div class="urgent-pulse-ring"></div>`;
-        } else {
-          pinThemeClass = 'pin-available';
-        }
-      } else if (item.status === 'In-Transit') {
-        pinThemeClass = 'pin-intransit';
-      } else {
-        pinThemeClass = 'pin-delivered';
-      }
-
-      const distanceToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
-
-      // Precision Centered DivIcon with Floating Information Mini-Badge
+      // High-Contrast SVG Teardrop Pin (Tip mathematically anchored at 15, 37)
       const donorIcon = L.divIcon({
-        className: 'bhoj-pin-wrapper',
-        html: `
-          ${pulseRingHtml}
-          <div class="bhoj-pin-badge">${item.servings} serv • ${distanceToDonor} km</div>
-          <div class="bhoj-pin-body ${pinThemeClass}">
-            <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          </div>
-        `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -18]
+        className: 'bhoj-pin-divicon',
+        html: getDonorSvgPin(item.status, item.foodType, isUrgent, isSelected, item.servings),
+        iconSize: [30, 38],
+        iconAnchor: [15, 37],
+        popupAnchor: [0, -37]
       });
 
       const marker = L.marker([item.lat, item.lng], { icon: donorIcon }).addTo(reliefMap);
@@ -297,13 +364,12 @@
       `);
 
       marker.on('click', function () {
-        focusOnDispatch(item.id, false);
+        focusOnDispatch(item.id, false, true);
       });
 
       donorMarkerMap.set(item.id, marker);
     });
 
-    // Update the dynamic legend to reflect current filter counts and active status
     if (activeSelectedDispatchId) {
       const selectedItem = global.BhojStore.getDispatchById(activeSelectedDispatchId);
       if (selectedItem) {
@@ -317,7 +383,7 @@
   }
 
   // ==========================================
-  // 3. Routing (OSRM Real Street-Level Routing)
+  // 4. Routing (OSRM Real Street-Level Routing)
   // ==========================================
   async function drawRoute(dispatch) {
     if (!reliefMap || !routeLayerGroup || !global.BhojStore) return;
@@ -331,6 +397,7 @@
       targetShelter = shelters.find((s) => s.name.toLowerCase().includes(dispatch.targetShelter.toLowerCase().substring(0, 6)));
     }
     if (!targetShelter) {
+      // Find nearest shelter geographically relative to the food donor
       let minShelterDist = Infinity;
       shelters.forEach((s) => {
         const d = calculateDistanceKm(dispatch.lat, dispatch.lng, s.lat, s.lng);
@@ -393,7 +460,7 @@
 
               // Leg 1: Solid Royal Blue along real streets
               const leg1Line = L.polyline(leg1Coords.length > 1 ? leg1Coords : [courierPoint, donorPoint], {
-                color: '#1d4ed8',
+                color: '#1D4ED8',
                 weight: 4,
                 opacity: 0.95,
                 lineCap: 'round',
@@ -411,7 +478,7 @@
               }).addTo(routeLayerGroup);
 
               const group = L.featureGroup([leg1Line, leg2Line]);
-              reliefMap.fitBounds(group.getBounds(), { padding: [65, 65], maxZoom: 15 });
+              reliefMap.fitBounds(group.getBounds(), { padding: [55, 55], maxZoom: 15 });
               osrmSucceeded = true;
             }
           }
@@ -424,7 +491,7 @@
     if (!osrmSucceeded) {
       // Fallback: Straight polylines
       const leg1Line = L.polyline([courierPoint, donorPoint], {
-        color: '#1d4ed8',
+        color: '#1D4ED8',
         weight: 3.5,
         opacity: 0.9,
         dashArray: '6, 6'
@@ -438,7 +505,7 @@
       }).addTo(routeLayerGroup);
 
       const group = L.featureGroup([leg1Line, leg2Line]);
-      reliefMap.fitBounds(group.getBounds(), { padding: [65, 65], maxZoom: 14 });
+      reliefMap.fitBounds(group.getBounds(), { padding: [55, 55], maxZoom: 14 });
     }
 
     const overlay = document.getElementById('route-summary-overlay');
@@ -446,7 +513,7 @@
       document.getElementById('route-donor-name').textContent = dispatch.donorName;
       document.getElementById('route-courier-dist').textContent = `${distCourierToDonor} km`;
       document.getElementById('route-courier-time').textContent = `${timeCourierToDonor} mins`;
-      document.getElementById('route-shelter-dist').textContent = `Donor ➔ ${targetShelter.name}: ${distDonorToShelter} km`;
+      document.getElementById('route-shelter-dist').textContent = `Donor to ${targetShelter.name}: ${distDonorToShelter} km`;
 
       const actionBtn = document.getElementById('btn-route-action');
       if (actionBtn) {
@@ -473,7 +540,7 @@
   }
 
   // ==========================================
-  // 3b. Context-Aware Dynamic Map Legend
+  // 5. Context-Aware Dynamic Map Legend
   // ==========================================
   function updateDynamicLegend(selectedDispatch = null, targetShelter = null, distLeg1 = 0, timeLeg1 = 0, distLeg2 = 0) {
     const legendContent = document.getElementById('legend-content');
@@ -482,9 +549,15 @@
     const dispatches = global.BhojStore.getDispatches();
     const shelters = global.BhojStore.getShelters();
 
-    const countAvailable = dispatches.filter((d) => d.status === 'Available').length;
-    const countInTransit = dispatches.filter((d) => d.status === 'In-Transit').length;
-    const countDelivered = dispatches.filter((d) => d.status === 'Delivered').length;
+    // Calculate counts respecting proximity radius
+    const nearbyDispatches = dispatches.filter((d) => {
+      const dist = calculateDistanceKm(courierCoords.lat, courierCoords.lng, d.lat, d.lng);
+      return currentRadiusFilter === 'all' || dist <= parseFloat(currentRadiusFilter);
+    });
+
+    const countAvailable = nearbyDispatches.filter((d) => d.status === 'Available').length;
+    const countInTransit = nearbyDispatches.filter((d) => d.status === 'In-Transit').length;
+    const countDelivered = nearbyDispatches.filter((d) => d.status === 'Delivered').length;
 
     if (selectedDispatch) {
       // ACTIVE ROUTE INSPECTION MODE
@@ -496,7 +569,7 @@
               Route Inspection
             </span>
             <button type="button" onclick="window.BhojClearRouteSelection()" class="text-[10px] text-[#C84B31] hover:underline font-bold cursor-pointer">
-              ✕ Clear / Show All
+              Clear Selection
             </button>
           </div>
 
@@ -515,16 +588,16 @@
 
           <div class="space-y-1.5 text-[10px]">
             <div class="flex items-center justify-between">
-              <span class="flex items-center gap-1 text-[#525B55]">
-                <span class="w-2 h-2 rounded-full bg-[#1d4ed8]"></span>
-                Courier ➔ Donor:
+              <span class="flex items-center gap-1.5 text-[#525B55]">
+                <span class="w-2 h-2 rounded-full bg-[#1D4ED8]"></span>
+                Courier to Donor:
               </span>
-              <strong class="text-[#1d4ed8] font-mono">${distLeg1} km (${timeLeg1}m)</strong>
+              <strong class="text-[#1D4ED8] font-mono">${distLeg1} km (${timeLeg1}m)</strong>
             </div>
             <div class="flex items-center justify-between">
-              <span class="flex items-center gap-1 text-[#525B55] truncate max-w-[170px]" title="${targetShelter ? targetShelter.name : 'Shelter'}">
+              <span class="flex items-center gap-1.5 text-[#525B55] truncate max-w-[170px]" title="${targetShelter ? targetShelter.name : 'Shelter'}">
                 <span class="w-2 h-2 rounded-full bg-[#C84B31]"></span>
-                Donor ➔ ${targetShelter ? targetShelter.name : 'Shelter'}:
+                Donor to ${targetShelter ? targetShelter.name : 'Shelter'}:
               </span>
               <strong class="text-[#C84B31] font-mono shrink-0">${distLeg2} km</strong>
             </div>
@@ -532,31 +605,13 @@
         </div>
       `;
 
-      // Dim all non-selected donor markers on the map
-      donorMarkerMap.forEach((marker, id) => {
-        const el = marker.getElement();
-        if (el) {
-          if (id === selectedDispatch.id) {
-            el.classList.remove('marker-dimmed');
-          } else {
-            el.classList.add('marker-dimmed');
-          }
-        }
-      });
-
     } else {
       // NORMAL FILTER-AWARE MODE
-      // Undim all markers
-      donorMarkerMap.forEach((marker) => {
-        const el = marker.getElement();
-        if (el) el.classList.remove('marker-dimmed');
-      });
-
       let filterLabel = 'VIEWING: ALL';
-      if (currentStatusFilter === 'Available') filterLabel = `VIEWING: AVAILABLE (${countAvailable})`;
-      else if (currentStatusFilter === 'In-Transit') filterLabel = `VIEWING: ON THE WAY (${countInTransit})`;
-      else if (currentStatusFilter === 'Delivered') filterLabel = `VIEWING: DELIVERED (${countDelivered})`;
-      else if (currentTypeFilter !== 'all') filterLabel = `VIEWING: ${currentTypeFilter.toUpperCase()}`;
+      if (currentStatusFilter === 'Available') filterLabel = `AVAILABLE (${countAvailable})`;
+      else if (currentStatusFilter === 'In-Transit') filterLabel = `ON THE WAY (${countInTransit})`;
+      else if (currentStatusFilter === 'Delivered') filterLabel = `DELIVERED (${countDelivered})`;
+      else if (currentTypeFilter !== 'all') filterLabel = `${currentTypeFilter.toUpperCase()}`;
 
       const isAvailableDimmed = currentStatusFilter !== 'all' && currentStatusFilter !== 'Available';
       const isInTransitDimmed = currentStatusFilter !== 'all' && currentStatusFilter !== 'In-Transit';
@@ -572,31 +627,31 @@
         <div class="space-y-1.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#1d4ed8] shrink-0"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-[#1D4ED8] shrink-0"></span>
               <span class="text-[#525B55]">Your Courier Location</span>
             </div>
-            <span class="text-[9px] text-[#1d4ed8] font-bold">Active</span>
+            <span class="text-[9px] text-[#1D4ED8] font-bold">Active</span>
           </div>
-          <div class="flex items-center justify-between ${isAvailableDimmed ? 'opacity-35' : ''}">
+          <div class="flex items-center justify-between ${isAvailableDimmed ? 'opacity-40' : ''}">
             <div class="flex items-center gap-1.5">
               <span class="w-2.5 h-2.5 rounded-full bg-[#1B4332] shrink-0"></span>
               <span class="text-[#525B55]">Available Food</span>
             </div>
             <span class="text-[9px] font-bold text-[#1B4332]">${countAvailable}</span>
           </div>
-          <div class="flex items-center justify-between ${isInTransitDimmed ? 'opacity-35' : ''}">
+          <div class="flex items-center justify-between ${isInTransitDimmed ? 'opacity-40' : ''}">
             <div class="flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#B45309] shrink-0"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-[#2563EB] shrink-0"></span>
               <span class="text-[#525B55]">On the Way</span>
             </div>
-            <span class="text-[9px] font-bold text-[#B45309]">${countInTransit}</span>
+            <span class="text-[9px] font-bold text-[#2563EB]">${countInTransit}</span>
           </div>
-          <div class="flex items-center justify-between ${isDeliveredDimmed ? 'opacity-35' : ''}">
+          <div class="flex items-center justify-between ${isDeliveredDimmed ? 'opacity-40' : ''}">
             <div class="flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#525B55] shrink-0"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-[#475569] shrink-0"></span>
               <span class="text-[#525B55]">Delivered</span>
             </div>
-            <span class="text-[9px] font-bold text-[#525B55]">${countDelivered}</span>
+            <span class="text-[9px] font-bold text-[#475569]">${countDelivered}</span>
           </div>
           <div class="flex items-center justify-between pt-1 border-t border-[#DCD9D0]/60">
             <div class="flex items-center gap-1.5">
@@ -621,12 +676,14 @@
     });
 
     updateDynamicLegend();
+    refreshDonorMarkers();
+
     if (reliefMap) {
       reliefMap.panTo([courierCoords.lat, courierCoords.lng]);
     }
   };
 
-  function focusOnDispatch(id, scrollFeed = true) {
+  function focusOnDispatch(id, scrollFeed = true, openPopup = false) {
     if (!id || !global.BhojStore) return;
 
     activeSelectedDispatchId = id;
@@ -649,8 +706,10 @@
       global.BhojVolunteerSwitchToMap();
     }
 
+    refreshDonorMarkers();
+
     const marker = donorMarkerMap.get(item.id);
-    if (marker && reliefMap) {
+    if (marker && reliefMap && openPopup) {
       marker.openPopup();
     }
 
@@ -668,7 +727,7 @@
   };
 
   // ==========================================
-  // 4. Courier Feed Rendering
+  // 6. Courier Feed Rendering
   // ==========================================
   function renderFeed() {
     if (!global.BhojStore) return;
@@ -680,17 +739,23 @@
 
     if (!feedContainer) return;
 
-    const countAll = dispatches.length;
-    const countAvailable = dispatches.filter((d) => d.status === 'Available').length;
-    const countInTransit = dispatches.filter((d) => d.status === 'In-Transit').length;
-    const countDelivered = dispatches.filter((d) => d.status === 'Delivered').length;
+    // Filter by Proximity Radius first
+    const nearby = dispatches.filter((item) => {
+      const distKm = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
+      return currentRadiusFilter === 'all' || distKm <= parseFloat(currentRadiusFilter);
+    });
+
+    const countAll = nearby.length;
+    const countAvailable = nearby.filter((d) => d.status === 'Available').length;
+    const countInTransit = nearby.filter((d) => d.status === 'In-Transit').length;
+    const countDelivered = nearby.filter((d) => d.status === 'Delivered').length;
 
     document.getElementById('count-status-all').textContent = countAll;
     document.getElementById('count-status-available').textContent = countAvailable;
     document.getElementById('count-status-intransit').textContent = countInTransit;
     document.getElementById('count-status-delivered').textContent = countDelivered;
 
-    let filtered = dispatches.filter((item) => {
+    let filtered = nearby.filter((item) => {
       if (currentStatusFilter !== 'all' && item.status.toLowerCase() !== currentStatusFilter.toLowerCase()) {
         return false;
       }
@@ -762,7 +827,7 @@
               <div>
                 <div class="flex items-center gap-2">
                   <span class="font-mono font-bold text-[#141E18] text-xs">${item.id}</span>
-                  <span class="text-[#DCD9D0]">•</span>
+                  <span class="text-[#DCD9D0]">&bull;</span>
                   ${typeBadge}
                   ${expiry.isUrgent && item.status === 'Available'
                     ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF2F2] text-[#C84B31] border border-[#FCA5A5]">Urgent (&lt;2h)</span>`
@@ -772,7 +837,7 @@
                   ${item.donorName}
                 </h3>
                 <div class="text-xs text-[#525B55] truncate max-w-xs mt-0.5">
-                  ${item.address || 'Delhi/NCR'}
+                  ${item.address || 'Local Region'}
                 </div>
               </div>
 
@@ -801,13 +866,14 @@
 
               <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
                 <div class="text-[10px] text-[#525B55]">Distance</div>
-                <div class="font-bold text-[#1d4ed8]">${distKm} km</div>
+                <div class="font-bold text-[#1D4ED8]">${distKm} km</div>
                 <div class="text-[10px] text-[#525B55]">~${travelMins} mins</div>
               </div>
             </div>
 
-            <div class="text-[11px] font-mono text-[#1B4332] bg-[#E8F3EE] border border-[#A3C9B8] px-2 py-1 rounded">
-              ✓ Temperature Checked • ✓ Clean Food-Grade Packaging • ✓ Fresh
+            <div class="text-[11px] font-mono text-[#1B4332] bg-[#E8F3EE] border border-[#A3C9B8] px-2.5 py-1 rounded flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-[#1B4332] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Temperature Checked &bull; Clean Packaging &bull; Verified Fresh</span>
             </div>
 
             <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()">
@@ -822,13 +888,13 @@
                     </button>`
                   : item.status === 'In-Transit'
                   ? `<div class="flex items-center gap-2">
-                      <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">➔ ${item.targetShelter || 'Shelter'}</span>
+                      <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">To: ${item.targetShelter || 'Shelter'}</span>
                       <button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
                         Mark as Delivered
                       </button>
                     </div>`
                   : `<span class="text-xs font-mono font-bold text-[#525B55]">
-                      ✓ Delivered to Shelter
+                      Delivered to Shelter
                     </span>`
               }
             </div>
@@ -840,7 +906,7 @@
   }
 
   // ==========================================
-  // 5. Shelter Assignment & Acceptance Modal
+  // 7. Shelter Assignment & Acceptance Modal
   // ==========================================
   let pendingAcceptDispatchId = null;
 
@@ -862,10 +928,21 @@
     const shelters = global.BhojStore.getShelters();
     const optionsContainer = document.getElementById('shelter-options-list');
 
+    // Filter shelters by proximity to the donor to avoid showing cross-state shelters
+    const localShelters = shelters
+      .map((s) => ({
+        ...s,
+        distFromDonor: calculateDistanceKm(dispatch.lat, dispatch.lng, s.lat, s.lng)
+      }))
+      .sort((a, b) => a.distFromDonor - b.distFromDonor);
+
+    // Pick top shelters within 60 km of donor (or top 3 closest if all are further)
+    const filteredShelters = localShelters.filter((s) => s.distFromDonor <= 60);
+    const sheltersToShow = filteredShelters.length > 0 ? filteredShelters : localShelters.slice(0, 3);
+
     if (optionsContainer) {
-      optionsContainer.innerHTML = shelters
+      optionsContainer.innerHTML = sheltersToShow
         .map((s, idx) => {
-          const distFromDonor = calculateDistanceKm(dispatch.lat, dispatch.lng, s.lat, s.lng);
           const isNearest = idx === 0;
 
           return `
@@ -874,12 +951,12 @@
               <div class="flex-1 space-y-0.5 text-xs">
                 <div class="flex items-center justify-between">
                   <span class="font-bold text-[#141E18]">${s.name}</span>
-                  <span class="font-mono text-[#1B4332] font-bold">${distFromDonor} km away</span>
+                  <span class="font-mono text-[#1B4332] font-bold">${s.distFromDonor} km away</span>
                 </div>
                 <p class="text-[11px] text-[#525B55]">${s.address}</p>
                 <div class="flex items-center gap-3 pt-1 text-[10px] font-mono text-[#525B55]">
                   <span>Capacity: <strong class="text-[#141E18]">${s.currentOccupancy}/${s.mealDemand}</strong></span>
-                  <span>•</span>
+                  <span>&bull;</span>
                   <span>Contact: ${s.contactPerson}</span>
                   ${isNearest ? `<span class="ml-auto px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-bold">Nearest Shelter</span>` : ''}
                 </div>
@@ -912,7 +989,7 @@
         if (!pendingAcceptDispatchId || !global.BhojStore) return;
 
         const selectedRadio = document.querySelector('input[name="targetShelter"]:checked');
-        const chosenShelter = selectedRadio ? selectedRadio.value : 'Asha Child Care Shelter';
+        const chosenShelter = selectedRadio ? selectedRadio.value : 'Community Shelter';
 
         try {
           const updated = global.BhojStore.updateStatus(
@@ -925,7 +1002,7 @@
           close();
 
           if (global.BhojToast) {
-            global.BhojToast.success(`Pickup confirmed! Route shown to ${chosenShelter}`);
+            global.BhojToast.success(`Pickup confirmed! Route mapped to ${chosenShelter}`);
           }
 
           renderFeed();
@@ -941,7 +1018,7 @@
   }
 
   // ==========================================
-  // 6. Complete Delivery Workflow
+  // 8. Complete Delivery Workflow
   // ==========================================
   function completeDelivery(id) {
     if (!id || !global.BhojStore) return;
@@ -954,7 +1031,7 @@
         id,
         'Delivered',
         volunteerName,
-        dispatch.targetShelter || 'Asha Child Care Shelter'
+        dispatch.targetShelter || 'Community Shelter'
       );
 
       const modal = document.getElementById('delivery-celebrate-modal');
@@ -996,7 +1073,7 @@
   }
 
   // ==========================================
-  // 7. Toolbar & URL Query Handlers
+  // 9. Toolbar & URL Query Handlers
   // ==========================================
   function setupToolbarListeners() {
     // Mobile / Tablet Segregated View Switcher (< 1024px)
@@ -1082,18 +1159,40 @@
           }
 
           const selectedOption = this.options[this.selectedIndex];
-          const optText = selectedOption ? selectedOption.text.replace('📍 ', '') : 'Custom Location';
+          const optText = selectedOption ? selectedOption.text : 'Custom Location';
           const gpsCoordsText = document.getElementById('gps-coords-text');
           if (gpsCoordsText) {
             gpsCoordsText.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)} • ${optText}`;
           }
 
+          plotShelterHubs();
           renderFeed();
           refreshDonorMarkers();
 
           if (activeSelectedDispatchId && global.BhojStore) {
             const item = global.BhojStore.getDispatchById(activeSelectedDispatchId);
             if (item) drawRoute(item);
+          }
+        }
+      });
+    }
+
+    // Operational Proximity Radius Filter
+    const radiusFilter = document.getElementById('feed-radius-filter');
+    if (radiusFilter) {
+      radiusFilter.addEventListener('change', function () {
+        currentRadiusFilter = this.value;
+        plotShelterHubs();
+        renderFeed();
+        refreshDonorMarkers();
+
+        if (activeSelectedDispatchId && global.BhojStore) {
+          const item = global.BhojStore.getDispatchById(activeSelectedDispatchId);
+          if (item) {
+            const dist = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
+            if (currentRadiusFilter !== 'all' && dist > parseFloat(currentRadiusFilter)) {
+              global.BhojClearRouteSelection();
+            }
           }
         }
       });
@@ -1116,7 +1215,7 @@
 
         navigator.geolocation.getCurrentPosition(
           async function (pos) {
-            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use My Live GPS';
+            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use Live GPS';
             liveGpsBtn.disabled = false;
 
             const lat = pos.coords.latitude;
@@ -1137,8 +1236,8 @@
             if (reliefMap) {
               gpsAccuracyCircle = L.circle([lat, lng], {
                 radius: accuracy,
-                color: '#1d4ed8',
-                fillColor: '#3b82f6',
+                color: '#1D4ED8',
+                fillColor: '#3B82F6',
                 fillOpacity: 0.12,
                 weight: 1.5,
                 dashArray: '4, 4'
@@ -1164,6 +1263,7 @@
               gpsCoordsText.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)} • ${areaName} (±${accuracy}m)`;
             }
 
+            plotShelterHubs();
             renderFeed();
             refreshDonorMarkers();
 
@@ -1177,7 +1277,7 @@
             }
           },
           function (err) {
-            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use My Live GPS';
+            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use Live GPS';
             liveGpsBtn.disabled = false;
             console.warn('[BhojVolunteer] Geolocation error:', err);
             if (global.BhojToast) {
@@ -1196,11 +1296,12 @@
         if (!global.BhojStore || typeof global.BhojStore.spawnPickupsNear !== 'function') return;
 
         global.BhojStore.spawnPickupsNear(courierCoords.lat, courierCoords.lng);
+        plotShelterHubs();
         renderFeed();
         refreshDonorMarkers();
 
         if (global.BhojToast) {
-          global.BhojToast.success('⚡ Generated 3 active pickups within 1.2 – 3.5 km of your position!');
+          global.BhojToast.success('Generated 3 active pickups within 1.2 to 3.5 km of your position');
         }
       });
     }
@@ -1277,7 +1378,7 @@
       if (event.type === 'DISPATCH_ADDED' && event.payload) {
         if (global.BhojToast) {
           global.BhojToast.warning(
-            `🔔 New Pickup: ${event.payload.donorName} (${event.payload.servings} portions). Pin added to map.`
+            `New Pickup: ${event.payload.donorName} (${event.payload.servings} portions). Pin added to map.`
           );
         }
       }
