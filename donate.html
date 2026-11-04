@@ -107,363 +107,467 @@
         
         <!-- ====================================================================
              LEFT COLUMN: SURPLUS FOOD DISPATCH REPORT FORM (Col-span-7)
+             Interactive 4-Step Tabbed Wizard
              ==================================================================== -->
         <div class="lg:col-span-7 space-y-6">
           
-          <form id="dispatch-form" class="card-surface p-6 sm:p-8 rounded space-y-8" novalidate>
+          <div class="card-surface rounded overflow-hidden shadow-sm border border-[#DCD9D0]">
             
-            <!-- SECTION 1: ESTABLISHMENT DETAILS -->
-            <div class="space-y-4">
-              <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h2 class="font-display text-base font-bold text-[#141E18]">1. Your Details</h2>
-                <span class="font-mono text-xs text-[#525B55]">Step 1 of 4</span>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="sm:col-span-2">
-                  <label for="donor-name" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Kitchen or Organization Name <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <input id="donor-name" type="text" required placeholder="e.g. Grand Imperial Banquet, TechSpace Canteen" class="bhoj-input text-sm">
-                  <span class="text-[11px] text-[#525B55] mt-1 block">Name of the hotel, banquet hall, office, or store</span>
-                </div>
-
-                <div>
-                  <label for="donor-category" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Type of Place <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <select id="donor-category" class="bhoj-input text-sm bg-white">
-                    <option value="Wedding Banquet">Wedding Banquet Hall</option>
-                    <option value="Corporate Dining Hall">Office Cafeteria / Canteen</option>
-                    <option value="Supermarket / Grocery">Supermarket / Grocery Store</option>
-                    <option value="Hotel / Restaurant">Hotel / Restaurant Buffet</option>
-                    <option value="Commercial Kitchen">Cloud Kitchen</option>
-                    <option value="Wholesale Depot">Wholesale Market</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label for="diet-type" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Food Category <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <select id="diet-type" class="bhoj-input text-sm bg-white">
-                    <option value="Vegetarian">Pure Vegetarian</option>
-                    <option value="Vegan">Vegan (No Dairy)</option>
-                    <option value="Non-Vegetarian">Non-Vegetarian</option>
-                    <option value="Jain Friendly">Jain (No Root Veg)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label for="contact-person" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Contact Person <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <input id="contact-person" type="text" required placeholder="e.g. Sunil Manchanda" class="bhoj-input text-sm">
-                </div>
-
-                <div>
-                  <label for="contact-phone" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Phone Number <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <input id="contact-phone" type="tel" required placeholder="e.g. +91 98101 23450" class="bhoj-input text-sm font-mono">
-                </div>
-              </div>
-            </div>
-
-            <!-- SECTION 2: FOOD PARTICULARS, SERVINGS & DYNAMIC WEIGHT -->
-            <div class="space-y-4">
-              <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h2 class="font-display text-base font-bold text-[#141E18]">2. Food Details & Quantity</h2>
-                <span class="font-mono text-xs text-[#525B55]">Step 2 of 4</span>
-              </div>
-
-              <!-- Food Type Selector -->
-              <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-2">
-                  Food Type <span class="text-[#C84B31]">*</span>
-                </label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="food-type-selector">
-                  
-                  <label class="bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#1B4332] bg-[#E8F3EE] transition-all flex items-start gap-3" for="radio-food-cooked">
-                    <input id="radio-food-cooked" type="radio" name="foodType" value="Cooked Meals" checked aria-label="Cooked Meals" class="mt-1 accent-[#1B4332]">
-                    <div class="space-y-1">
-                      <div class="flex items-center gap-2">
-                        <span class="text-sm font-bold text-[#141E18]">Cooked Meals</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-[#1B4332] border border-[#A3C9B8]">Hot Food</span>
-                      </div>
-                      <p class="text-xs text-[#525B55] leading-snug">
-                        Prepared curries, rice, dal, and rotis. Best picked up within 4–6 hours.
-                      </p>
-                    </div>
-                  </label>
-
-                  <label class="bhoj-radio-card cursor-pointer p-4 rounded border border-[#DCD9D0] bg-white transition-all flex items-start gap-3" for="radio-food-raw">
-                    <input id="radio-food-raw" type="radio" name="foodType" value="Raw Produce" aria-label="Raw Produce and Staples" class="mt-1 accent-[#C84B31]">
-                    <div class="space-y-1">
-                      <div class="flex items-center gap-2">
-                        <span class="text-sm font-bold text-[#141E18]">Raw Produce & Staples</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">Ambient</span>
-                      </div>
-                      <p class="text-xs text-[#525B55] leading-snug">
-                        Fresh fruits, vegetables, or dry grains. Safe to consume over 12–48 hours.
-                      </p>
-                    </div>
-                  </label>
-
-                </div>
-              </div>
-
-              <!-- Servings with Live Readout -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <label for="servings-input" class="text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                      Quantity (Servings) <span class="text-[#C84B31]">*</span>
-                    </label>
-                    <span class="text-[11px] font-mono text-[#1B4332] font-bold">1 serving ≈ 0.45 kg</span>
-                  </div>
-                  <input id="servings-input" type="number" min="10" max="5000" step="5" value="120" required class="bhoj-input text-base font-mono font-bold text-[#141E18]">
-                  <div class="flex items-center gap-2 mt-2">
-                    <span class="text-[11px] text-[#525B55]">Quick picks:</span>
-                    <button type="button" data-servings="50" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">50</button>
-                    <button type="button" data-servings="120" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">120</button>
-                    <button type="button" data-servings="250" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">250</button>
-                    <button type="button" data-servings="500" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">500+</button>
-                  </div>
-                </div>
-
-                <div class="p-4 rounded bg-[#FAF9F6] border border-[#DCD9D0] space-y-2">
-                  <div class="text-[10px] font-mono uppercase tracking-wider text-[#525B55] font-semibold">
-                    Calculated Weight & People Fed
-                  </div>
-                  <div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#DCD9D0]">
-                    <div>
-                      <span class="text-[11px] text-[#525B55]">Total Weight</span>
-                      <div id="calc-weight-kg" class="text-base font-bold font-mono text-[#C84B31]">54.0 kg</div>
-                    </div>
-                    <div>
-                      <span class="text-[11px] text-[#525B55]">People Fed</span>
-                      <div id="calc-people-fed" class="text-base font-bold font-mono text-[#1B4332]">120 People</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Detailed Items Description -->
-              <div>
-                <label for="food-items-desc" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                  List of Food Items & Dishes <span class="text-[#C84B31]">*</span>
-                </label>
-                <textarea id="food-items-desc" rows="2" required placeholder="e.g. Paneer curry, dal makhani, steamed rice, rotis, gulab jamun (packed in clean foil trays)" class="bhoj-input text-xs sm:text-sm"></textarea>
-              </div>
-
-              <!-- Time & Shelf Life Slider -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="prepared-time" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    When Was It Cooked / Prepared? <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <input id="prepared-time" type="datetime-local" class="bhoj-input text-xs sm:text-sm font-mono">
-                  <div class="flex items-center gap-2 mt-1.5 text-[11px]">
-                    <button type="button" id="btn-cooked-just-now" class="text-[#1B4332] font-semibold underline">Just now</button>
-                    <span class="text-[#DCD9D0]">•</span>
-                    <button type="button" id="btn-cooked-1hr" class="text-[#525B55] hover:text-[#141E18] underline">1 hr ago</button>
-                    <span class="text-[#DCD9D0]">•</span>
-                    <button type="button" id="btn-cooked-2hr" class="text-[#525B55] hover:text-[#141E18] underline">2 hrs ago</button>
-                  </div>
-                </div>
-
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <label for="shelf-life" class="text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                      Safe to Eat For: <span id="shelf-life-display" class="font-mono text-[#1B4332] text-sm font-bold">4 Hours</span>
-                    </label>
-                    <span id="urgency-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
-                      Moderate (3–6 hrs)
-                    </span>
-                  </div>
-                  <input id="shelf-life" type="range" min="2" max="24" step="1" value="4" class="w-full accent-[#C84B31] cursor-pointer">
-                  <div class="flex justify-between text-[10px] font-mono text-[#525B55] mt-1">
-                    <span>2 hrs (Urgent)</span>
-                    <span>6 hrs</span>
-                    <span>12 hrs</span>
-                    <span>24 hrs (Produce)</span>
-                  </div>
-                  <div class="text-[11px] text-[#525B55] mt-1 font-mono">
-                    Best Before: <strong id="calc-expiry-timestamp" class="text-[#141E18]">Calculating...</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Packaging and Holding Temperature -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="packaging-type" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    How Is It Packed? <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <select id="packaging-type" class="bhoj-input text-xs sm:text-sm bg-white">
-                    <option value="Sealed Aluminum Food-Grade Trays">Sealed Aluminum Trays</option>
-                    <option value="Insulated Stainless Steel Urns">Insulated Stainless Steel Urns</option>
-                    <option value="Eco-Friendly Biodegradable Meal Boxes">Eco Meal Boxes</option>
-                    <option value="Commercial Ventilated Plastic Crates">Plastic Crates (Produce)</option>
-                    <option value="Food Grade Jute Bags">Jute Sacks (Dry Staples)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label for="temperature-input" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                    Current Temperature <span class="text-[#C84B31]">*</span>
-                  </label>
-                  <input id="temperature-input" type="text" value="68°C" placeholder="e.g. 68°C (Hot) or 18°C (Normal)" class="bhoj-input text-xs sm:text-sm font-mono">
-                </div>
-              </div>
-            </div>
-
-            <!-- SECTION 3: PICKUP LOCATION & LEAFLET MAP -->
-            <div class="space-y-4">
-              <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h2 class="font-display text-base font-bold text-[#141E18]">3. Pickup Address</h2>
-                <span class="font-mono text-xs text-[#525B55]">Step 3 of 4</span>
-              </div>
-
-              <!-- Quick Presets -->
-              <div class="space-y-2">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div class="text-[11px] font-mono text-[#525B55] uppercase tracking-wider font-semibold">
-                    Quick Region Presets or Click on Map:
-                  </div>
-                  <button type="button" id="btn-donor-gps" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shadow-sm">
-                    <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="8" stroke-width="2"/>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
-                    </svg>
-                    <span id="btn-donor-gps-text">Use Live GPS Location</span>
-                  </button>
-                </div>
-                <div class="flex flex-wrap gap-2" id="location-presets">
-                  <button type="button" data-lat="31.2554" data-lng="75.7050" data-addr="GT Road, Near LPU Main Gate, Phagwara-Jalandhar Highway" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
-                    LPU Campus / Phagwara
-                  </button>
-                  <button type="button" data-lat="31.3185" data-lng="75.5842" data-addr="EH-178, Civil Lines, BMC Chowk, Jalandhar, Punjab" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
-                    Jalandhar BMC Chowk
-                  </button>
-                  <button type="button" data-lat="28.6280" data-lng="77.2190" data-addr="Barakhamba Road, Connaught Place, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    CP Hub (Central Delhi)
-                  </button>
-                  <button type="button" data-lat="28.5355" data-lng="77.3910" data-addr="Logix Cyber Park, Sector 62, Noida, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    Noida Sector 62
-                  </button>
-                  <button type="button" data-lat="28.4950" data-lng="77.0890" data-addr="DLF CyberCity Wing 4, Gurugram, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    Gurugram CyberCity
-                  </button>
-                  <button type="button" data-lat="28.5921" data-lng="77.0460" data-addr="Sector 21 Institutional Area, Dwarka, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    Dwarka Sector 21
-                  </button>
-                </div>
-              </div>
-
-              <!-- Key-Free Leaflet Mini Map -->
-              <div class="space-y-2">
-                <div id="donor-map" class="h-64 sm:h-72 w-full rounded border border-[#DCD9D0] overflow-hidden z-10"></div>
-                <div class="flex items-center justify-between text-[11px] font-mono text-[#525B55]">
-                  <span>Drag the marker or click the map to set pickup point</span>
-                  <span class="text-[#141E18] font-bold" id="coords-readout">Lat: 28.6280, Lng: 77.2190</span>
-                </div>
-              </div>
-
-              <input type="hidden" id="donor-lat" value="28.6280">
-              <input type="hidden" id="donor-lng" value="77.2190">
-
-              <div>
-                <label for="donor-address" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
-                  Full Street Address & Gate Instructions <span class="text-[#C84B31]">*</span>
-                </label>
-                <input id="donor-address" type="text" required value="Barakhamba Road, Connaught Place, New Delhi" placeholder="e.g. Gate No. 3 Basement Loading Dock, Near Security Desk" class="bhoj-input text-xs sm:text-sm">
-              </div>
-            </div>
-
-            <!-- SECTION 4: MANDATORY FOOD SAFETY & HYGIENE CHECKLIST GATE -->
-            <div id="hygiene-gate-container" class="p-6 rounded bg-[#FAF9F6] border-2 border-[#1B4332]/40 space-y-4">
+            <!-- 4-STEP INTERACTIVE TAB BAR -->
+            <div role="tablist" class="grid grid-cols-2 md:grid-cols-4 border-b border-[#DCD9D0] bg-[#FAF9F6] text-xs font-mono" id="donation-tab-bar">
               
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#DCD9D0] pb-3">
-                <div>
-                  <h3 class="font-display text-base font-bold text-[#141E18]">
-                    4. Food Safety Checklist
-                  </h3>
-                  <p class="text-xs text-[#525B55]">
-                    Confirm all 3 checks to unlock volunteer courier pickup
-                  </p>
+              <!-- Tab 1: Your Details -->
+              <button type="button" role="tab" id="tab-btn-1" data-step="1" aria-selected="true" class="step-tab-btn active p-2.5 sm:p-3.5 text-left border-r border-[#DCD9D0] border-b-2 border-b-[#C84B31] bg-white transition-all flex items-start gap-2">
+                <span class="step-tab-badge w-5 h-5 rounded bg-[#C84B31] text-white flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors">1</span>
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-[9px] uppercase font-bold text-[#C84B31] tracking-wider step-tab-num">Step 1</div>
+                  <div class="font-display font-bold text-[#141E18] text-xs sm:text-[13px] leading-tight whitespace-nowrap">Your Details</div>
                 </div>
-
-                <div id="compliance-badge" class="px-3 py-1 rounded text-xs font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] self-start sm:self-auto">
-                  <span id="compliance-count-text">0 / 3 Checked</span>
-                </div>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="space-y-1">
-                <div class="flex justify-between text-[11px] font-mono text-[#525B55]">
-                  <span>Safety Checklist Progress</span>
-                  <span id="compliance-progress-pct" class="text-[#1B4332] font-bold">0%</span>
-                </div>
-                <div class="w-full h-2 rounded bg-[#EFECE6] overflow-hidden">
-                  <div id="compliance-progress-bar" class="h-full bg-[#1B4332] transition-all duration-300" style="width: 0%;"></div>
-                </div>
-              </div>
-
-              <!-- 3 Mandatory Checkboxes -->
-              <div class="space-y-3 pt-1">
-                <label class="bhoj-checkbox-label" for="chk-temp-check">
-                  <input id="chk-temp-check" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
-                  <div class="text-xs">
-                    <div class="font-bold text-[#141E18]">
-                      Kept at Safe Temperature (&gt;60°C Hot or &lt;5°C Cold)
-                    </div>
-                    <p class="text-[#525B55] mt-0.5 leading-snug">
-                      Food was stored hot in warmers or chilled in coolers until dispatch.
-                    </p>
-                  </div>
-                </label>
-
-                <label class="bhoj-checkbox-label" for="chk-packaging">
-                  <input id="chk-packaging" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
-                  <div class="text-xs">
-                    <div class="font-bold text-[#141E18]">
-                      Packed in Clean, Sealed Containers
-                    </div>
-                    <p class="text-[#525B55] mt-0.5 leading-snug">
-                      Packed in clean, covered, leak-proof food trays or urns ready for transit.
-                    </p>
-                  </div>
-                </label>
-
-                <label class="bhoj-checkbox-label" for="chk-no-spoilage">
-                  <input id="chk-no-spoilage" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
-                  <div class="text-xs">
-                    <div class="font-bold text-[#141E18]">
-                      Checked Fresh (Smells & Looks Good)
-                    </div>
-                    <p class="text-[#525B55] mt-0.5 leading-snug">
-                      Kitchen team checked the food. Fresh, clean, and safe to eat.
-                    </p>
-                  </div>
-                </label>
-              </div>
-
-              <!-- Help Note -->
-              <div id="gate-lock-message" class="p-3 rounded bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#B45309]">
-                Please check all 3 boxes above to unlock courier dispatch.
-              </div>
-            </div>
-
-            <!-- Submit Button (Locked until 3/3 verified) -->
-            <div class="pt-2">
-              <button id="btn-submit-dispatch" type="submit" disabled class="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded text-sm font-semibold uppercase tracking-wider bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] cursor-not-allowed opacity-70 transition-all duration-200">
-                <span id="btn-submit-label">Unlock By Completing Safety Checklist (0/3)</span>
               </button>
+
+              <!-- Tab 2: Food & Quantity -->
+              <button type="button" role="tab" id="tab-btn-2" data-step="2" aria-selected="false" class="step-tab-btn p-2.5 sm:p-3.5 text-left border-r border-[#DCD9D0] border-b-2 border-b-transparent hover:bg-white/60 transition-all flex items-start gap-2">
+                <span class="step-tab-badge w-5 h-5 rounded bg-[#EFECE6] text-[#525B55] flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors">2</span>
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-[9px] uppercase font-bold text-[#525B55] tracking-wider step-tab-num">Step 2</div>
+                  <div class="font-display font-bold text-[#141E18] text-xs sm:text-[13px] leading-tight whitespace-nowrap">Food Details</div>
+                </div>
+              </button>
+
+              <!-- Tab 3: Pickup Address -->
+              <button type="button" role="tab" id="tab-btn-3" data-step="3" aria-selected="false" class="step-tab-btn p-2.5 sm:p-3.5 text-left border-r border-[#DCD9D0] border-b-2 border-b-transparent hover:bg-white/60 transition-all flex items-start gap-2">
+                <span class="step-tab-badge w-5 h-5 rounded bg-[#EFECE6] text-[#525B55] flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors">3</span>
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-[9px] uppercase font-bold text-[#525B55] tracking-wider step-tab-num">Step 3</div>
+                  <div class="font-display font-bold text-[#141E18] text-xs sm:text-[13px] leading-tight whitespace-nowrap">Pickup Point</div>
+                </div>
+              </button>
+
+              <!-- Tab 4: Safety Checklist -->
+              <button type="button" role="tab" id="tab-btn-4" data-step="4" aria-selected="false" class="step-tab-btn p-2.5 sm:p-3.5 text-left border-b-2 border-b-transparent hover:bg-white/60 transition-all flex items-start gap-2">
+                <span class="step-tab-badge w-5 h-5 rounded bg-[#EFECE6] text-[#525B55] flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors">4</span>
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-[9px] uppercase font-bold text-[#525B55] tracking-wider step-tab-num">Step 4</div>
+                  <div class="font-display font-bold text-[#141E18] text-xs sm:text-[13px] leading-tight whitespace-nowrap">Safety Checks</div>
+                </div>
+              </button>
+
             </div>
 
-          </form>
+            <form id="dispatch-form" class="p-6 sm:p-8 space-y-6" novalidate>
+              
+              <!-- STEP 1 PANEL: ESTABLISHMENT DETAILS -->
+              <div id="step-panel-1" class="step-panel space-y-5">
+                <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
+                  <div>
+                    <h2 class="font-display text-base font-bold text-[#141E18]">1. Your Details</h2>
+                    <p class="text-xs text-[#525B55]">Provide your kitchen, hall, or store identification for couriers</p>
+                  </div>
+                  <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#FAF9F6] border border-[#DCD9D0] text-[#525B55]">Step 1 of 4</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="sm:col-span-2">
+                    <label for="donor-name" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      Kitchen or Organization Name <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <input id="donor-name" type="text" required placeholder="e.g. Grand Imperial Banquet, TechSpace Canteen" class="bhoj-input text-sm">
+                    <span class="text-[11px] text-[#525B55] mt-1 block">Name of the hotel, banquet hall, office, or store</span>
+                  </div>
+
+                  <div>
+                    <label for="donor-category" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      Type of Place <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <select id="donor-category" class="bhoj-input text-sm bg-white">
+                      <option value="Wedding Banquet">Wedding Banquet Hall</option>
+                      <option value="Corporate Dining Hall">Office Cafeteria / Canteen</option>
+                      <option value="Supermarket / Grocery">Supermarket / Grocery Store</option>
+                      <option value="Hotel / Restaurant">Hotel / Restaurant Buffet</option>
+                      <option value="Commercial Kitchen">Cloud Kitchen</option>
+                      <option value="Wholesale Depot">Wholesale Market</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="diet-type" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      Food Category <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <select id="diet-type" class="bhoj-input text-sm bg-white">
+                      <option value="Vegetarian">Pure Vegetarian</option>
+                      <option value="Vegan">Vegan (No Dairy)</option>
+                      <option value="Non-Vegetarian">Non-Vegetarian</option>
+                      <option value="Jain Friendly">Jain (No Root Veg)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="contact-person" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      Contact Person <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <input id="contact-person" type="text" required placeholder="e.g. Sunil Manchanda" class="bhoj-input text-sm">
+                  </div>
+
+                  <div>
+                    <label for="contact-phone" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      Phone Number <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <input id="contact-phone" type="tel" required placeholder="e.g. +91 98101 23450" class="bhoj-input text-sm font-mono">
+                  </div>
+                </div>
+
+                <!-- Step 1 Navigation -->
+                <div class="pt-5 border-t border-[#DCD9D0] flex items-center justify-between">
+                  <span class="text-xs font-mono text-[#525B55]">Step 1 of 4 &bull; Organization Profile</span>
+                  <button type="button" class="btn-step-next btn-primary px-5 py-2.5 text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-sm" data-next="2">
+                    <span>Continue to Food Details</span>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 2 PANEL: FOOD PARTICULARS, SERVINGS & DYNAMIC WEIGHT -->
+              <div id="step-panel-2" class="step-panel space-y-5 hidden">
+                <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
+                  <div>
+                    <h2 class="font-display text-base font-bold text-[#141E18]">2. Food Details & Quantity</h2>
+                    <p class="text-xs text-[#525B55]">Describe surplus food items, portion count, and holding temperature</p>
+                  </div>
+                  <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#FAF9F6] border border-[#DCD9D0] text-[#525B55]">Step 2 of 4</span>
+                </div>
+
+                <!-- Food Type Selector -->
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-2">
+                    Food Type <span class="text-[#C84B31]">*</span>
+                  </label>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="food-type-selector">
+                    
+                    <label class="bhoj-radio-card cursor-pointer p-4 rounded border-2 border-[#1B4332] bg-[#E8F3EE] transition-all flex items-start gap-3" for="radio-food-cooked">
+                      <input id="radio-food-cooked" type="radio" name="foodType" value="Cooked Meals" checked aria-label="Cooked Meals" class="mt-1 accent-[#1B4332]">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-bold text-[#141E18]">Cooked Meals</span>
+                          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-[#1B4332] border border-[#A3C9B8]">Hot Food</span>
+                        </div>
+                        <p class="text-xs text-[#525B55] leading-snug">
+                          Prepared curries, rice, dal, and rotis. Best picked up within 4–6 hours.
+                        </p>
+                      </div>
+                    </label>
+
+                    <label class="bhoj-radio-card cursor-pointer p-4 rounded border border-[#DCD9D0] bg-white transition-all flex items-start gap-3" for="radio-food-raw">
+                      <input id="radio-food-raw" type="radio" name="foodType" value="Raw Produce" aria-label="Raw Produce and Staples" class="mt-1 accent-[#C84B31]">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-bold text-[#141E18]">Raw Produce & Staples</span>
+                          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">Ambient</span>
+                        </div>
+                        <p class="text-xs text-[#525B55] leading-snug">
+                          Fresh fruits, vegetables, or dry grains. Safe to consume over 12–48 hours.
+                        </p>
+                      </div>
+                    </label>
+
+                  </div>
+                </div>
+
+                <!-- Servings with Live Readout -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                  <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                      <label for="servings-input" class="text-xs font-bold uppercase tracking-wider text-[#525B55]">
+                        Quantity (Servings) <span class="text-[#C84B31]">*</span>
+                      </label>
+                      <span class="text-[11px] font-mono text-[#1B4332] font-bold">1 serving ≈ 0.45 kg</span>
+                    </div>
+                    <input id="servings-input" type="number" min="10" max="5000" step="5" value="120" required class="bhoj-input text-base font-mono font-bold text-[#141E18]">
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="text-[11px] text-[#525B55]">Quick picks:</span>
+                      <button type="button" data-servings="50" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">50</button>
+                      <button type="button" data-servings="120" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">120</button>
+                      <button type="button" data-servings="250" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">250</button>
+                      <button type="button" data-servings="500" class="btn-preset-servings px-2 py-0.5 rounded bg-[#EFECE6] text-[11px] font-mono text-[#141E18] hover:bg-[#DCD9D0]">500+</button>
+                    </div>
+                  </div>
+
+                  <div class="p-4 rounded bg-[#FAF9F6] border border-[#DCD9D0] space-y-2">
+                    <div class="text-[10px] font-mono uppercase tracking-wider text-[#525B55] font-semibold">
+                      Calculated Weight & People Fed
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#DCD9D0]">
+                      <div>
+                        <span class="text-[11px] text-[#525B55]">Total Weight</span>
+                        <div id="calc-weight-kg" class="text-base font-bold font-mono text-[#C84B31]">54.0 kg</div>
+                      </div>
+                      <div>
+                        <span class="text-[11px] text-[#525B55]">People Fed</span>
+                        <div id="calc-people-fed" class="text-base font-bold font-mono text-[#1B4332]">120 People</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detailed Items Description -->
+                <div>
+                  <label for="food-items-desc" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                    List of Food Items & Dishes <span class="text-[#C84B31]">*</span>
+                  </label>
+                  <textarea id="food-items-desc" rows="2" required placeholder="e.g. Paneer curry, dal makhani, steamed rice, rotis, gulab jamun (packed in clean foil trays)" class="bhoj-input text-xs sm:text-sm"></textarea>
+                </div>
+
+                <!-- Time & Shelf Life Slider -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="prepared-time" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      When Was It Cooked / Prepared? <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <input id="prepared-time" type="datetime-local" class="bhoj-input text-xs sm:text-sm font-mono">
+                    <div class="flex items-center gap-2 mt-1.5 text-[11px]">
+                      <button type="button" id="btn-cooked-just-now" class="text-[#1B4332] font-semibold underline">Just now</button>
+                      <span class="text-[#DCD9D0]">&bull;</span>
+                      <button type="button" id="btn-cooked-1hr" class="text-[#525B55] hover:text-[#141E18] underline">1 hr ago</button>
+                      <span class="text-[#DCD9D0]">&bull;</span>
+                      <button type="button" id="btn-cooked-2hr" class="text-[#525B55] hover:text-[#141E18] underline">2 hrs ago</button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                      <label for="shelf-life" class="text-xs font-bold uppercase tracking-wider text-[#525B55]">
+                        Safe to Eat For: <span id="shelf-life-display" class="font-mono text-[#1B4332] text-sm font-bold">4 Hours</span>
+                      </label>
+                      <span id="urgency-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
+                        Moderate (3–6 hrs)
+                      </span>
+                    </div>
+                    <input id="shelf-life" type="range" min="2" max="24" step="1" value="4" class="w-full accent-[#C84B31] cursor-pointer">
+                    <div class="flex justify-between text-[10px] font-mono text-[#525B55] mt-1">
+                      <span>2 hrs (Urgent)</span>
+                      <span>6 hrs</span>
+                      <span>12 hrs</span>
+                      <span>24 hrs (Produce)</span>
+                    </div>
+                    <div class="text-[11px] text-[#525B55] mt-1 font-mono">
+                      Best Before: <strong id="calc-expiry-timestamp" class="text-[#141E18]">Calculating...</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Packaging and Holding Temperature -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="packaging-type" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      How Is It Packed? <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <select id="packaging-type" class="bhoj-input text-xs sm:text-sm bg-white">
+                      <option value="Sealed Aluminum Food-Grade Trays">Sealed Aluminum Trays</option>
+                      <option value="Insulated Stainless Steel Urns">Insulated Stainless Steel Urns</option>
+                      <option value="Eco-Friendly Biodegradable Meal Boxes">Eco Meal Boxes</option>
+                      <option value="Commercial Ventilated Plastic Crates">Plastic Crates (Produce)</option>
+                      <option value="Food Grade Jute Bags">Jute Sacks (Dry Staples)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="temperature-input" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                      Current Temperature <span class="text-[#C84B31]">*</span>
+                    </label>
+                    <input id="temperature-input" type="text" value="68°C" placeholder="e.g. 68°C (Hot) or 18°C (Normal)" class="bhoj-input text-xs sm:text-sm font-mono">
+                  </div>
+                </div>
+
+                <!-- Step 2 Navigation -->
+                <div class="pt-5 border-t border-[#DCD9D0] flex items-center justify-between">
+                  <button type="button" class="btn-step-prev px-4 py-2 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] flex items-center gap-1.5 cursor-pointer transition-colors" data-prev="1">
+                    <svg class="w-3.5 h-3.5 text-[#141E18]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <span>Back: Your Details</span>
+                  </button>
+                  <button type="button" class="btn-step-next btn-primary px-5 py-2.5 text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-sm" data-next="3">
+                    <span>Continue to Pickup Address</span>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 3 PANEL: PICKUP LOCATION & LEAFLET MAP -->
+              <div id="step-panel-3" class="step-panel space-y-5 hidden">
+                <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
+                  <div>
+                    <h2 class="font-display text-base font-bold text-[#141E18]">3. Pickup Address</h2>
+                    <p class="text-xs text-[#525B55]">Pinpoint exact loading dock or gate coordinates for volunteer couriers</p>
+                  </div>
+                  <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#FAF9F6] border border-[#DCD9D0] text-[#525B55]">Step 3 of 4</span>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="space-y-2">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="text-[11px] font-mono text-[#525B55] uppercase tracking-wider font-semibold">
+                      Quick Region Presets or Click on Map:
+                    </div>
+                    <button type="button" id="btn-donor-gps" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shadow-sm">
+                      <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="8" stroke-width="2"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+                      </svg>
+                      <span id="btn-donor-gps-text">Use Live GPS Location</span>
+                    </button>
+                  </div>
+                  <div class="flex flex-wrap gap-2" id="location-presets">
+                    <button type="button" data-lat="31.2554" data-lng="75.7050" data-addr="GT Road, Near LPU Main Gate, Phagwara-Jalandhar Highway" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
+                      LPU Campus / Phagwara
+                    </button>
+                    <button type="button" data-lat="31.3185" data-lng="75.5842" data-addr="EH-178, Civil Lines, BMC Chowk, Jalandhar, Punjab" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
+                      Jalandhar BMC Chowk
+                    </button>
+                    <button type="button" data-lat="28.6280" data-lng="77.2190" data-addr="Barakhamba Road, Connaught Place, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
+                      CP Hub (Central Delhi)
+                    </button>
+                    <button type="button" data-lat="28.5355" data-lng="77.3910" data-addr="Logix Cyber Park, Sector 62, Noida, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
+                      Noida Sector 62
+                    </button>
+                    <button type="button" data-lat="28.4950" data-lng="77.0890" data-addr="DLF CyberCity Wing 4, Gurugram, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
+                      Gurugram CyberCity
+                    </button>
+                    <button type="button" data-lat="28.5921" data-lng="77.0460" data-addr="Sector 21 Institutional Area, Dwarka, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
+                      Dwarka Sector 21
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Key-Free Leaflet Mini Map -->
+                <div class="space-y-2">
+                  <div id="donor-map" class="h-64 sm:h-72 w-full rounded border border-[#DCD9D0] overflow-hidden z-10"></div>
+                  <div class="flex items-center justify-between text-[11px] font-mono text-[#525B55]">
+                    <span>Drag the marker or click the map to set pickup point</span>
+                    <span class="text-[#141E18] font-bold" id="coords-readout">Lat: 28.6280, Lng: 77.2190</span>
+                  </div>
+                </div>
+
+                <input type="hidden" id="donor-lat" value="28.6280">
+                <input type="hidden" id="donor-lng" value="77.2190">
+
+                <div>
+                  <label for="donor-address" class="block text-xs font-bold uppercase tracking-wider text-[#525B55] mb-1.5">
+                    Full Street Address & Gate Instructions <span class="text-[#C84B31]">*</span>
+                  </label>
+                  <input id="donor-address" type="text" required value="Barakhamba Road, Connaught Place, New Delhi" placeholder="e.g. Gate No. 3 Basement Loading Dock, Near Security Desk" class="bhoj-input text-xs sm:text-sm">
+                </div>
+
+                <!-- Step 3 Navigation -->
+                <div class="pt-5 border-t border-[#DCD9D0] flex items-center justify-between">
+                  <button type="button" class="btn-step-prev px-4 py-2 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] flex items-center gap-1.5 cursor-pointer transition-colors" data-prev="2">
+                    <svg class="w-3.5 h-3.5 text-[#141E18]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <span>Back: Food Details</span>
+                  </button>
+                  <button type="button" class="btn-step-next btn-primary px-5 py-2.5 text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-sm" data-next="4">
+                    <span>Continue to Safety Checklist</span>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 4 PANEL: MANDATORY FOOD SAFETY & HYGIENE CHECKLIST GATE -->
+              <div id="step-panel-4" class="step-panel space-y-5 hidden">
+                <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
+                  <div>
+                    <h2 class="font-display text-base font-bold text-[#141E18]">4. Food Safety Checklist</h2>
+                    <p class="text-xs text-[#525B55]">Verify mandatory hygiene standards to authorize courier dispatch</p>
+                  </div>
+                  <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#FAF9F6] border border-[#DCD9D0] text-[#525B55]">Step 4 of 4</span>
+                </div>
+
+                <div id="hygiene-gate-container" class="p-6 rounded bg-[#FAF9F6] border-2 border-[#1B4332]/40 space-y-4">
+                  
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#DCD9D0] pb-3">
+                    <div>
+                      <h3 class="font-display text-base font-bold text-[#141E18]">
+                        Mandatory Inspection Gate
+                      </h3>
+                      <p class="text-xs text-[#525B55]">
+                        Confirm all 3 checks to unlock volunteer courier pickup
+                      </p>
+                    </div>
+
+                    <div id="compliance-badge" class="px-3 py-1 rounded text-xs font-mono font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] self-start sm:self-auto">
+                      <span id="compliance-count-text">0 / 3 Checked</span>
+                    </div>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div class="space-y-1">
+                    <div class="flex justify-between text-[11px] font-mono text-[#525B55]">
+                      <span>Safety Checklist Progress</span>
+                      <span id="compliance-progress-pct" class="text-[#1B4332] font-bold">0%</span>
+                    </div>
+                    <div class="w-full h-2 rounded bg-[#EFECE6] overflow-hidden">
+                      <div id="compliance-progress-bar" class="h-full bg-[#1B4332] transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                  </div>
+
+                  <!-- 3 Mandatory Checkboxes -->
+                  <div class="space-y-3 pt-1">
+                    <label class="bhoj-checkbox-label" for="chk-temp-check">
+                      <input id="chk-temp-check" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
+                      <div class="text-xs">
+                        <div class="font-bold text-[#141E18]">
+                          Kept at Safe Temperature (&gt;60°C Hot or &lt;5°C Cold)
+                        </div>
+                        <p class="text-[#525B55] mt-0.5 leading-snug">
+                          Food was stored hot in warmers or chilled in coolers until dispatch.
+                        </p>
+                      </div>
+                    </label>
+
+                    <label class="bhoj-checkbox-label" for="chk-packaging">
+                      <input id="chk-packaging" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
+                      <div class="text-xs">
+                        <div class="font-bold text-[#141E18]">
+                          Packed in Clean, Sealed Containers
+                        </div>
+                        <p class="text-[#525B55] mt-0.5 leading-snug">
+                          Packed in clean, covered, leak-proof food trays or urns ready for transit.
+                        </p>
+                      </div>
+                    </label>
+
+                    <label class="bhoj-checkbox-label" for="chk-no-spoilage">
+                      <input id="chk-no-spoilage" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B4332]">
+                      <div class="text-xs">
+                        <div class="font-bold text-[#141E18]">
+                          Checked Fresh (Smells & Looks Good)
+                        </div>
+                        <p class="text-[#525B55] mt-0.5 leading-snug">
+                          Kitchen team checked the food. Fresh, clean, and safe to eat.
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  <!-- Help Note -->
+                  <div id="gate-lock-message" class="p-3 rounded bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#B45309]">
+                    Please check all 3 boxes above to unlock courier dispatch.
+                  </div>
+                </div>
+
+                <!-- Step 4 Navigation & Final Submit Button (Locked until 3/3 verified) -->
+                <div class="pt-5 border-t border-[#DCD9D0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <button type="button" class="btn-step-prev px-4 py-2.5 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] flex items-center justify-center gap-1.5 cursor-pointer transition-colors" data-prev="3">
+                    <svg class="w-3.5 h-3.5 text-[#141E18]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <span>Back: Pickup Address</span>
+                  </button>
+                  <button id="btn-submit-dispatch" type="submit" disabled class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded text-xs font-semibold uppercase tracking-wider bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] cursor-not-allowed opacity-70 transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span id="btn-submit-label">Unlock By Completing Safety Checklist (0/3)</span>
+                  </button>
+                </div>
+
+              </div>
+
+            </form>
+
+          </div>
 
         </div>
 

@@ -420,6 +420,44 @@ body {
   border-color: #B8B3A6;
 }
 
+/* ==========================================================================
+   8. Interactive Step Tab Wizard
+   ========================================================================== */
+.step-tab-btn {
+  position: relative;
+  background-color: #FAF9F6;
+  border-bottom: 2px solid transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.step-tab-btn:hover:not(.active) {
+  background-color: #F0ECE1;
+  color: var(--color-ink-primary);
+}
+
+.step-tab-btn.active {
+  background-color: #FFFFFF;
+  border-bottom-color: var(--color-terracotta);
+  color: var(--color-ink-primary);
+}
+
+.step-tab-btn.active .step-tab-badge {
+  background-color: var(--color-terracotta);
+  color: #FFFFFF;
+}
+
+.step-tab-btn.completed {
+  background-color: #FAF9F6;
+}
+
+.step-tab-btn.completed .step-tab-badge {
+  background-color: var(--color-botanical-surface);
+  color: var(--color-botanical);
+  border: 1px solid var(--color-botanical-border);
+}
+
 /* Toast Container */
 #bhoj-toast-container {
   z-index: 9999;

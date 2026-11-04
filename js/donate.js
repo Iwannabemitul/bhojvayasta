@@ -176,17 +176,22 @@
       primaryTiles.addTo(donorMap);
 
       const pinIcon = L.divIcon({
-        className: 'bhoj-pin-wrapper',
+        className: 'bhoj-pin-divicon',
         html: `
-          <div class="bhoj-pin-body pin-available">
-            <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          <div class="bhoj-svg-pin-wrapper active-route-pin">
+            <svg width="30" height="38" viewBox="0 0 30 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 37C15 37 28 24.5 28 14C28 6.82 22.18 1 15 1C7.82 1 2 6.82 2 14C2 24.5 15 37 15 37Z" fill="#C84B31" stroke="#FFFFFF" stroke-width="1.8"/>
+              <circle cx="15" cy="14" r="8.5" fill="rgba(255,255,255,0.2)"/>
+              <g transform="translate(9, 8)" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <circle cx="6" cy="6" r="4.5" />
+                <path d="M6 3.5v5M3.5 6h5" />
+              </g>
             </svg>
           </div>
         `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -18]
+        iconSize: [30, 38],
+        iconAnchor: [15, 37],
+        popupAnchor: [0, -37]
       });
 
       donorMarker = L.marker([DEFAULT_LAT, DEFAULT_LNG], {
@@ -313,6 +318,141 @@
       const currentAddr = addrInput ? addrInput.value : `${formattedLat}, ${formattedLng}`;
       previewAddr.textContent = currentAddr;
     }
+  }
+
+  // ==========================================
+  // 3b. Interactive 4-Step Tabbed Wizard
+  // ==========================================
+  let currentStep = 1;
+
+  function validateStep(step) {
+    if (step === 1) {
+      const name = (document.getElementById('donor-name')?.value || '').trim();
+      const person = (document.getElementById('contact-person')?.value || '').trim();
+      const phone = (document.getElementById('contact-phone')?.value || '').trim();
+      if (!name) {
+        if (global.BhojToast) global.BhojToast.warning('Please enter your kitchen or organization name.');
+        document.getElementById('donor-name')?.focus();
+        return false;
+      }
+      if (!person) {
+        if (global.BhojToast) global.BhojToast.warning('Please enter the contact person name.');
+        document.getElementById('contact-person')?.focus();
+        return false;
+      }
+      if (!phone) {
+        if (global.BhojToast) global.BhojToast.warning('Please enter a contact phone number.');
+        document.getElementById('contact-phone')?.focus();
+        return false;
+      }
+    } else if (step === 2) {
+      const items = (document.getElementById('food-items-desc')?.value || '').trim();
+      if (!items) {
+        if (global.BhojToast) global.BhojToast.warning('Please list the food items and dishes.');
+        document.getElementById('food-items-desc')?.focus();
+        return false;
+      }
+    } else if (step === 3) {
+      const addr = (document.getElementById('donor-address')?.value || '').trim();
+      if (!addr) {
+        if (global.BhojToast) global.BhojToast.warning('Please enter the pickup address.');
+        document.getElementById('donor-address')?.focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function goToStep(targetStep, bypassValidation = false) {
+    targetStep = parseInt(targetStep, 10);
+    if (isNaN(targetStep) || targetStep < 1 || targetStep > 4) return;
+
+    if (!bypassValidation && targetStep > currentStep) {
+      for (let s = currentStep; s < targetStep; s++) {
+        if (!validateStep(s)) return;
+      }
+    }
+
+    currentStep = targetStep;
+
+    const panels = document.querySelectorAll('.step-panel');
+    panels.forEach((p, idx) => {
+      if (idx + 1 === currentStep) {
+        p.classList.remove('hidden');
+      } else {
+        p.classList.add('hidden');
+      }
+    });
+
+    const tabButtons = document.querySelectorAll('.step-tab-btn');
+    tabButtons.forEach((tab) => {
+      const step = parseInt(tab.getAttribute('data-step'), 10);
+      const badge = tab.querySelector('.step-tab-badge');
+      const numLabel = tab.querySelector('.step-tab-num');
+      const borderR = step !== 4 ? 'border-r border-[#DCD9D0]' : '';
+
+      if (step === currentStep) {
+        tab.className = `step-tab-btn active p-2.5 sm:p-3.5 text-left ${borderR} border-b-2 border-b-[#C84B31] bg-white transition-all flex items-start gap-2`;
+        tab.setAttribute('aria-selected', 'true');
+        if (badge) {
+          badge.className = 'step-tab-badge w-5 h-5 rounded bg-[#C84B31] text-white flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors';
+          badge.textContent = step;
+        }
+        if (numLabel) {
+          numLabel.className = 'text-[9px] uppercase font-bold text-[#C84B31] tracking-wider step-tab-num';
+        }
+      } else if (step < currentStep) {
+        tab.className = `step-tab-btn completed p-2.5 sm:p-3.5 text-left ${borderR} border-b-2 border-b-transparent bg-[#FAF9F6] transition-all flex items-start gap-2`;
+        tab.setAttribute('aria-selected', 'false');
+        if (badge) {
+          badge.className = 'step-tab-badge w-5 h-5 rounded bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8] flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors';
+          badge.innerHTML = `<svg class="w-3 h-3 text-[#1B4332]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+        }
+        if (numLabel) {
+          numLabel.className = 'text-[9px] uppercase font-bold text-[#1B4332] tracking-wider step-tab-num';
+        }
+      } else {
+        tab.className = `step-tab-btn p-2.5 sm:p-3.5 text-left ${borderR} border-b-2 border-b-transparent bg-[#FAF9F6] hover:bg-white/60 transition-all flex items-start gap-2`;
+        tab.setAttribute('aria-selected', 'false');
+        if (badge) {
+          badge.className = 'step-tab-badge w-5 h-5 rounded bg-[#EFECE6] text-[#525B55] flex items-center justify-center font-bold text-[10px] shrink-0 transition-colors';
+          badge.textContent = step;
+        }
+        if (numLabel) {
+          numLabel.className = 'text-[9px] uppercase font-bold text-[#525B55] tracking-wider step-tab-num';
+        }
+      }
+    });
+
+    if (currentStep === 3 && donorMap) {
+      setTimeout(() => {
+        donorMap.invalidateSize();
+      }, 100);
+    }
+  }
+
+  function setupStepTabs() {
+    const tabButtons = document.querySelectorAll('.step-tab-btn');
+    tabButtons.forEach((tab) => {
+      tab.addEventListener('click', function () {
+        const step = this.getAttribute('data-step');
+        goToStep(step, false);
+      });
+    });
+
+    document.querySelectorAll('.btn-step-next').forEach((btn) => {
+      btn.addEventListener('click', function () {
+        const next = this.getAttribute('data-next');
+        goToStep(next, false);
+      });
+    });
+
+    document.querySelectorAll('.btn-step-prev').forEach((btn) => {
+      btn.addEventListener('click', function () {
+        const prev = this.getAttribute('data-prev');
+        goToStep(prev, true);
+      });
+    });
   }
 
   // ==========================================
@@ -547,6 +687,7 @@
         updateCalculations();
         updateHygieneGate();
         renderRecentSubmissions();
+        goToStep(1, true);
 
       } catch (err) {
         console.error('[BhojDonate] Error adding dispatch:', err);
@@ -622,6 +763,7 @@
     });
 
     initDonorMap();
+    setupStepTabs();
     setupLivePreview();
     renderRecentSubmissions();
     setupFormSubmission();
