@@ -327,13 +327,25 @@
               </div>
 
               <!-- Quick Presets -->
-              <div class="space-y-1.5">
-                <div class="text-[11px] font-mono text-[#525B55] uppercase tracking-wider font-semibold">
-                  Quick Locations or Click on Map:
+              <div class="space-y-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div class="text-[11px] font-mono text-[#525B55] uppercase tracking-wider font-semibold">
+                    Quick Region Presets or Click on Map:
+                  </div>
+                  <button type="button" id="btn-donor-gps" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shadow-sm">
+                    <span>🎯</span>
+                    <span id="btn-donor-gps-text">Use My Current GPS Location</span>
+                  </button>
                 </div>
                 <div class="flex flex-wrap gap-2" id="location-presets">
+                  <button type="button" data-lat="31.2554" data-lng="75.7050" data-addr="GT Road, Near LPU Main Gate, Phagwara-Jalandhar Highway" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
+                    📍 LPU Campus / Phagwara
+                  </button>
+                  <button type="button" data-lat="31.3185" data-lng="75.5842" data-addr="EH-178, Civil Lines, BMC Chowk, Jalandhar, Punjab" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-[#E8F3EE] hover:bg-[#D4EADE] border border-[#A3C9B8] text-[#1B4332] font-semibold transition-colors">
+                    📍 Jalandhar BMC Chowk
+                  </button>
                   <button type="button" data-lat="28.6280" data-lng="77.2190" data-addr="Barakhamba Road, Connaught Place, New Delhi" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
-                    CP Hub (Central)
+                    CP Hub (Central Delhi)
                   </button>
                   <button type="button" data-lat="28.5355" data-lng="77.3910" data-addr="Logix Cyber Park, Sector 62, Noida, NCR" class="btn-location-preset px-2.5 py-1 text-xs font-medium rounded bg-white hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] transition-colors">
                     Noida Sector 62

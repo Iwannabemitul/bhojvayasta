@@ -15,11 +15,11 @@
 (function (global) {
   'use strict';
 
-  const STORAGE_KEY = 'bhojvayasta_dispatches';
+  const STORAGE_KEY = 'bhojvayasta_dispatches_v2';
   const CHANNEL_NAME = 'bhojvayasta_sync';
   const BASE_HISTORICAL_MEALS = 12400; // Base historical offset for established look
 
-  // 4 Fixed Receiving Shelters & Slum Relief Hubs in Delhi/NCR
+  // 7 Fixed Receiving Shelters & Slum Relief Hubs (Delhi/NCR + Jalandhar/Phagwara LPU Corridor)
   const SHELTER_HUBS = [
     {
       id: 'SH-01',
@@ -33,7 +33,8 @@
       mealDemand: 150,
       currentOccupancy: 135,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food'],
-      operatingHours: '08:00 AM - 10:00 PM'
+      operatingHours: '08:00 AM - 10:00 PM',
+      region: 'Delhi/NCR'
     },
     {
       id: 'SH-02',
@@ -47,7 +48,8 @@
       mealDemand: 250,
       currentOccupancy: 280,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food', 'Bakery'],
-      operatingHours: '24 Hours Emergency Hub'
+      operatingHours: '24 Hours Emergency Hub',
+      region: 'Delhi/NCR'
     },
     {
       id: 'SH-03',
@@ -61,7 +63,8 @@
       mealDemand: 120,
       currentOccupancy: 110,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Dairy'],
-      operatingHours: '07:30 AM - 09:30 PM'
+      operatingHours: '07:30 AM - 09:30 PM',
+      region: 'Delhi/NCR'
     },
     {
       id: 'SH-04',
@@ -75,7 +78,53 @@
       mealDemand: 180,
       currentOccupancy: 175,
       acceptedCategories: ['Cooked Meals', 'Packaged Food'],
-      operatingHours: '08:00 AM - 09:00 PM'
+      operatingHours: '08:00 AM - 09:00 PM',
+      region: 'Delhi/NCR'
+    },
+    {
+      id: 'SH-05',
+      name: 'Apahaj Ashram & Hunger Relief Center',
+      category: 'Destitute & Hunger Relief',
+      address: 'HMV Road, Patel Chowk, Jalandhar',
+      lat: 31.3340,
+      lng: 75.5680,
+      contactPerson: 'Bhai Gurpreet Singh',
+      phone: '+91 98150 11223',
+      mealDemand: 200,
+      currentOccupancy: 185,
+      acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food'],
+      operatingHours: '07:00 AM - 09:30 PM',
+      region: 'Jalandhar'
+    },
+    {
+      id: 'SH-06',
+      name: 'Nari Niketan & Child Care Home',
+      category: 'Women & Child Welfare',
+      address: 'Nakodar Road, Near Model Town, Jalandhar',
+      lat: 31.3090,
+      lng: 75.5610,
+      contactPerson: 'Smt. Paramjeet Kaur',
+      phone: '+91 98722 33445',
+      mealDemand: 140,
+      currentOccupancy: 130,
+      acceptedCategories: ['Cooked Meals', 'Dairy', 'Bakery'],
+      operatingHours: '08:00 AM - 09:00 PM',
+      region: 'Jalandhar'
+    },
+    {
+      id: 'SH-07',
+      name: 'Phagwara Seva Slum Relief Camp',
+      category: 'Migrant & Slum Relief',
+      address: 'GT Road, Near Chaheru / LPU Corridor, Phagwara',
+      lat: 31.2580,
+      lng: 75.7020,
+      contactPerson: 'Harpreet Singh (Sevadar)',
+      phone: '+91 98881 55667',
+      mealDemand: 180,
+      currentOccupancy: 195,
+      acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food'],
+      operatingHours: '24 Hours Emergency Hub',
+      region: 'Jalandhar'
     }
   ];
 
@@ -115,6 +164,7 @@
         volunteer: null,
         volunteerPhone: null,
         targetShelter: null,
+        region: 'Delhi/NCR',
         notes: 'Vehicular access via Gate 3 for easy pickup. Ground floor dispatch dock.',
         createdAt: new Date(now - 2 * HOUR_MS).toISOString(),
         statusTimestamps: {
@@ -153,6 +203,7 @@
         volunteer: null,
         volunteerPhone: null,
         targetShelter: null,
+        region: 'Delhi/NCR',
         notes: 'Security check cleared; inform receptionist at Tower C security desk upon arrival.',
         createdAt: new Date(now - 1 * HOUR_MS).toISOString(),
         statusTimestamps: {
@@ -191,6 +242,7 @@
         volunteer: null,
         volunteerPhone: null,
         targetShelter: null,
+        region: 'Delhi/NCR',
         notes: 'Loading bay is situated at the basement ramp. Trolleys available on-site.',
         createdAt: new Date(now - 6 * HOUR_MS).toISOString(),
         statusTimestamps: {
@@ -229,6 +281,7 @@
         volunteer: 'Rohan V.',
         volunteerPhone: '+91 98188 90123',
         targetShelter: 'Asha Child Care Shelter',
+        region: 'Delhi/NCR',
         notes: 'Rohan V. picked up at 14:15. Courier en route on electric delivery two-wheeler.',
         createdAt: new Date(now - 2.5 * HOUR_MS).toISOString(),
         statusTimestamps: {
@@ -267,6 +320,7 @@
         volunteer: 'Priya S.',
         volunteerPhone: '+91 98733 44556',
         targetShelter: 'Seva Urban Slum Relief Camp',
+        region: 'Delhi/NCR',
         notes: 'Handed over directly to Rajendra Sharma. Distributed to 150 migrant workers and children.',
         createdAt: new Date(now - 5 * HOUR_MS).toISOString(),
         statusTimestamps: {
@@ -305,12 +359,130 @@
         volunteer: 'Aman K.',
         volunteerPhone: '+91 98114 77889',
         targetShelter: 'Bal Vikas Orphanage',
+        region: 'Delhi/NCR',
         notes: 'Delivered in mini-cargo truck. Stocked in orphanage pantry for week-long cooking.',
         createdAt: new Date(now - 12 * HOUR_MS).toISOString(),
         statusTimestamps: {
           available: new Date(now - 12 * HOUR_MS).toISOString(),
           inTransit: new Date(now - 8 * HOUR_MS).toISOString(),
           delivered: new Date(now - 6 * HOUR_MS).toISOString()
+        }
+      },
+      {
+        id: 'BV-5012',
+        donorName: 'UniMall & Central Mess Dining Hall (LPU Campus)',
+        donorCategory: 'University Mess',
+        foodType: 'Cooked Meals',
+        foodTitle: 'Campus Mess Dinner Surplus Batch',
+        servings: 240,
+        dietType: 'Vegetarian',
+        cookedAt: new Date(now - 1.5 * HOUR_MS).toISOString(),
+        shelfLifeHours: 4.5,
+        expiryTime: new Date(now + 3 * HOUR_MS).toISOString(),
+        status: 'Available',
+        lat: 31.2554,
+        lng: 75.7050,
+        address: 'GT Road, Phagwara-Jalandhar Highway, Near LPU Main Gate',
+        contactPhone: '+91 98140 88990',
+        contactPerson: 'Ramanjot Singh (Mess Supervisor)',
+        itemsDescription: 'Dal Makhani, Jeera Rice, Paneer Butter Masala & Tandoori Rotis',
+        packagingType: 'Insulated Stainless Steel Carts & Thermal Boxes',
+        storageTemp: 'Hot (> 65°C)',
+        temperatureRecorded: '69°C',
+        region: 'Jalandhar',
+        safetyChecklist: {
+          tempCheck: true,
+          cleanPackaging: true,
+          noSpoiledItems: true,
+          hygieneCertified: true
+        },
+        volunteer: null,
+        volunteerPhone: null,
+        targetShelter: null,
+        notes: 'Enter through Gate 1 or UniMall service ramp. Guard has gate pass pre-approved.',
+        createdAt: new Date(now - 1.5 * HOUR_MS).toISOString(),
+        statusTimestamps: {
+          available: new Date(now - 1.5 * HOUR_MS).toISOString(),
+          inTransit: null,
+          delivered: null
+        }
+      },
+      {
+        id: 'BV-5048',
+        donorName: 'The Maya Hotel & Wedding Banquet',
+        donorCategory: 'Banquet Hall',
+        foodType: 'Cooked Meals',
+        foodTitle: 'Punjabi Wedding Buffet Surplus',
+        servings: 160,
+        dietType: 'Vegetarian',
+        cookedAt: new Date(now - 2 * HOUR_MS).toISOString(),
+        shelfLifeHours: 4,
+        expiryTime: new Date(now + 2 * HOUR_MS).toISOString(),
+        status: 'Available',
+        lat: 31.3185,
+        lng: 75.5842,
+        address: 'EH-178, Civil Lines, BMC Chowk, Jalandhar',
+        contactPhone: '+91 98155 44332',
+        contactPerson: 'Balwinder Chawla (Banquet Manager)',
+        itemsDescription: 'Punjabi Wedding Buffet Surplus - Chana Masala, Pulao, Mixed Veg',
+        packagingType: 'Heavy Commercial Foil Tins',
+        storageTemp: 'Hot (> 65°C)',
+        temperatureRecorded: '66°C',
+        region: 'Jalandhar',
+        safetyChecklist: {
+          tempCheck: true,
+          cleanPackaging: true,
+          noSpoiledItems: true,
+          hygieneCertified: true
+        },
+        volunteer: null,
+        volunteerPhone: null,
+        targetShelter: null,
+        notes: 'Dispatch area at kitchen rear entrance. Porter will assist loading.',
+        createdAt: new Date(now - 2 * HOUR_MS).toISOString(),
+        statusTimestamps: {
+          available: new Date(now - 2 * HOUR_MS).toISOString(),
+          inTransit: null,
+          delivered: null
+        }
+      },
+      {
+        id: 'BV-5089',
+        donorName: 'Reliance Smart Bazaar Model Town',
+        donorCategory: 'Retail Supermarket',
+        foodType: 'Raw Produce',
+        foodTitle: 'Fresh Seasonal Produce & Grains',
+        servings: 130,
+        dietType: 'Vegetarian',
+        cookedAt: new Date(now - 5 * HOUR_MS).toISOString(),
+        shelfLifeHours: 36,
+        expiryTime: new Date(now + 31 * HOUR_MS).toISOString(),
+        status: 'In-Transit',
+        lat: 31.3045,
+        lng: 75.5785,
+        address: 'Model Town Market, Jalandhar, Punjab',
+        contactPhone: '+91 98144 66778',
+        contactPerson: 'Manpreet Sandhu',
+        itemsDescription: 'Fresh Seasonal Vegetable Crates, Potatoes, Onions & Whole Wheat Bags',
+        packagingType: 'Plastic Crates & Gunny Bags',
+        storageTemp: 'Ambient (20°C)',
+        temperatureRecorded: '20°C',
+        region: 'Jalandhar',
+        safetyChecklist: {
+          tempCheck: true,
+          cleanPackaging: true,
+          noSpoiledItems: true,
+          hygieneCertified: true
+        },
+        volunteer: 'Simranjeet S.',
+        volunteerPhone: '+91 98882 12345',
+        targetShelter: 'Apahaj Ashram & Hunger Relief Center',
+        notes: 'Simranjeet S. is en route on utility pickup van to Apahaj Ashram.',
+        createdAt: new Date(now - 5 * HOUR_MS).toISOString(),
+        statusTimestamps: {
+          available: new Date(now - 5 * HOUR_MS).toISOString(),
+          inTransit: new Date(now - 0.5 * HOUR_MS).toISOString(),
+          delivered: null
         }
       }
     ];
@@ -520,6 +692,7 @@
         volunteer: null,
         volunteerPhone: null,
         targetShelter: null,
+        region: data.region || ((parseFloat(data.lat) || 28.6139) > 30 ? 'Jalandhar' : 'Delhi/NCR'),
         notes: data.notes || 'Ready for immediate pickup by registered community courier.',
         createdAt: new Date(now).toISOString(),
         statusTimestamps: {
@@ -663,8 +836,128 @@
       const seeds = generateSeedData();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
       broadcastEvent('DEMO_DATA_RESET', seeds);
-      console.log('[BhojStore] Demo data successfully reset to 6 seed items.');
+      console.log('[BhojStore] Demo data successfully reset to seed items.');
       return seeds;
+    },
+
+    /**
+     * Dynamically shifts or generates 3 active pickups within 1.2 km – 3.5 km
+     * of the given coordinates (user's live GPS position) for testing local routing.
+     * @param {number} lat
+     * @param {number} lng
+     * @returns {Array} Updated list of dispatches
+     */
+    spawnPickupsNear(lat, lng) {
+      if (!lat || !lng) return this.getDispatches();
+      const list = this.getDispatches();
+      const now = Date.now();
+      const HOUR_MS = 60 * 60 * 1000;
+
+      // 1 deg lat ≈ 111 km, 1 deg lng ≈ 111 * cos(lat)
+      const kmToLat = 1 / 111.0;
+      const kmToLng = 1 / (111.0 * Math.cos((lat * Math.PI) / 180));
+
+      const presets = [
+        {
+          name: 'Annapurna Community Banquet & Catering',
+          category: 'Banquet Hall',
+          foodType: 'Cooked Meals',
+          foodTitle: 'Fresh Evening Buffet Recovery Batch',
+          servings: 180,
+          distKm: 1.4,
+          angle: 45,
+          items: 'Dal Makhani, Jeera Rice, Shahi Paneer, Fresh Tandoori Rotis',
+          temp: 'Hot (> 65°C)',
+          recorded: '67°C',
+          status: 'Available'
+        },
+        {
+          name: 'Metro City Fresh Mart & Produce Depot',
+          category: 'Retail Supermarket',
+          foodType: 'Raw Produce',
+          foodTitle: 'Seasonal Farm Produce Crates',
+          servings: 120,
+          distKm: 2.1,
+          angle: 160,
+          items: 'Fresh seasonal vegetables, potatoes, onions, whole grain wheat bags',
+          temp: 'Ambient (20°C)',
+          recorded: '20°C',
+          status: 'Available'
+        },
+        {
+          name: 'Grand Heritage Dining Kitchen',
+          category: 'Restaurant & Catering',
+          foodType: 'Cooked Meals',
+          foodTitle: 'Executive Thali Surplus Portions',
+          servings: 150,
+          distKm: 2.8,
+          angle: 280,
+          items: 'Subz Biryani, Yellow Tadka Dal, Phulkas, Mixed Seasonal Veg',
+          temp: 'Hot (> 65°C)',
+          recorded: '65°C',
+          status: 'In-Transit',
+          volunteer: 'Local Active Courier',
+          targetShelter: lat > 30 ? 'Apahaj Ashram & Hunger Relief Center' : 'Asha Child Care Shelter'
+        }
+      ];
+
+      // Remove any previously spawned pickups with prefix BV-9
+      const filteredList = list.filter((item) => !item.id.startsWith('BV-9'));
+
+      presets.forEach((p, idx) => {
+        const rad = (p.angle * Math.PI) / 180;
+        const offsetLat = p.distKm * kmToLat * Math.sin(rad);
+        const offsetLng = p.distKm * kmToLng * Math.cos(rad);
+        const pLat = parseFloat((lat + offsetLat).toFixed(4));
+        const pLng = parseFloat((lng + offsetLng).toFixed(4));
+        const randId = `BV-9${Math.floor(100 + Math.random() * 900)}`;
+
+        const newDispatch = {
+          id: randId,
+          donorName: p.name,
+          donorCategory: p.category,
+          foodType: p.foodType,
+          foodTitle: p.foodTitle,
+          servings: p.servings,
+          dietType: 'Vegetarian',
+          cookedAt: new Date(now - 1.5 * HOUR_MS).toISOString(),
+          shelfLifeHours: p.foodType === 'Cooked Meals' ? 4.5 : 36,
+          expiryTime: new Date(now + (p.foodType === 'Cooked Meals' ? 3 : 24) * HOUR_MS).toISOString(),
+          status: p.status,
+          lat: pLat,
+          lng: pLng,
+          address: `Near Local Sector (approx ${p.distKm} km from GPS, lat: ${pLat}, lng: ${pLng})`,
+          contactPhone: '+91 98111 55443',
+          contactPerson: 'Dispatch Desk Coordinator',
+          itemsDescription: p.items,
+          packagingType: 'Food Grade Insulated Carriers',
+          storageTemp: p.temp,
+          temperatureRecorded: p.recorded,
+          region: lat > 30 ? 'Jalandhar' : 'Delhi/NCR',
+          safetyChecklist: {
+            tempCheck: true,
+            cleanPackaging: true,
+            noSpoiledItems: true,
+            hygieneCertified: true
+          },
+          volunteer: p.volunteer || null,
+          volunteerPhone: p.volunteer ? '+91 98765 43210' : null,
+          targetShelter: p.targetShelter || null,
+          notes: 'Dynamically generated within 1.2–3.5 km of active courier position for local testing.',
+          createdAt: new Date(now).toISOString(),
+          statusTimestamps: {
+            available: new Date(now).toISOString(),
+            inTransit: p.status === 'In-Transit' ? new Date(now).toISOString() : null,
+            delivered: null
+          }
+        };
+
+        filteredList.unshift(newDispatch);
+      });
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredList));
+      broadcastEvent('DEMO_DATA_RESET', filteredList);
+      return filteredList;
     },
 
     /**

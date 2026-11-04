@@ -138,7 +138,7 @@
             Bhoj<span class="text-[#C84B31]">Vayasta</span>
           </span>
           <span class="hidden sm:inline-block text-[11px] font-medium px-2 py-0.5 bg-[#EFECE6] text-[#525B55] border border-[#DCD9D0] rounded">
-            Delhi / NCR
+            Delhi/NCR • Punjab Corridor
           </span>
         </a>
 

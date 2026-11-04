@@ -74,27 +74,51 @@
          ==================================================================== -->
     <section class="card-surface p-4 mb-6 rounded space-y-3">
       
-      <!-- Top Row: Simulator Controls -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#DCD9D0]">
+      <!-- Top Row: Simulator & Live Geolocation Controls -->
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-3 border-b border-[#DCD9D0]">
         
         <div class="flex flex-wrap items-center gap-2 sm:gap-3">
           <div class="font-mono text-xs uppercase text-[#525B55] font-semibold">Courier Name:</div>
-          <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Simulated courier name" class="bhoj-input text-xs font-bold text-[#141E18] w-52 sm:w-60 py-1 px-2.5">
+          <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Simulated courier name" class="bhoj-input text-xs font-bold text-[#141E18] w-48 sm:w-56 py-1 px-2.5">
           <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
-            GPS Simulator
+            Multi-Region GPS
           </span>
         </div>
 
-        <div class="flex items-center gap-2 self-start md:self-auto">
-          <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Your Location:</span>
-          <select id="courier-location-select" class="bhoj-input text-xs font-medium text-[#141E18] py-1 px-2.5 bg-white cursor-pointer w-auto">
-            <option value="28.6139,77.2090" selected>📍 Connaught Place (Central)</option>
-            <option value="28.5355,77.3910">📍 Sector 62 (Noida)</option>
-            <option value="28.4950,77.0890">📍 DLF CyberCity (Gurugram)</option>
-            <option value="28.5680,77.2430">📍 Lajpat Nagar (South Delhi)</option>
-            <option value="28.6650,77.2320">📍 Kashmere Gate (North Delhi)</option>
-            <option value="28.7150,77.1210">📍 Rohini Sector 11 (NW Delhi)</option>
-          </select>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Location:</span>
+            <select id="courier-location-select" class="bhoj-input text-xs font-medium text-[#141E18] py-1 px-2.5 bg-white cursor-pointer w-auto">
+              <optgroup label="Jalandhar / Phagwara Region">
+                <option value="31.2554,75.7050" selected>📍 LPU Campus / Phagwara Highway</option>
+                <option value="31.3260,75.5762">📍 Model Town / BMC Chowk (Jalandhar)</option>
+                <option value="31.3340,75.5680">📍 Jyoti Chowk / Civil Lines (Jalandhar)</option>
+              </optgroup>
+              <optgroup label="Delhi / NCR Region">
+                <option value="28.6139,77.2090">📍 Connaught Place (Central Delhi)</option>
+                <option value="28.5355,77.3910">📍 Sector 62 (Noida)</option>
+                <option value="28.4950,77.0890">📍 DLF CyberCity (Gurugram)</option>
+                <option value="28.5680,77.2430">📍 Lajpat Nagar (South Delhi)</option>
+                <option value="28.6650,77.2320">📍 Kashmere Gate (North Delhi)</option>
+                <option value="28.7150,77.1210">📍 Rohini Sector 11 (NW Delhi)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <button id="btn-use-live-gps" type="button" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm" title="Detect your actual browser GPS location">
+            <span>🎯</span>
+            <span id="btn-use-live-gps-text">Use My Live GPS</span>
+          </button>
+
+          <button id="btn-spawn-near-me" type="button" class="px-2.5 py-1 text-xs font-mono font-bold rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] hover:bg-[#FDE68A] flex items-center gap-1 shrink-0 cursor-pointer transition-colors" title="Dynamically shift 3 active pickups within 1.2 - 3.5 km of your position">
+            <span>⚡</span>
+            <span>Spawn Pickups Near Me</span>
+          </button>
+        </div>
+
+        <div id="live-gps-readout" class="font-mono text-[11px] px-2.5 py-1 rounded bg-[#FAF9F6] text-[#141E18] border border-[#DCD9D0] flex items-center gap-1.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-[#1d4ed8] animate-pulse shrink-0"></span>
+          <span id="gps-coords-text" class="truncate">31.2554, 75.7050 • LPU Campus (Simulated)</span>
         </div>
 
       </div>
@@ -197,26 +221,53 @@
         <!-- Map Canvas -->
         <div id="relief-map" class="w-full h-full z-10"></div>
 
-        <!-- Map Key (Top Right - keeps top-left clear for Leaflet zoom buttons) -->
-        <div class="absolute top-3 right-3 z-[400] bg-white/95 border border-[#DCD9D0] p-2.5 rounded text-[10px] font-mono space-y-1 shadow-sm hidden sm:block">
-          <div class="font-bold text-[#141E18] uppercase tracking-wider border-b border-[#DCD9D0] pb-1">
-            Map Legend
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#1d4ed8] shrink-0"></span>
-            <span class="text-[#525B55]">Your Location (drag to move)</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#1B4332] shrink-0"></span>
-            <span class="text-[#525B55]">Available Food</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#B45309] shrink-0"></span>
-            <span class="text-[#525B55]">On the Way</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#0284C7] shrink-0"></span>
-            <span class="text-[#525B55]">Hunger Relief Shelter</span>
+        <!-- Dynamic Context-Aware Map Legend (Top Right) -->
+        <div id="dynamic-map-legend" class="absolute top-3 right-3 z-[400] bg-white/95 backdrop-blur-sm border border-[#DCD9D0] p-3 rounded text-[10px] font-mono shadow-md w-64 sm:w-72 hidden sm:block transition-all">
+          <div id="legend-content">
+            <!-- Dynamically populated and morphed by js/volunteer.js -->
+            <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5 mb-2">
+              <span class="font-bold text-[#141E18] uppercase tracking-wider">Map Legend</span>
+              <span id="legend-filter-badge" class="px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] text-[9px] font-bold">
+                VIEWING: ALL
+              </span>
+            </div>
+            <div class="space-y-1.5" id="legend-rows">
+              <div id="legend-row-courier" class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#1d4ed8] shrink-0"></span>
+                  <span class="text-[#525B55]">Your Courier Location</span>
+                </div>
+                <span class="text-[9px] text-[#1d4ed8] font-bold">Active</span>
+              </div>
+              <div id="legend-row-available" class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#1B4332] shrink-0"></span>
+                  <span class="text-[#525B55]">Available Food</span>
+                </div>
+                <span id="legend-count-available" class="text-[9px] font-bold text-[#1B4332]">0</span>
+              </div>
+              <div id="legend-row-intransit" class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#B45309] shrink-0"></span>
+                  <span class="text-[#525B55]">On the Way</span>
+                </div>
+                <span id="legend-count-intransit" class="text-[9px] font-bold text-[#B45309]">0</span>
+              </div>
+              <div id="legend-row-delivered" class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#525B55] shrink-0"></span>
+                  <span class="text-[#525B55]">Delivered</span>
+                </div>
+                <span id="legend-count-delivered" class="text-[9px] font-bold text-[#525B55]">0</span>
+              </div>
+              <div id="legend-row-shelter" class="flex items-center justify-between pt-1 border-t border-[#DCD9D0]/60">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#0284C7] shrink-0"></span>
+                  <span class="text-[#525B55]">Hunger Relief Shelters</span>
+                </div>
+                <span id="legend-count-shelter" class="text-[9px] font-bold text-[#0284C7]">7 Hubs</span>
+              </div>
+            </div>
           </div>
         </div>
 

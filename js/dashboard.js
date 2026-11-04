@@ -635,7 +635,7 @@
     });
 
     window.addEventListener('storage', function (e) {
-      if (e.key === 'bhojvayasta_dispatches') {
+      if (e.key === 'bhojvayasta_dispatches_v2' || e.key === 'bhojvayasta_dispatches') {
         updateKPIs();
         updateCharts();
         renderLedger();

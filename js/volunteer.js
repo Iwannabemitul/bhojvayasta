@@ -14,8 +14,9 @@
   let donorMarkerMap = new Map();
   let shelterMarkerList = [];
   let routeLayerGroup = null;
+  let gpsAccuracyCircle = null;
 
-  let courierCoords = { lat: 28.6139, lng: 77.2090 }; // Connaught Place default
+  let courierCoords = { lat: 31.2554, lng: 75.7050 }; // LPU Campus / Phagwara Highway default
   let volunteerName = 'Arjun Mehta (Verified Courier)';
   let currentStatusFilter = 'all';
   let currentTypeFilter = 'all';
@@ -90,18 +91,20 @@
   function createCourierMarker() {
     if (!reliefMap) return;
 
+    // Precision Anchored SVG Navigation Arrow with Pulsing Radar Ring
     const courierIcon = L.divIcon({
       className: 'bhoj-pin-wrapper',
       html: `
-        <div class="bhoj-pin-body" style="background: #1d4ed8; border: 2px solid #FFFFFF;">
-          <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        <div class="courier-radar-ring"></div>
+        <div class="bhoj-courier-pin-body">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
           </svg>
         </div>
       `,
       iconSize: [36, 36],
-      iconAnchor: [18, 32],
-      popupAnchor: [0, -30]
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -18]
     });
 
     courierMarker = L.marker([courierCoords.lat, courierCoords.lng], {
@@ -112,8 +115,8 @@
 
     courierMarker.bindPopup(`
       <div class="text-xs space-y-1">
-        <strong class="text-[#1d4ed8]">Your Location</strong>
-        <p class="text-[#525B55]">Drag this pin anywhere in Delhi/NCR to see live distances update.</p>
+        <strong class="text-[#1d4ed8]">Your Courier Position</strong>
+        <p class="text-[#525B55]">Drag this pin anywhere or click "Use My Live GPS" to track local relief logistics.</p>
       </div>
     `);
 
@@ -128,7 +131,18 @@
       courierCoords.lat = pos.lat;
       courierCoords.lng = pos.lng;
 
+      if (gpsAccuracyCircle && reliefMap) {
+        reliefMap.removeLayer(gpsAccuracyCircle);
+        gpsAccuracyCircle = null;
+      }
+
+      const gpsCoordsText = document.getElementById('gps-coords-text');
+      if (gpsCoordsText) {
+        gpsCoordsText.textContent = `${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)} • Custom Position (Dragged)`;
+      }
+
       renderFeed();
+      refreshDonorMarkers();
 
       if (activeSelectedDispatchId) {
         const item = global.BhojStore ? global.BhojStore.getDispatchById(activeSelectedDispatchId) : null;
@@ -136,7 +150,7 @@
       }
 
       if (global.BhojToast) {
-        global.BhojToast.info(`Location updated to [${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}]`);
+        global.BhojToast.info(`Courier moved to [${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}]`);
       }
     });
   }
@@ -158,18 +172,21 @@
             </svg>
           </div>
         `,
-        iconSize: [34, 34],
-        iconAnchor: [17, 30],
-        popupAnchor: [0, -28]
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -18]
       });
 
       const marker = L.marker([shelter.lat, shelter.lng], { icon: shelterIcon }).addTo(reliefMap);
 
       marker.bindPopup(`
         <div class="space-y-1 text-xs">
-          <span class="font-mono text-[10px] uppercase font-bold text-[#0284C7] px-1.5 py-0.5 bg-[#F0F9FF] border border-[#BAE6FD] rounded">
-            ${shelter.category}
-          </span>
+          <div class="flex items-center justify-between gap-1">
+            <span class="font-mono text-[10px] uppercase font-bold text-[#0284C7] px-1.5 py-0.5 bg-[#F0F9FF] border border-[#BAE6FD] rounded">
+              ${shelter.category}
+            </span>
+            <span class="font-mono text-[9px] text-[#525B55]">${shelter.region || 'Regional Hub'}</span>
+          </div>
           <h4 class="font-bold text-[#141E18] text-sm mt-1">${shelter.name}</h4>
           <p class="text-[#525B55]">${shelter.address}</p>
           <div class="pt-1 border-t border-[#DCD9D0] flex items-center justify-between text-[11px] font-mono">
@@ -192,6 +209,14 @@
     const dispatches = global.BhojStore.getDispatches();
 
     dispatches.forEach((item) => {
+      // 1. Context-Aware Filter Gate: Only show pins matching active status & food type filters
+      if (currentStatusFilter !== 'all' && item.status.toLowerCase() !== currentStatusFilter.toLowerCase()) {
+        return;
+      }
+      if (currentTypeFilter !== 'all' && item.foodType.toLowerCase() !== currentTypeFilter.toLowerCase()) {
+        return;
+      }
+
       const expiry = global.BhojStore.getExpiryStatus(item);
       const isUrgent = expiry.isUrgent && item.status === 'Available';
 
@@ -211,10 +236,14 @@
         pinThemeClass = 'pin-delivered';
       }
 
+      const distanceToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
+
+      // Precision Centered DivIcon with Floating Information Mini-Badge
       const donorIcon = L.divIcon({
         className: 'bhoj-pin-wrapper',
         html: `
           ${pulseRingHtml}
+          <div class="bhoj-pin-badge">${item.servings} serv • ${distanceToDonor} km</div>
           <div class="bhoj-pin-body ${pinThemeClass}">
             <svg class="bhoj-pin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -222,13 +251,11 @@
           </div>
         `,
         iconSize: [36, 36],
-        iconAnchor: [18, 32],
-        popupAnchor: [0, -30]
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -18]
       });
 
       const marker = L.marker([item.lat, item.lng], { icon: donorIcon }).addTo(reliefMap);
-
-      const distanceToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, item.lat, item.lng);
 
       marker.bindPopup(`
         <div class="space-y-2 text-xs">
@@ -275,12 +302,24 @@
 
       donorMarkerMap.set(item.id, marker);
     });
+
+    // Update the dynamic legend to reflect current filter counts and active status
+    if (activeSelectedDispatchId) {
+      const selectedItem = global.BhojStore.getDispatchById(activeSelectedDispatchId);
+      if (selectedItem) {
+        drawRoute(selectedItem);
+      } else {
+        updateDynamicLegend();
+      }
+    } else {
+      updateDynamicLegend();
+    }
   }
 
   // ==========================================
-  // 3. Routing (Courier -> Donor -> Shelter)
+  // 3. Routing (OSRM Real Street-Level Routing)
   // ==========================================
-  function drawRoute(dispatch) {
+  async function drawRoute(dispatch) {
     if (!reliefMap || !routeLayerGroup || !global.BhojStore) return;
 
     routeLayerGroup.clearLayers();
@@ -308,28 +347,99 @@
     const donorPoint = [dispatch.lat, dispatch.lng];
     const shelterPoint = [targetShelter.lat, targetShelter.lng];
 
-    const distCourierToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, dispatch.lat, dispatch.lng);
-    const timeCourierToDonor = estimateTravelTimeMinutes(distCourierToDonor);
-    const distDonorToShelter = calculateDistanceKm(dispatch.lat, dispatch.lng, targetShelter.lat, targetShelter.lng);
+    let distCourierToDonor = calculateDistanceKm(courierCoords.lat, courierCoords.lng, dispatch.lat, dispatch.lng);
+    let timeCourierToDonor = estimateTravelTimeMinutes(distCourierToDonor);
+    let distDonorToShelter = calculateDistanceKm(dispatch.lat, dispatch.lng, targetShelter.lat, targetShelter.lng);
 
-    // Leg 1: Blue dashed polyline (Courier -> Donor)
-    const leg1Line = L.polyline([courierPoint, donorPoint], {
-      color: '#1d4ed8',
-      weight: 3.5,
-      opacity: 0.85,
-      dashArray: '6, 6'
-    }).addTo(routeLayerGroup);
+    let osrmSucceeded = false;
 
-    // Leg 2: Terracotta dashed polyline (Donor -> Shelter)
-    const leg2Line = L.polyline([donorPoint, shelterPoint], {
-      color: '#C84B31',
-      weight: 3.5,
-      opacity: 0.85,
-      dashArray: '6, 6'
-    }).addTo(routeLayerGroup);
+    // Real Street Routing via Public OSRM API (Free, high-speed, no API key needed)
+    try {
+      const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${courierCoords.lng},${courierCoords.lat};${dispatch.lng},${dispatch.lat};${targetShelter.lng},${targetShelter.lat}?overview=full&geometries=geojson&steps=false`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-    const group = L.featureGroup([leg1Line, leg2Line]);
-    reliefMap.fitBounds(group.getBounds(), { padding: [40, 40], maxZoom: 14 });
+      const res = await fetch(osrmUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.code === 'Ok' && data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+
+          if (route.legs && route.legs.length >= 2) {
+            const leg1 = route.legs[0];
+            const leg2 = route.legs[1];
+
+            distCourierToDonor = parseFloat((leg1.distance / 1000).toFixed(1));
+            timeCourierToDonor = Math.max(3, Math.round(leg1.duration / 60));
+            distDonorToShelter = parseFloat((leg2.distance / 1000).toFixed(1));
+
+            if (route.geometry && route.geometry.coordinates) {
+              const allCoords = route.geometry.coordinates.map((c) => [c[1], c[0]]);
+
+              let splitIdx = 0;
+              let minDistToDonor = Infinity;
+              allCoords.forEach((pt, i) => {
+                const d = Math.hypot(pt[0] - dispatch.lat, pt[1] - dispatch.lng);
+                if (d < minDistToDonor) {
+                  minDistToDonor = d;
+                  splitIdx = i;
+                }
+              });
+
+              const leg1Coords = allCoords.slice(0, splitIdx + 1);
+              const leg2Coords = allCoords.slice(splitIdx);
+
+              // Leg 1: Solid Royal Blue along real streets
+              const leg1Line = L.polyline(leg1Coords.length > 1 ? leg1Coords : [courierPoint, donorPoint], {
+                color: '#1d4ed8',
+                weight: 4,
+                opacity: 0.95,
+                lineCap: 'round',
+                lineJoin: 'round'
+              }).addTo(routeLayerGroup);
+
+              // Leg 2: Dashed Terracotta along real streets
+              const leg2Line = L.polyline(leg2Coords.length > 1 ? leg2Coords : [donorPoint, shelterPoint], {
+                color: '#C84B31',
+                weight: 4,
+                opacity: 0.95,
+                dashArray: '6, 8',
+                lineCap: 'round',
+                lineJoin: 'round'
+              }).addTo(routeLayerGroup);
+
+              const group = L.featureGroup([leg1Line, leg2Line]);
+              reliefMap.fitBounds(group.getBounds(), { padding: [65, 65], maxZoom: 15 });
+              osrmSucceeded = true;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[BhojVolunteer] OSRM routing unavailable, falling back to straight polylines:', err);
+    }
+
+    if (!osrmSucceeded) {
+      // Fallback: Straight polylines
+      const leg1Line = L.polyline([courierPoint, donorPoint], {
+        color: '#1d4ed8',
+        weight: 3.5,
+        opacity: 0.9,
+        dashArray: '6, 6'
+      }).addTo(routeLayerGroup);
+
+      const leg2Line = L.polyline([donorPoint, shelterPoint], {
+        color: '#C84B31',
+        weight: 3.5,
+        opacity: 0.9,
+        dashArray: '6, 6'
+      }).addTo(routeLayerGroup);
+
+      const group = L.featureGroup([leg1Line, leg2Line]);
+      reliefMap.fitBounds(group.getBounds(), { padding: [65, 65], maxZoom: 14 });
+    }
 
     const overlay = document.getElementById('route-summary-overlay');
     if (overlay) {
@@ -357,7 +467,164 @@
 
       overlay.classList.remove('hidden');
     }
+
+    // Morph the Map Legend into Active Route Inspection Mode
+    updateDynamicLegend(dispatch, targetShelter, distCourierToDonor, timeCourierToDonor, distDonorToShelter);
   }
+
+  // ==========================================
+  // 3b. Context-Aware Dynamic Map Legend
+  // ==========================================
+  function updateDynamicLegend(selectedDispatch = null, targetShelter = null, distLeg1 = 0, timeLeg1 = 0, distLeg2 = 0) {
+    const legendContent = document.getElementById('legend-content');
+    if (!legendContent || !global.BhojStore) return;
+
+    const dispatches = global.BhojStore.getDispatches();
+    const shelters = global.BhojStore.getShelters();
+
+    const countAvailable = dispatches.filter((d) => d.status === 'Available').length;
+    const countInTransit = dispatches.filter((d) => d.status === 'In-Transit').length;
+    const countDelivered = dispatches.filter((d) => d.status === 'Delivered').length;
+
+    if (selectedDispatch) {
+      // ACTIVE ROUTE INSPECTION MODE
+      legendContent.innerHTML = `
+        <div class="space-y-2">
+          <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5">
+            <span class="font-bold text-[#141E18] uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#1B4332] animate-pulse"></span>
+              Route Inspection
+            </span>
+            <button type="button" onclick="window.BhojClearRouteSelection()" class="text-[10px] text-[#C84B31] hover:underline font-bold cursor-pointer">
+              ✕ Clear / Show All
+            </button>
+          </div>
+
+          <div class="bg-[#FAF9F6] p-2 rounded border border-[#DCD9D0] space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-mono font-bold text-[#141E18] text-[11px]">${selectedDispatch.id}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                selectedDispatch.status === 'Available' ? 'bg-[#E8F3EE] text-[#1B4332]' : 'bg-[#FEF3C7] text-[#B45309]'
+              }">${selectedDispatch.status}</span>
+            </div>
+            <div class="font-bold text-[#141E18] text-xs truncate">${selectedDispatch.donorName}</div>
+            <div class="text-[10px] text-[#525B55]">
+              ${selectedDispatch.servings} serv (~${((selectedDispatch.servings * 0.45).toFixed(1))} kg) • ${selectedDispatch.storageTemp || 'Temp OK'}
+            </div>
+          </div>
+
+          <div class="space-y-1.5 text-[10px]">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1 text-[#525B55]">
+                <span class="w-2 h-2 rounded-full bg-[#1d4ed8]"></span>
+                Courier ➔ Donor:
+              </span>
+              <strong class="text-[#1d4ed8] font-mono">${distLeg1} km (${timeLeg1}m)</strong>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1 text-[#525B55] truncate max-w-[170px]" title="${targetShelter ? targetShelter.name : 'Shelter'}">
+                <span class="w-2 h-2 rounded-full bg-[#C84B31]"></span>
+                Donor ➔ ${targetShelter ? targetShelter.name : 'Shelter'}:
+              </span>
+              <strong class="text-[#C84B31] font-mono shrink-0">${distLeg2} km</strong>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Dim all non-selected donor markers on the map
+      donorMarkerMap.forEach((marker, id) => {
+        const el = marker.getElement();
+        if (el) {
+          if (id === selectedDispatch.id) {
+            el.classList.remove('marker-dimmed');
+          } else {
+            el.classList.add('marker-dimmed');
+          }
+        }
+      });
+
+    } else {
+      // NORMAL FILTER-AWARE MODE
+      // Undim all markers
+      donorMarkerMap.forEach((marker) => {
+        const el = marker.getElement();
+        if (el) el.classList.remove('marker-dimmed');
+      });
+
+      let filterLabel = 'VIEWING: ALL';
+      if (currentStatusFilter === 'Available') filterLabel = `VIEWING: AVAILABLE (${countAvailable})`;
+      else if (currentStatusFilter === 'In-Transit') filterLabel = `VIEWING: ON THE WAY (${countInTransit})`;
+      else if (currentStatusFilter === 'Delivered') filterLabel = `VIEWING: DELIVERED (${countDelivered})`;
+      else if (currentTypeFilter !== 'all') filterLabel = `VIEWING: ${currentTypeFilter.toUpperCase()}`;
+
+      const isAvailableDimmed = currentStatusFilter !== 'all' && currentStatusFilter !== 'Available';
+      const isInTransitDimmed = currentStatusFilter !== 'all' && currentStatusFilter !== 'In-Transit';
+      const isDeliveredDimmed = currentStatusFilter !== 'all' && currentStatusFilter !== 'Delivered';
+
+      legendContent.innerHTML = `
+        <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5 mb-2">
+          <span class="font-bold text-[#141E18] uppercase tracking-wider">Map Legend</span>
+          <span class="px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] text-[9px] font-bold">
+            ${filterLabel}
+          </span>
+        </div>
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#1d4ed8] shrink-0"></span>
+              <span class="text-[#525B55]">Your Courier Location</span>
+            </div>
+            <span class="text-[9px] text-[#1d4ed8] font-bold">Active</span>
+          </div>
+          <div class="flex items-center justify-between ${isAvailableDimmed ? 'opacity-35' : ''}">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#1B4332] shrink-0"></span>
+              <span class="text-[#525B55]">Available Food</span>
+            </div>
+            <span class="text-[9px] font-bold text-[#1B4332]">${countAvailable}</span>
+          </div>
+          <div class="flex items-center justify-between ${isInTransitDimmed ? 'opacity-35' : ''}">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#B45309] shrink-0"></span>
+              <span class="text-[#525B55]">On the Way</span>
+            </div>
+            <span class="text-[9px] font-bold text-[#B45309]">${countInTransit}</span>
+          </div>
+          <div class="flex items-center justify-between ${isDeliveredDimmed ? 'opacity-35' : ''}">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#525B55] shrink-0"></span>
+              <span class="text-[#525B55]">Delivered</span>
+            </div>
+            <span class="text-[9px] font-bold text-[#525B55]">${countDelivered}</span>
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t border-[#DCD9D0]/60">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#0284C7] shrink-0"></span>
+              <span class="text-[#525B55]">Hunger Relief Shelters</span>
+            </div>
+            <span class="text-[9px] font-bold text-[#0284C7]">${shelters.length} Hubs</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  global.BhojClearRouteSelection = function () {
+    activeSelectedDispatchId = null;
+    if (routeLayerGroup) routeLayerGroup.clearLayers();
+    const overlay = document.getElementById('route-summary-overlay');
+    if (overlay) overlay.classList.add('hidden');
+
+    document.querySelectorAll('.courier-card').forEach((c) => {
+      c.classList.remove('bg-[#F0FDF4]', 'border-l-4', 'border-l-[#1B4332]');
+    });
+
+    updateDynamicLegend();
+    if (reliefMap) {
+      reliefMap.panTo([courierCoords.lat, courierCoords.lng]);
+    }
+  };
 
   function focusOnDispatch(id, scrollFeed = true) {
     if (!id || !global.BhojStore) return;
@@ -804,17 +1071,136 @@
           courierCoords.lat = lat;
           courierCoords.lng = lng;
 
+          if (gpsAccuracyCircle && reliefMap) {
+            reliefMap.removeLayer(gpsAccuracyCircle);
+            gpsAccuracyCircle = null;
+          }
+
           if (courierMarker && reliefMap) {
             courierMarker.setLatLng([lat, lng]);
-            reliefMap.panTo([lat, lng]);
+            reliefMap.flyTo([lat, lng], 13, { duration: 1.2 });
+          }
+
+          const selectedOption = this.options[this.selectedIndex];
+          const optText = selectedOption ? selectedOption.text.replace('📍 ', '') : 'Custom Location';
+          const gpsCoordsText = document.getElementById('gps-coords-text');
+          if (gpsCoordsText) {
+            gpsCoordsText.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)} • ${optText}`;
           }
 
           renderFeed();
+          refreshDonorMarkers();
 
           if (activeSelectedDispatchId && global.BhojStore) {
             const item = global.BhojStore.getDispatchById(activeSelectedDispatchId);
             if (item) drawRoute(item);
           }
+        }
+      });
+    }
+
+    // Live Browser Geolocation Button
+    const liveGpsBtn = document.getElementById('btn-use-live-gps');
+    const liveGpsBtnText = document.getElementById('btn-use-live-gps-text');
+    const gpsCoordsText = document.getElementById('gps-coords-text');
+
+    if (liveGpsBtn) {
+      liveGpsBtn.addEventListener('click', function () {
+        if (!navigator.geolocation) {
+          if (global.BhojToast) global.BhojToast.error('Geolocation is not supported by your browser.');
+          return;
+        }
+
+        if (liveGpsBtnText) liveGpsBtnText.textContent = 'Acquiring GPS fix...';
+        liveGpsBtn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+          async function (pos) {
+            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use My Live GPS';
+            liveGpsBtn.disabled = false;
+
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const accuracy = Math.round(pos.coords.accuracy || 25);
+
+            courierCoords.lat = lat;
+            courierCoords.lng = lng;
+
+            if (courierMarker) {
+              courierMarker.setLatLng([lat, lng]);
+            }
+
+            if (gpsAccuracyCircle && reliefMap) {
+              reliefMap.removeLayer(gpsAccuracyCircle);
+            }
+
+            if (reliefMap) {
+              gpsAccuracyCircle = L.circle([lat, lng], {
+                radius: accuracy,
+                color: '#1d4ed8',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.12,
+                weight: 1.5,
+                dashArray: '4, 4'
+              }).addTo(reliefMap);
+
+              reliefMap.flyTo([lat, lng], 14, { duration: 1.2 });
+            }
+
+            let areaName = 'Live GPS Position';
+            try {
+              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
+                headers: { 'Accept': 'application/json' }
+              });
+              if (res.ok) {
+                const data = await res.json();
+                areaName = (data.address ? `${data.address.suburb || data.address.neighbourhood || data.address.road || ''}, ${data.address.city || data.address.town || data.address.state || ''}` : data.display_name.split(',')[0]) || 'Live GPS Position';
+              }
+            } catch (e) {
+              console.warn('[BhojVolunteer] Nominatim reverse geocode error:', e);
+            }
+
+            if (gpsCoordsText) {
+              gpsCoordsText.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)} • ${areaName} (±${accuracy}m)`;
+            }
+
+            renderFeed();
+            refreshDonorMarkers();
+
+            if (activeSelectedDispatchId && global.BhojStore) {
+              const item = global.BhojStore.getDispatchById(activeSelectedDispatchId);
+              if (item) drawRoute(item);
+            }
+
+            if (global.BhojToast) {
+              global.BhojToast.success(`Live GPS acquired: ${areaName} (±${accuracy}m)`);
+            }
+          },
+          function (err) {
+            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use My Live GPS';
+            liveGpsBtn.disabled = false;
+            console.warn('[BhojVolunteer] Geolocation error:', err);
+            if (global.BhojToast) {
+              global.BhojToast.error('Could not get GPS fix. Please select a preset location from the dropdown.');
+            }
+          },
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        );
+      });
+    }
+
+    // Spawn Pickups Near Me Quick Button
+    const spawnBtn = document.getElementById('btn-spawn-near-me');
+    if (spawnBtn) {
+      spawnBtn.addEventListener('click', function () {
+        if (!global.BhojStore || typeof global.BhojStore.spawnPickupsNear !== 'function') return;
+
+        global.BhojStore.spawnPickupsNear(courierCoords.lat, courierCoords.lng);
+        renderFeed();
+        refreshDonorMarkers();
+
+        if (global.BhojToast) {
+          global.BhojToast.success('⚡ Generated 3 active pickups within 1.2 – 3.5 km of your position!');
         }
       });
     }
@@ -834,6 +1220,7 @@
         btn.className = 'feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0';
 
         renderFeed();
+        refreshDonorMarkers();
       });
     }
 
@@ -842,6 +1229,7 @@
       typeSelect.addEventListener('change', function () {
         currentTypeFilter = this.value;
         renderFeed();
+        refreshDonorMarkers();
       });
     }
 
@@ -896,7 +1284,7 @@
     });
 
     window.addEventListener('storage', function (e) {
-      if (e.key === 'bhojvayasta_dispatches') {
+      if (e.key === 'bhojvayasta_dispatches_v2' || e.key === 'bhojvayasta_dispatches') {
         renderFeed();
         refreshDonorMarkers();
       }

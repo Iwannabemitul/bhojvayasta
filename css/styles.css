@@ -288,6 +288,82 @@ body {
   border: 2px solid #FFFFFF;
 }
 
+/* Courier Specific Precision Marker Body & Compass */
+.bhoj-courier-pin-body {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1d4ed8;
+  border: 2.5px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.35);
+  z-index: 5;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.bhoj-pin-wrapper:hover .bhoj-courier-pin-body {
+  transform: scale(1.15);
+}
+
+/* Pulsing Radar Ring for Active Courier */
+.courier-radar-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #1d4ed8;
+  background-color: rgba(29, 78, 216, 0.2);
+  animation: courierRadar 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes courierRadar {
+  0% {
+    width: 28px;
+    height: 28px;
+    opacity: 0.95;
+  }
+  100% {
+    width: 68px;
+    height: 68px;
+    opacity: 0;
+  }
+}
+
+/* Floating Mini Badge above Map Markers */
+.bhoj-pin-badge {
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-hairline);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--color-ink-primary);
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(20, 30, 24, 0.12);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Dimmed State for Inactive Markers During Inspection Mode */
+.marker-dimmed {
+  opacity: 0.35 !important;
+  filter: grayscale(40%) !important;
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+
 /* Pulsing Ripple for Urgent Food */
 .urgent-pulse-ring {
   position: absolute;

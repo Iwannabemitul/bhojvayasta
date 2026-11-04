@@ -185,8 +185,8 @@
           </div>
         `,
         iconSize: [36, 36],
-        iconAnchor: [18, 32],
-        popupAnchor: [0, -30]
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -18]
       });
 
       donorMarker = L.marker([DEFAULT_LAT, DEFAULT_LNG], {
@@ -205,6 +205,68 @@
         donorMarker.setLatLng(e.latlng);
         setCoordinates(e.latlng.lat, e.latlng.lng);
       });
+
+      // Browser Live Geolocation Button Handler
+      const gpsBtn = document.getElementById('btn-donor-gps');
+      const gpsBtnText = document.getElementById('btn-donor-gps-text');
+
+      if (gpsBtn) {
+        gpsBtn.addEventListener('click', function () {
+          if (!navigator.geolocation) {
+            if (global.BhojToast) global.BhojToast.error('Geolocation is not supported by your browser.');
+            return;
+          }
+
+          if (gpsBtnText) gpsBtnText.textContent = 'Acquiring GPS fix...';
+          gpsBtn.disabled = true;
+
+          navigator.geolocation.getCurrentPosition(
+            async function (pos) {
+              if (gpsBtnText) gpsBtnText.textContent = 'Use My Current GPS Location';
+              gpsBtn.disabled = false;
+
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              const accuracy = Math.round(pos.coords.accuracy || 25);
+
+              donorMarker.setLatLng([lat, lng]);
+              donorMap.flyTo([lat, lng], 14, { duration: 1.2 });
+              setCoordinates(lat, lng);
+
+              // Attempt Nominatim reverse geocode
+              try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
+                  headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  const address = data.display_name || (data.address ? `${data.address.road || ''}, ${data.address.suburb || data.address.city || ''}` : '');
+                  if (address) {
+                    setCoordinates(lat, lng, address);
+                    if (global.BhojToast) global.BhojToast.success(`Located at ${address.split(',')[0]} (±${accuracy}m)`);
+                    return;
+                  }
+                }
+              } catch (geoErr) {
+                console.warn('[BhojDonate] Reverse geocode error:', geoErr);
+              }
+
+              if (global.BhojToast) {
+                global.BhojToast.success(`GPS coordinates captured: [${lat.toFixed(4)}, ${lng.toFixed(4)}] (±${accuracy}m)`);
+              }
+            },
+            function (err) {
+              if (gpsBtnText) gpsBtnText.textContent = 'Use My Current GPS Location';
+              gpsBtn.disabled = false;
+              console.warn('[BhojDonate] Geolocation error:', err);
+              if (global.BhojToast) {
+                global.BhojToast.error('Could not get GPS fix. Please select a quick preset or click on the map.');
+              }
+            },
+            { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+          );
+        });
+      }
 
       const presetContainer = document.getElementById('location-presets');
       if (presetContainer) {
