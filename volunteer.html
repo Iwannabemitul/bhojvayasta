@@ -70,25 +70,23 @@
   <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex-grow flex flex-col">
     
     <!-- ====================================================================
-         1. STATIC TOP CONTROL BAR (Zero mid-screen sticky collisions)
+         1. STREAMLINED 2-TIER COURIER CONTROL BAR (Model B App-Shell)
          ==================================================================== -->
-    <section class="card-surface p-4 mb-6 rounded space-y-3">
+    <section class="card-surface p-3 sm:p-4 mb-4 rounded border border-[#DCD9D0] space-y-3">
       
-      <!-- Top Row: Simulator & Live Geolocation Controls -->
-      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-3 border-b border-[#DCD9D0]">
+      <!-- TIER 1: PRIMARY STRIP (Always Visible) -->
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
         
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-          <div class="font-mono text-xs uppercase text-[#525B55] font-semibold">Courier Name:</div>
-          <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Simulated courier name" class="bhoj-input text-xs font-bold text-[#141E18] w-48 sm:w-56 py-1 px-2.5">
-          <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
-            Multi-Region GPS
-          </span>
-        </div>
-
+        <!-- Left Group: Location Pill & Live GPS -->
         <div class="flex flex-wrap items-center gap-2">
-          <div class="flex items-center gap-1.5">
-            <span class="font-mono text-xs uppercase text-[#525B55] font-semibold">Location:</span>
-            <select id="courier-location-select" class="bhoj-input text-xs font-medium text-[#141E18] py-1 px-2.5 bg-white cursor-pointer w-auto">
+          
+          <div class="flex items-center gap-1.5 bg-[#FAF9F6] border border-[#DCD9D0] rounded px-2.5 py-1">
+            <svg class="w-3.5 h-3.5 text-[#C84B31] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="font-mono text-[11px] uppercase text-[#525B55] font-semibold">City:</span>
+            <select id="courier-location-select" class="bg-transparent text-xs font-semibold text-[#141E18] focus:outline-none cursor-pointer">
               <optgroup label="Jalandhar / Phagwara Region">
                 <option value="31.2554,75.7050" selected>LPU Campus / Phagwara Highway</option>
                 <option value="31.3260,75.5762">Model Town / BMC Chowk (Jalandhar)</option>
@@ -105,14 +103,103 @@
             </select>
           </div>
 
-          <button id="btn-use-live-gps" type="button" class="btn-primary px-3 py-1 text-xs font-semibold flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm" title="Detect your actual browser GPS location">
+          <button id="btn-use-live-gps" type="button" class="btn-primary px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm" title="Detect your actual browser GPS location">
             <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="8" stroke-width="2"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
             </svg>
-            <span id="btn-use-live-gps-text">Use Live GPS</span>
+            <span id="btn-use-live-gps-text">Live GPS</span>
           </button>
 
+          <div id="live-gps-readout" class="font-mono text-[11px] px-2.5 py-1.5 rounded bg-[#FAF9F6] text-[#141E18] border border-[#DCD9D0] flex items-center gap-1.5 max-w-[260px] sm:max-w-xs overflow-hidden text-ellipsis whitespace-nowrap" title="Current Coordinates & Locality">
+            <span class="w-2 h-2 rounded-full bg-[#1d4ed8] animate-pulse shrink-0"></span>
+            <span id="gps-coords-text" class="truncate">31.2554, 75.7050 &bull; LPU Campus</span>
+          </div>
+
+        </div>
+
+        <!-- Right Group: Status Filters & Search & Drawer Toggle -->
+        <div class="flex flex-wrap items-center gap-2">
+          
+          <!-- Status Chips -->
+          <div class="flex items-center gap-1 overflow-x-auto" id="feed-status-filters">
+            <button data-status="all" class="feed-filter-btn px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0 transition-colors">
+              All (<span id="count-status-all">0</span>)
+            </button>
+            <button data-status="Available" class="feed-filter-btn px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0 transition-colors">
+              Available (<span id="count-status-available">0</span>)
+            </button>
+            <button data-status="In-Transit" class="feed-filter-btn px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0 transition-colors">
+              On the Way (<span id="count-status-intransit">0</span>)
+            </button>
+            <button data-status="Delivered" class="feed-filter-btn px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0 transition-colors">
+              Delivered (<span id="count-status-delivered">0</span>)
+            </button>
+          </div>
+
+          <!-- Quick Search -->
+          <div class="w-36 sm:w-44">
+            <input id="feed-search-input" type="text" placeholder="Search dish, donor..." class="bhoj-input py-1 px-2.5 text-xs">
+          </div>
+
+          <!-- Tier 2 Toggle Button -->
+          <button id="btn-toggle-filters-drawer" type="button" class="px-2.5 py-1.5 text-xs font-mono font-semibold rounded bg-[#FAF9F6] hover:bg-[#EFECE6] text-[#141E18] border border-[#DCD9D0] flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer" title="Toggle Radius, Food Category, Sort & Simulation Options">
+            <svg class="w-3.5 h-3.5 text-[#525B55]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            <span>Filters</span>
+            <span id="filters-badge" class="hidden w-2 h-2 rounded-full bg-[#C84B31]"></span>
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- TIER 2: COLLAPSIBLE SECONDARY SETTINGS & SIMULATION DRAWER -->
+      <div id="toolbar-secondary-drawer" class="hidden pt-3 border-t border-[#DCD9D0] flex flex-wrap items-center justify-between gap-3 text-xs bg-[#FAF9F6] p-3 rounded">
+        
+        <div class="flex flex-wrap items-center gap-3">
+          
+          <!-- Operational Radius -->
+          <div class="flex items-center gap-1.5 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px] uppercase">Radius:</span>
+            <select id="feed-radius-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
+              <option value="25">Within 25 km</option>
+              <option value="50" selected>Within 50 km (Local Hub)</option>
+              <option value="all">All Locations (Cross-City)</option>
+            </select>
+          </div>
+
+          <!-- Food Type -->
+          <div class="flex items-center gap-1.5 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px] uppercase">Type:</span>
+            <select id="feed-type-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
+              <option value="all">All Food Types</option>
+              <option value="Cooked Meals">Cooked Meals</option>
+              <option value="Raw Produce">Raw Produce</option>
+            </select>
+          </div>
+
+          <!-- Sort -->
+          <div class="flex items-center gap-1.5 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px] uppercase">Sort:</span>
+            <select id="feed-sort-select" class="bg-transparent text-[#C84B31] font-semibold focus:outline-none cursor-pointer">
+              <option value="nearest">Closest First</option>
+              <option value="urgent">Needs Pickup Soonest</option>
+              <option value="servings">Most Food First</option>
+            </select>
+          </div>
+
+          <!-- Courier Identity -->
+          <div class="flex items-center gap-1.5 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
+            <span class="text-[#525B55] font-mono text-[11px] uppercase">Courier:</span>
+            <input id="courier-name-input" type="text" value="Arjun Mehta (Verified Courier)" title="Simulated courier name" class="bg-transparent text-xs font-bold text-[#141E18] focus:outline-none w-36 sm:w-44">
+          </div>
+
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Simulation Action -->
           <button id="btn-spawn-near-me" type="button" class="px-2.5 py-1 text-xs font-mono font-bold rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] hover:bg-[#FDE68A] flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors" title="Dynamically shift 3 active pickups within 1.2 - 3.5 km of your position">
             <svg class="w-3.5 h-3.5 text-[#B45309] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -121,70 +208,27 @@
           </button>
         </div>
 
-        <div id="live-gps-readout" class="font-mono text-[11px] px-2.5 py-1 rounded bg-[#FAF9F6] text-[#141E18] border border-[#DCD9D0] flex items-center gap-1.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-          <span class="w-2 h-2 rounded-full bg-[#1d4ed8] animate-pulse shrink-0"></span>
-          <span id="gps-coords-text" class="truncate">31.2554, 75.7050 • LPU Campus (Simulated)</span>
-        </div>
-
-      </div>
-
-      <!-- Bottom Row: Filter & Sort Controls -->
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        
-        <!-- Status Tabs -->
-        <div class="flex items-center gap-1.5 overflow-x-auto" id="feed-status-filters">
-          <button data-status="all" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0">
-            All (<span id="count-status-all">0</span>)
-          </button>
-          <button data-status="Available" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
-            Available (<span id="count-status-available">0</span>)
-          </button>
-          <button data-status="In-Transit" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
-            On the Way (<span id="count-status-intransit">0</span>)
-          </button>
-          <button data-status="Delivered" class="feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0">
-            Delivered (<span id="count-status-delivered">0</span>)
-          </button>
-        </div>
-
-        <!-- Secondary Filters & Search -->
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <!-- Operational Proximity Radius Filter -->
-          <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
-            <span class="text-[#525B55] font-mono text-[11px]">Radius:</span>
-            <select id="feed-radius-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
-              <option value="25">Within 25 km</option>
-              <option value="50" selected>Within 50 km</option>
-              <option value="all">All Locations</option>
-            </select>
-          </div>
-
-          <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
-            <span class="text-[#525B55] font-mono text-[11px]">Type:</span>
-            <select id="feed-type-filter" class="bg-transparent text-[#141E18] font-semibold focus:outline-none cursor-pointer">
-              <option value="all">All Types</option>
-              <option value="Cooked Meals">Cooked Meals</option>
-              <option value="Raw Produce">Raw Produce</option>
-            </select>
-          </div>
-
-          <div class="flex items-center gap-1 bg-white border border-[#DCD9D0] rounded px-2.5 py-1">
-            <span class="text-[#525B55] font-mono text-[11px]">Sort:</span>
-            <select id="feed-sort-select" class="bg-transparent text-[#C84B31] font-semibold focus:outline-none cursor-pointer">
-              <option value="nearest">Closest First</option>
-              <option value="urgent">Needs Pickup Soonest</option>
-              <option value="servings">Most Food First</option>
-            </select>
-          </div>
-
-          <div class="w-44 sm:w-52">
-            <input id="feed-search-input" type="text" placeholder="Search dish, donor, or area..." class="bhoj-input py-1 px-2.5 text-xs">
-          </div>
-        </div>
-
       </div>
 
     </section>
+
+    <!-- DONOR BROADCAST BANNER (Rendered when url has mode=donor) -->
+    <div id="donor-broadcast-banner" class="hidden mb-4 p-3.5 bg-[#141E18] text-white rounded border border-[#1B4332] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-2.5 w-2.5 shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10B981]"></span>
+        </span>
+        <div>
+          <span class="font-bold text-[#E8F3EE] uppercase tracking-wider">Broadcast Active:</span>
+          <span id="donor-broadcast-title" class="font-normal text-white ml-1">Dispatch is live on the network</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <span id="donor-broadcast-status-badge" class="px-2 py-0.5 rounded bg-[#1B4332] text-[#E8F3EE] border border-[#A3C9B8] text-[10px] font-bold">Waiting for Courier</span>
+        <button id="btn-dismiss-broadcast" type="button" class="text-xs text-[#DCD9D0] hover:text-white underline cursor-pointer">Courier View</button>
+      </div>
+    </div>
 
     <!-- Mobile / Tablet View Switcher (< 1024px) -->
     <div class="lg:hidden flex items-center bg-[#EFECE6] p-1 rounded border border-[#DCD9D0] mb-4">
@@ -329,7 +373,9 @@
           <h3 class="font-display text-xl font-bold text-[#141E18] mt-1">Where will you deliver this food?</h3>
           <p class="text-xs text-[#525B55]">Select a community shelter or child care home near the donor.</p>
         </div>
-        <button id="modal-shelter-close" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm font-mono p-1">✕</button>
+        <button id="modal-shelter-close" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm p-1 rounded hover:bg-[#EFECE6] transition-colors" aria-label="Close dialog">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <!-- Batch Summary -->

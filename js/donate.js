@@ -675,7 +675,7 @@
         const newDispatch = global.BhojStore.addDispatch(payload);
 
         if (global.BhojToast) {
-          global.BhojToast.success(`Food donation posted! ID: ${newDispatch.id}`);
+          global.BhojToast.success(`Food donation posted! ID: ${newDispatch.id}. Opening live broadcast map...`);
         }
 
         showSuccessModal(newDispatch);
@@ -688,6 +688,11 @@
         updateHygieneGate();
         renderRecentSubmissions();
         goToStep(1, true);
+
+        // Auto-redirect to live map broadcast view after brief celebratory delay
+        setTimeout(() => {
+          window.location.href = `volunteer.html?claim=${newDispatch.id}&mode=donor`;
+        }, 1200);
 
       } catch (err) {
         console.error('[BhojDonate] Error adding dispatch:', err);
@@ -707,7 +712,7 @@
     document.getElementById('modal-success-zone').textContent = dispatch.address;
 
     const btnFeed = document.getElementById('btn-view-on-feed');
-    if (btnFeed) btnFeed.href = `volunteer.html?claim=${dispatch.id}`;
+    if (btnFeed) btnFeed.href = `volunteer.html?claim=${dispatch.id}&mode=donor`;
 
     modal.classList.remove('hidden');
   }

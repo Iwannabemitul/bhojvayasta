@@ -540,8 +540,8 @@
         cta.textContent = 'Accept Pickup on Courier Map';
         cta.classList.remove('hidden');
       } else {
-        cta.href = 'volunteer.html';
-        cta.textContent = 'Open Courier Map';
+        cta.href = `volunteer.html?claim=${dispatch.id}`;
+        cta.textContent = 'View Route on Courier Map';
       }
     }
 

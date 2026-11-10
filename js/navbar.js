@@ -55,7 +55,9 @@
           </svg>
         </div>
         <div class="flex-1 text-xs font-medium leading-snug text-[#141E18]">${message}</div>
-        <button type="button" class="text-[#525B55] hover:text-[#141E18] text-xs font-mono ml-1" aria-label="Close">✕</button>
+        <button type="button" class="text-[#525B55] hover:text-[#141E18] text-xs p-1 ml-1" aria-label="Close">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       `;
 
       const closeBtn = toast.querySelector('button');

@@ -16,6 +16,7 @@
   let shelterMarkerList = [];
   let routeLayerGroup = null;
   let gpsAccuracyCircle = null;
+  let donorRadarCircle = null;
 
   let courierCoords = { lat: 31.2554, lng: 75.7050 }; // LPU Campus / Phagwara Highway default
   let volunteerName = 'Arjun Mehta (Verified Courier)';
@@ -1177,11 +1178,41 @@
       });
     }
 
+    // Toggle Tier 2 Secondary Drawer & Filters Badge
+    const toggleFiltersBtn = document.getElementById('btn-toggle-filters-drawer');
+    const secondaryDrawer = document.getElementById('toolbar-secondary-drawer');
+    const filtersBadge = document.getElementById('filters-badge');
+
+    function updateFiltersBadge() {
+      if (!filtersBadge) return;
+      const isFiltered = (currentRadiusFilter !== '50') || (currentTypeFilter !== 'all') || (currentSortBy !== 'nearest');
+      if (isFiltered) {
+        filtersBadge.classList.remove('hidden');
+      } else {
+        filtersBadge.classList.add('hidden');
+      }
+    }
+
+    if (toggleFiltersBtn && secondaryDrawer) {
+      toggleFiltersBtn.addEventListener('click', function () {
+        secondaryDrawer.classList.toggle('hidden');
+      });
+    }
+
+    // Courier Name Input Listener
+    const courierInput = document.getElementById('courier-name-input');
+    if (courierInput) {
+      courierInput.addEventListener('input', function() {
+        volunteerName = this.value.trim() || 'Arjun Mehta (Verified Courier)';
+      });
+    }
+
     // Operational Proximity Radius Filter
     const radiusFilter = document.getElementById('feed-radius-filter');
     if (radiusFilter) {
       radiusFilter.addEventListener('change', function () {
         currentRadiusFilter = this.value;
+        updateFiltersBadge();
         plotShelterHubs();
         renderFeed();
         refreshDonorMarkers();
@@ -1215,7 +1246,7 @@
 
         navigator.geolocation.getCurrentPosition(
           async function (pos) {
-            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use Live GPS';
+            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Live GPS';
             liveGpsBtn.disabled = false;
 
             const lat = pos.coords.latitude;
@@ -1277,7 +1308,7 @@
             }
           },
           function (err) {
-            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Use Live GPS';
+            if (liveGpsBtnText) liveGpsBtnText.textContent = 'Live GPS';
             liveGpsBtn.disabled = false;
             console.warn('[BhojVolunteer] Geolocation error:', err);
             if (global.BhojToast) {
@@ -1315,10 +1346,10 @@
         currentStatusFilter = btn.getAttribute('data-status');
 
         statusContainer.querySelectorAll('.feed-filter-btn').forEach((b) => {
-          b.className = 'feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0';
+          b.className = 'feed-filter-btn px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-white text-[#525B55] hover:bg-[#EFECE6] border border-[#DCD9D0] shrink-0 transition-colors';
         });
 
-        btn.className = 'feed-filter-btn px-3 py-1 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0';
+        btn.className = 'feed-filter-btn px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-[#141E18] text-white shrink-0 transition-colors';
 
         renderFeed();
         refreshDonorMarkers();
@@ -1329,6 +1360,7 @@
     if (typeSelect) {
       typeSelect.addEventListener('change', function () {
         currentTypeFilter = this.value;
+        updateFiltersBadge();
         renderFeed();
         refreshDonorMarkers();
       });
@@ -1338,6 +1370,7 @@
     if (sortSelect) {
       sortSelect.addEventListener('change', function () {
         currentSortBy = this.value;
+        updateFiltersBadge();
         renderFeed();
       });
     }
@@ -1354,14 +1387,67 @@
   function checkUrlClaim() {
     const params = new URLSearchParams(window.location.search);
     const claimId = params.get('claim') || params.get('id');
+    const mode = params.get('mode');
 
     if (claimId && global.BhojStore) {
       const item = global.BhojStore.getDispatchById(claimId);
       if (item) {
         setTimeout(() => {
-          focusOnDispatch(item.id, true);
-          if (item.status === 'Available') {
-            openShelterAssignModal(item.id);
+          if (mode === 'donor') {
+            // DONOR BROADCAST MODE
+            const banner = document.getElementById('donor-broadcast-banner');
+            const bannerTitle = document.getElementById('donor-broadcast-title');
+            const bannerStatus = document.getElementById('donor-broadcast-status-badge');
+            const dismissBtn = document.getElementById('btn-dismiss-broadcast');
+
+            if (banner) {
+              banner.classList.remove('hidden');
+              if (bannerTitle) {
+                bannerTitle.textContent = `Dispatch #${item.id} (${item.foodTitle}) is live on the network`;
+              }
+              if (bannerStatus) {
+                bannerStatus.textContent = item.status === 'Available' ? 'Waiting for Courier' : item.status;
+              }
+            }
+
+            if (dismissBtn) {
+              dismissBtn.onclick = function() {
+                if (banner) banner.classList.add('hidden');
+                if (donorRadarCircle && reliefMap) {
+                  reliefMap.removeLayer(donorRadarCircle);
+                  donorRadarCircle = null;
+                }
+                global.BhojClearRouteSelection();
+              };
+            }
+
+            if (reliefMap) {
+              if (donorRadarCircle) {
+                reliefMap.removeLayer(donorRadarCircle);
+              }
+              donorRadarCircle = L.circle([item.lat, item.lng], {
+                radius: 3500,
+                color: '#1B4332',
+                fillColor: '#10B981',
+                fillOpacity: 0.12,
+                weight: 1.5,
+                dashArray: '4, 4'
+              }).addTo(reliefMap);
+
+              reliefMap.flyTo([item.lat, item.lng], 14, { duration: 1.2 });
+            }
+
+            focusOnDispatch(item.id, false);
+
+            if (global.BhojToast) {
+              global.BhojToast.success(`Live Broadcast Active: Dispatch #${item.id} is now broadcasting to nearby couriers.`);
+            }
+          } else {
+            // Standard volunteer courier claim mode
+            focusOnDispatch(item.id, true);
+            if (item.status === 'Available') {
+              openShelterAssignModal(item.id);
+            }
           }
         }, 500);
       }
