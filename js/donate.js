@@ -15,6 +15,71 @@
   const DEFAULT_LAT = 28.6280;
   const DEFAULT_LNG = 77.2190;
 
+  // Stored XSS Sanitization Utility
+  const escapeHtml = (global.BhojStore && typeof global.BhojStore.escapeHtml === 'function')
+    ? global.BhojStore.escapeHtml
+    : function (str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      };
+
+  /**
+   * WCAG 2.1 AA Accessible Dialog Focus Management:
+   * Traps Tab focus inside modal dialog, dismisses on Escape, and restores focus.
+   */
+  function trapModalFocus(modalEl, onDismiss) {
+    if (!modalEl) return;
+    const previouslyFocused = document.activeElement;
+
+    const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(modalEl.querySelectorAll(focusableSelectors))
+      .filter((el) => !el.disabled && el.offsetParent !== null);
+
+    if (focusableElements.length > 0) {
+      setTimeout(() => focusableElements[0].focus(), 50);
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        modalEl.removeEventListener('keydown', handleKeyDown);
+        if (typeof onDismiss === 'function') onDismiss();
+        if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+          previouslyFocused.focus();
+        }
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const currentElements = Array.from(modalEl.querySelectorAll(focusableSelectors))
+          .filter((el) => !el.disabled && el.offsetParent !== null);
+        if (currentElements.length === 0) return;
+
+        const first = currentElements[0];
+        const last = currentElements[currentElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    }
+
+    modalEl.addEventListener('keydown', handleKeyDown);
+  }
+
   function getLocalDateTimeString(offsetHours = 0) {
     const d = new Date(Date.now() - offsetHours * 60 * 60 * 1000);
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -321,43 +386,106 @@
   }
 
   // ==========================================
-  // 3b. Interactive 4-Step Tabbed Wizard
+  // 3b. Interactive 4-Step Tabbed Wizard with Inline Accessible Validation
   // ==========================================
   let currentStep = 1;
 
+  /**
+   * Accessible Inline Form Validation:
+   * Sets aria-invalid, aria-describedby, .is-invalid border class, and displays
+   * descriptive error element without relying solely on transient toasts (WCAG 3.3.1 & 3.3.2).
+   */
+  function setFieldError(fieldId, errorElementId, message) {
+    const field = document.getElementById(fieldId);
+    const errEl = document.getElementById(errorElementId);
+    if (field) {
+      field.classList.add('is-invalid');
+      field.setAttribute('aria-invalid', 'true');
+      if (errEl) {
+        field.setAttribute('aria-describedby', errorElementId);
+      }
+    }
+    if (errEl) {
+      const msgSpan = errEl.querySelector('span');
+      if (msgSpan) {
+        msgSpan.textContent = message;
+      } else {
+        errEl.textContent = message;
+      }
+      errEl.classList.remove('hidden');
+    }
+  }
+
+  function clearFieldError(fieldId, errorElementId) {
+    const field = document.getElementById(fieldId);
+    const errEl = document.getElementById(errorElementId);
+    if (field) {
+      field.classList.remove('is-invalid');
+      field.removeAttribute('aria-invalid');
+      field.removeAttribute('aria-describedby');
+    }
+    if (errEl) {
+      errEl.classList.add('hidden');
+    }
+  }
+
   function validateStep(step) {
+    let isValid = true;
+    let firstInvalidEl = null;
+
     if (step === 1) {
       const name = (document.getElementById('donor-name')?.value || '').trim();
       const person = (document.getElementById('contact-person')?.value || '').trim();
       const phone = (document.getElementById('contact-phone')?.value || '').trim();
+
       if (!name) {
-        if (global.BhojToast) global.BhojToast.warning('Please enter your kitchen or organization name.');
-        document.getElementById('donor-name')?.focus();
-        return false;
+        setFieldError('donor-name', 'donor-name-error', 'Please enter your kitchen or organization name.');
+        if (!firstInvalidEl) firstInvalidEl = document.getElementById('donor-name');
+        isValid = false;
+      } else {
+        clearFieldError('donor-name', 'donor-name-error');
       }
+
       if (!person) {
-        if (global.BhojToast) global.BhojToast.warning('Please enter the contact person name.');
-        document.getElementById('contact-person')?.focus();
-        return false;
+        setFieldError('contact-person', 'contact-person-error', 'Please enter the contact person name.');
+        if (!firstInvalidEl) firstInvalidEl = document.getElementById('contact-person');
+        isValid = false;
+      } else {
+        clearFieldError('contact-person', 'contact-person-error');
       }
+
       if (!phone) {
-        if (global.BhojToast) global.BhojToast.warning('Please enter a contact phone number.');
-        document.getElementById('contact-phone')?.focus();
+        setFieldError('contact-phone', 'contact-phone-error', 'Please enter a contact phone number.');
+        if (!firstInvalidEl) firstInvalidEl = document.getElementById('contact-phone');
+        isValid = false;
+      } else {
+        clearFieldError('contact-phone', 'contact-phone-error');
+      }
+
+      if (!isValid) {
+        if (global.BhojToast) global.BhojToast.warning('Please complete the required organization details highlighted below.');
+        firstInvalidEl?.focus();
         return false;
       }
     } else if (step === 2) {
       const items = (document.getElementById('food-items-desc')?.value || '').trim();
       if (!items) {
-        if (global.BhojToast) global.BhojToast.warning('Please list the food items and dishes.');
+        setFieldError('food-items-desc', 'food-items-desc-error', 'Please describe the food items and dishes.');
         document.getElementById('food-items-desc')?.focus();
+        if (global.BhojToast) global.BhojToast.warning('Please list the food items before continuing.');
         return false;
+      } else {
+        clearFieldError('food-items-desc', 'food-items-desc-error');
       }
     } else if (step === 3) {
       const addr = (document.getElementById('donor-address')?.value || '').trim();
       if (!addr) {
-        if (global.BhojToast) global.BhojToast.warning('Please enter the pickup address.');
+        setFieldError('donor-address', 'donor-address-error', 'Please enter the pickup address and gate instructions.');
         document.getElementById('donor-address')?.focus();
+        if (global.BhojToast) global.BhojToast.warning('Please enter the pickup address before continuing.');
         return false;
+      } else {
+        clearFieldError('donor-address', 'donor-address-error');
       }
     }
     return true;
@@ -569,17 +697,17 @@
           <div class="p-3 rounded bg-[#FAF9F6] border border-[#DCD9D0] flex items-center justify-between gap-3 text-xs">
             <div>
               <div class="flex items-center gap-1.5 font-mono">
-                <span class="font-bold text-[#141E18]">${item.id}</span>
+                <span class="font-bold text-[#141E18]">${escapeHtml(item.id)}</span>
                 <span class="text-[#DCD9D0]">•</span>
-                <span class="font-sans font-medium text-[#141E18] truncate max-w-[150px]">${item.donorName}</span>
+                <span class="font-sans font-medium text-[#141E18] truncate max-w-[150px]">${escapeHtml(item.donorName)}</span>
               </div>
               <div class="text-[11px] text-[#525B55] font-mono mt-0.5">
-                ${item.servings} serv • ${item.foodType}
+                ${item.servings} serv • ${escapeHtml(item.foodType)}
               </div>
             </div>
             <span class="status-pill ${statusBadge}">
               <span class="status-dot"></span>
-              <span>${item.status}</span>
+              <span>${escapeHtml(item.status)}</span>
             </span>
           </div>
         `;
@@ -689,11 +817,6 @@
         renderRecentSubmissions();
         goToStep(1, true);
 
-        // Auto-redirect to live map broadcast view after brief celebratory delay
-        setTimeout(() => {
-          window.location.href = `volunteer.html?claim=${newDispatch.id}&mode=donor`;
-        }, 1200);
-
       } catch (err) {
         console.error('[BhojDonate] Error adding dispatch:', err);
         if (global.BhojToast) {
@@ -715,6 +838,7 @@
     if (btnFeed) btnFeed.href = `volunteer.html?claim=${dispatch.id}&mode=donor`;
 
     modal.classList.remove('hidden');
+    trapModalFocus(modal, () => modal.classList.add('hidden'));
   }
 
   function setupModalDismiss() {
@@ -765,6 +889,14 @@
     ['chk-temp-check', 'chk-packaging', 'chk-no-spoilage'].forEach((id) => {
       const chk = document.getElementById(id);
       if (chk) chk.addEventListener('change', updateHygieneGate);
+    });
+
+    // Real-time input listeners to clear validation error styling upon user typing
+    ['donor-name', 'contact-person', 'contact-phone', 'food-items-desc', 'donor-address'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', () => clearFieldError(id, `${id}-error`));
+      }
     });
 
     initDonorMap();

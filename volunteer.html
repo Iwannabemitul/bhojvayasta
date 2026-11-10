@@ -362,7 +362,10 @@
   <!-- ====================================================================
        MODAL: SHELTER SELECTION & PICKUP ACCEPTANCE CONFIRMATION
        ==================================================================== -->
-  <div id="shelter-assign-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+  <!-- ====================================================================
+       MODAL: SHELTER SELECTION & PICKUP ACCEPTANCE CONFIRMATION
+       ==================================================================== -->
+  <div id="shelter-assign-modal" role="dialog" aria-modal="true" aria-labelledby="assign-modal-heading" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
     <div class="bg-white border border-[#DCD9D0] w-full max-w-lg rounded p-6 sm:p-8 space-y-5 shadow-2xl">
       
       <div class="flex items-start justify-between border-b border-[#DCD9D0] pb-3">
@@ -370,8 +373,8 @@
           <span class="font-mono text-xs font-bold text-[#B45309] px-2 py-0.5 rounded bg-[#FEF3C7] border border-[#FDE68A]">
             Confirm Pickup
           </span>
-          <h3 class="font-display text-xl font-bold text-[#141E18] mt-1">Where will you deliver this food?</h3>
-          <p class="text-xs text-[#525B55]">Select a community shelter or child care home near the donor.</p>
+          <h3 id="assign-modal-heading" class="font-display text-xl font-bold text-[#141E18] mt-1">Where will you deliver this food?</h3>
+          <p class="text-xs text-[#525B55]">Select a community shelter or child care home in this dispatch's corridor.</p>
         </div>
         <button id="modal-shelter-close" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm p-1 rounded hover:bg-[#EFECE6] transition-colors" aria-label="Close dialog">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -389,6 +392,10 @@
           <span id="assign-modal-donor" class="text-[#141E18] font-bold">Establishment</span>
         </div>
         <div class="flex justify-between">
+          <span class="text-[#525B55]">Operating Corridor:</span>
+          <span id="assign-modal-corridor" class="text-[#1B4332] font-bold">Delhi/NCR</span>
+        </div>
+        <div class="flex justify-between">
           <span class="text-[#525B55]">Food Quantity:</span>
           <span id="assign-modal-servings" class="text-[#C84B31] font-bold">0 Servings</span>
         </div>
@@ -396,9 +403,12 @@
 
       <!-- Shelter Hub Radio Selector -->
       <div class="space-y-2">
-        <div class="font-mono text-xs uppercase font-bold text-[#525B55]">Select Receiving Shelter</div>
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-xs uppercase font-bold text-[#525B55]">Select Matching Corridor Shelter</span>
+          <span id="shelter-corridor-badge" class="font-mono text-[10px] text-[#1B4332] bg-[#E8F3EE] border border-[#A3C9B8] px-1.5 py-0.5 rounded">Geofenced</span>
+        </div>
         <div class="space-y-2 max-h-56 overflow-y-auto pr-1" id="shelter-options-list">
-          <!-- Dynamically filled with 4 shelters -->
+          <!-- Dynamically filled with matching corridor shelters -->
         </div>
       </div>
 
@@ -419,9 +429,82 @@
   </div>
 
   <!-- ====================================================================
+       MODAL: HANDOVER PROOF OF DELIVERY (PoD) VERIFICATION
+       ==================================================================== -->
+  <div id="handover-pod-modal" role="dialog" aria-modal="true" aria-labelledby="pod-modal-heading" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+    <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl">
+      
+      <div class="flex items-start justify-between border-b border-[#DCD9D0] pb-3">
+        <div>
+          <span class="font-mono text-xs font-bold text-[#1B4332] px-2 py-0.5 rounded bg-[#E8F3EE] border border-[#A3C9B8]">
+            Proof of Delivery Protocol
+          </span>
+          <h3 id="pod-modal-heading" class="font-display text-xl font-bold text-[#141E18] mt-1">
+            Shelter Handover Verification
+          </h3>
+          <p class="text-xs text-[#525B55]">
+            Confirm physical food receipt with the shelter coordinator.
+          </p>
+        </div>
+        <button id="modal-pod-close" type="button" class="text-[#525B55] hover:text-[#141E18] text-sm p-1 rounded hover:bg-[#EFECE6] transition-colors" aria-label="Close verification dialog">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Delivery Handover Details -->
+      <div class="p-3 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-1.5 text-xs font-mono">
+        <div class="flex justify-between">
+          <span class="text-[#525B55]">Donation ID:</span>
+          <span id="pod-modal-id" class="text-[#141E18] font-bold">BV-0000</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#525B55]">Receiving Shelter:</span>
+          <span id="pod-modal-shelter" class="text-[#141E18] font-bold">Shelter Name</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#525B55]">Shelter Coordinator:</span>
+          <span id="pod-modal-coordinator" class="text-[#1B4332] font-bold">Coordinator</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#525B55]">Servings to Deliver:</span>
+          <span id="pod-modal-servings" class="text-[#C84B31] font-bold">0 Servings</span>
+        </div>
+      </div>
+
+      <!-- PIN Input -->
+      <div class="space-y-2">
+        <label for="pod-pin-input" class="block text-xs font-bold uppercase tracking-wider text-[#525B55]">
+          Enter 4-Digit Shelter Verification Code <span class="text-[#C84B31]">*</span>
+        </label>
+        <div class="relative">
+          <input id="pod-pin-input" type="text" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="e.g. 4821" class="bhoj-input text-center text-2xl font-mono tracking-widest font-bold py-2.5">
+        </div>
+        <p id="pod-pin-error" class="error-msg hidden" role="alert">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Invalid PIN. Please enter the 4-digit code provided by the shelter coordinator.</span>
+        </p>
+        <div class="text-[11px] text-[#525B55] bg-[#FAF9F6] p-2 rounded border border-[#DCD9D0]">
+          <span class="font-bold text-[#141E18]">Academic / Demo Hint:</span> Shelter Coordinator PIN is <strong id="pod-expected-pin-hint" class="font-mono text-[#B45309]">----</strong> (Generated securely on dispatch).
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end gap-3 pt-2 border-t border-[#DCD9D0]">
+        <button id="btn-cancel-pod" type="button" class="btn-secondary px-4 py-2 text-xs font-semibold">
+          Cancel
+        </button>
+        <button id="btn-submit-pod" type="button" class="btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+          Verify & Complete Delivery
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====================================================================
        MODAL: DELIVERY CELEBRATION
        ==================================================================== -->
-  <div id="delivery-celebrate-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+  <div id="delivery-celebrate-modal" role="dialog" aria-modal="true" aria-labelledby="celebrate-modal-heading" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
     <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl text-center">
       
       <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto">
@@ -434,11 +517,11 @@
         <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-semibold">
           Delivered Safely
         </span>
-        <h3 class="font-display text-2xl font-bold text-[#141E18]">
+        <h3 id="celebrate-modal-heading" class="font-display text-2xl font-bold text-[#141E18]">
           Food Delivered to Shelter!
         </h3>
         <p class="text-xs text-[#525B55]">
-          Thank you, <span id="celebrate-volunteer-name" class="font-bold text-[#141E18]">Arjun Mehta</span>! This food has been safely handed over and added to the community total.
+          Thank you, <span id="celebrate-volunteer-name" class="font-bold text-[#141E18]">Arjun Mehta</span>! This food has been safely handed over and verified via Proof of Delivery PIN.
         </p>
       </div>
 

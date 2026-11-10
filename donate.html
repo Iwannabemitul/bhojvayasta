@@ -172,6 +172,10 @@
                       Kitchen or Organization Name <span class="text-[#C84B31]">*</span>
                     </label>
                     <input id="donor-name" type="text" required placeholder="e.g. Grand Imperial Banquet, TechSpace Canteen" class="bhoj-input text-sm">
+                    <p id="donor-name-error" class="error-msg hidden" role="alert">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <span>Please enter your kitchen or organization name.</span>
+                    </p>
                     <span class="text-[11px] text-[#525B55] mt-1 block">Name of the hotel, banquet hall, office, or store</span>
                   </div>
 
@@ -206,6 +210,10 @@
                       Contact Person <span class="text-[#C84B31]">*</span>
                     </label>
                     <input id="contact-person" type="text" required placeholder="e.g. Sunil Manchanda" class="bhoj-input text-sm">
+                    <p id="contact-person-error" class="error-msg hidden" role="alert">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <span>Please enter the contact person name.</span>
+                    </p>
                   </div>
 
                   <div>
@@ -213,6 +221,10 @@
                       Phone Number <span class="text-[#C84B31]">*</span>
                     </label>
                     <input id="contact-phone" type="tel" required placeholder="e.g. +91 98101 23450" class="bhoj-input text-sm font-mono">
+                    <p id="contact-phone-error" class="error-msg hidden" role="alert">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <span>Please enter a contact phone number.</span>
+                    </p>
                   </div>
                 </div>
 
@@ -314,6 +326,10 @@
                     List of Food Items & Dishes <span class="text-[#C84B31]">*</span>
                   </label>
                   <textarea id="food-items-desc" rows="2" required placeholder="e.g. Paneer curry, dal makhani, steamed rice, rotis, gulab jamun (packed in clean foil trays)" class="bhoj-input text-xs sm:text-sm"></textarea>
+                  <p id="food-items-desc-error" class="error-msg hidden" role="alert">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Please describe the food items and dishes.</span>
+                  </p>
                 </div>
 
                 <!-- Time & Shelf Life Slider -->
@@ -453,6 +469,10 @@
                     Full Street Address & Gate Instructions <span class="text-[#C84B31]">*</span>
                   </label>
                   <input id="donor-address" type="text" required value="Barakhamba Road, Connaught Place, New Delhi" placeholder="e.g. Gate No. 3 Basement Loading Dock, Near Security Desk" class="bhoj-input text-xs sm:text-sm">
+                  <p id="donor-address-error" class="error-msg hidden" role="alert">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Please enter the pickup address and gate instructions.</span>
+                  </p>
                 </div>
 
                 <!-- Step 3 Navigation -->
@@ -689,7 +709,7 @@
   <!-- ====================================================================
        SUCCESS CONFIRMATION MODAL
        ==================================================================== -->
-  <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
+  <div id="success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-success-heading" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
     <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl text-center">
       
       <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto">
@@ -702,7 +722,7 @@
         <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-semibold">
           Donation Live
         </span>
-        <h3 class="font-display text-2xl font-bold text-[#141E18]">
+        <h3 id="modal-success-heading" class="font-display text-2xl font-bold text-[#141E18]">
           Food Posted for Pickup!
         </h3>
         <p class="text-xs text-[#525B55]">

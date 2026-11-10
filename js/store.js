@@ -19,6 +19,84 @@
   const CHANNEL_NAME = 'bhojvayasta_sync';
   const BASE_HISTORICAL_MEALS = 12400; // Base historical offset for established look
 
+  /**
+   * SafeStorage Facade Pattern
+   * 
+   * Wraps browser localStorage to catch:
+   * 1. QuotaExceededError (e.g. mobile browser storage limits)
+   * 2. SecurityError (e.g. Chrome/Firefox private windows, Safari iframe block)
+   * 3. Environments where window or localStorage is undefined
+   * 
+   * Seamlessly degrades to an in-memory session dictionary so that
+   * state mutations never throw unhandled fatal exceptions.
+   */
+  const SafeStorage = (function () {
+    const memoryStore = new Map();
+    let isNativeSupported = false;
+
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const testKey = '__bhoj_test_write__';
+        window.localStorage.setItem(testKey, testKey);
+        window.localStorage.removeItem(testKey);
+        isNativeSupported = true;
+      }
+    } catch (e) {
+      console.warn('[BhojStore:SafeStorage] Native localStorage blocked or quota exceeded. Operating in-memory session fallback.', e);
+      isNativeSupported = false;
+    }
+
+    return {
+      memoryStore,
+      getItem(key) {
+        if (this.memoryStore && typeof this.memoryStore.has === 'function' && this.memoryStore.has(key)) {
+          return this.memoryStore.get(key);
+        }
+        if (memoryStore.has(key)) {
+          return memoryStore.get(key);
+        }
+        if (isNativeSupported) {
+          try {
+            return window.localStorage.getItem(key);
+          } catch (e) {
+            console.warn('[BhojStore:SafeStorage] Read failure on native storage; reading from fallback memory:', e);
+            return memoryStore.has(key) ? memoryStore.get(key) : null;
+          }
+        }
+        return memoryStore.has(key) ? memoryStore.get(key) : null;
+      },
+      setItem(key, value) {
+        const valStr = String(value);
+        if (isNativeSupported) {
+          try {
+            window.localStorage.setItem(key, valStr);
+            memoryStore.delete(key);
+            return true;
+          } catch (e) {
+            console.warn('[BhojStore:SafeStorage] Write failure on native storage (QuotaExceeded/SecurityError). Falling back to memory:', e);
+            memoryStore.set(key, valStr);
+            return false;
+          }
+        }
+        memoryStore.set(key, valStr);
+        return true;
+      },
+      removeItem(key) {
+        if (isNativeSupported) {
+          try {
+            window.localStorage.removeItem(key);
+          } catch (e) {
+            console.warn('[BhojStore:SafeStorage] RemoveItem failure on native storage:', e);
+          }
+        }
+        memoryStore.delete(key);
+      },
+      isNative() {
+        return isNativeSupported;
+      }
+    };
+  })();
+
   // 7 Fixed Receiving Shelters & Slum Relief Hubs (Delhi/NCR + Jalandhar/Phagwara LPU Corridor)
   const SHELTER_HUBS = [
     {
@@ -34,7 +112,9 @@
       currentOccupancy: 135,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food'],
       operatingHours: '08:00 AM - 10:00 PM',
-      region: 'Delhi/NCR'
+      region: 'Delhi/NCR',
+      corridor: 'Delhi/NCR',
+      handoverPin: '4821'
     },
     {
       id: 'SH-02',
@@ -49,7 +129,9 @@
       currentOccupancy: 280,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food', 'Bakery'],
       operatingHours: '24 Hours Emergency Hub',
-      region: 'Delhi/NCR'
+      region: 'Delhi/NCR',
+      corridor: 'Delhi/NCR',
+      handoverPin: '5912'
     },
     {
       id: 'SH-03',
@@ -64,7 +146,9 @@
       currentOccupancy: 110,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Dairy'],
       operatingHours: '07:30 AM - 09:30 PM',
-      region: 'Delhi/NCR'
+      region: 'Delhi/NCR',
+      corridor: 'Delhi/NCR',
+      handoverPin: '7341'
     },
     {
       id: 'SH-04',
@@ -79,7 +163,9 @@
       currentOccupancy: 175,
       acceptedCategories: ['Cooked Meals', 'Packaged Food'],
       operatingHours: '08:00 AM - 09:00 PM',
-      region: 'Delhi/NCR'
+      region: 'Delhi/NCR',
+      corridor: 'Delhi/NCR',
+      handoverPin: '2650'
     },
     {
       id: 'SH-05',
@@ -94,7 +180,9 @@
       currentOccupancy: 185,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food'],
       operatingHours: '07:00 AM - 09:30 PM',
-      region: 'Jalandhar'
+      region: 'Jalandhar',
+      corridor: 'Punjab / Jalandhar / Phagwara',
+      handoverPin: '6275'
     },
     {
       id: 'SH-06',
@@ -109,7 +197,9 @@
       currentOccupancy: 130,
       acceptedCategories: ['Cooked Meals', 'Dairy', 'Bakery'],
       operatingHours: '08:00 AM - 09:00 PM',
-      region: 'Jalandhar'
+      region: 'Jalandhar',
+      corridor: 'Punjab / Jalandhar / Phagwara',
+      handoverPin: '9143'
     },
     {
       id: 'SH-07',
@@ -124,7 +214,9 @@
       currentOccupancy: 195,
       acceptedCategories: ['Cooked Meals', 'Raw Produce', 'Packaged Food'],
       operatingHours: '24 Hours Emergency Hub',
-      region: 'Jalandhar'
+      region: 'Jalandhar',
+      corridor: 'Punjab / Jalandhar / Phagwara',
+      handoverPin: '1588'
     }
   ];
 
@@ -485,7 +577,25 @@
           delivered: null
         }
       }
-    ];
+    ].map((item) => ({
+      ...item,
+      version: item.version || 1,
+      handoverPin: item.handoverPin || (
+        item.id === 'BV-1082' ? '4821' :
+        item.id === 'BV-2401' ? '5912' :
+        item.id === 'BV-3194' ? '7341' :
+        item.id === 'BV-4820' ? '2650' :
+        item.id === 'BV-5172' ? '8104' :
+        item.id === 'BV-6893' ? '3499' :
+        item.id === 'BV-5012' ? '6275' :
+        item.id === 'BV-5048' ? '9143' : '1588'
+      ),
+      corridor: item.corridor || (
+        (item.lat >= 30.0 || (item.region && item.region.toLowerCase().includes('jalandhar')))
+          ? 'Punjab / Jalandhar / Phagwara'
+          : 'Delhi/NCR'
+      )
+    }));
   }
 
   // Cross-Tab Broadcast Channel initialization with safety fallback
@@ -561,43 +671,74 @@
   // Core Store Engine Definition
   const BhojStore = {
     /**
-     * Initializes the store in localStorage if empty or invalid.
-     * Guarantees realistic seed data is available immediately.
+     * Stored XSS Mitigation: Encodes HTML special characters to prevent script injection.
+     * Essential for sanitizing user-controllable input (donorName, address, itemsDescription).
+     * @param {string|any} str - Input text
+     * @returns {string} Sanitized string safe for HTML interpolation
+     */
+    escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    },
+
+    /**
+     * Initializes the store in SafeStorage if empty or invalid.
+     * Guarantees realistic seed data is available immediately without storage crashes.
      */
     initStore() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = SafeStorage.getItem(STORAGE_KEY);
         if (!raw) {
           const seeds = generateSeedData();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
-          console.log('[BhojStore] Initialized with 6 realistic Delhi/NCR dispatches.');
+          SafeStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
+          console.log('[BhojStore] Initialized with realistic Delhi/NCR and Punjab seed dispatches.');
           return seeds;
         }
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed) || parsed.length === 0) {
           const seeds = generateSeedData();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
+          SafeStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
           return seeds;
         }
         return parsed;
       } catch (e) {
-        console.error('[BhojStore] Error reading localStorage, resetting to seed data:', e);
+        console.error('[BhojStore] Error reading SafeStorage, resetting to seed data:', e);
         const seeds = generateSeedData();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
+        SafeStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
         return seeds;
       }
     },
 
     /**
      * Retrieves all food dispatches sorted by newest first.
+     * Normalizes records to ensure OCC version, corridor, and handoverPin exist.
      * @returns {Array} List of dispatches
      */
     getDispatches() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = SafeStorage.getItem(STORAGE_KEY);
         if (!raw) return this.initStore();
         const data = JSON.parse(raw);
-        return Array.isArray(data) ? data : this.initStore();
+        if (!Array.isArray(data)) return this.initStore();
+
+        // Self-healing normalization for backwards compatibility with pre-existing storage
+        return data.map((item) => {
+          if (!item.version) item.version = 1;
+          if (!item.handoverPin) {
+            item.handoverPin = String(Math.floor(1000 + Math.random() * 9000));
+          }
+          if (!item.corridor) {
+            item.corridor = (item.lat >= 30.0 || (item.region && item.region.toLowerCase().includes('jalandhar')))
+              ? 'Punjab / Jalandhar / Phagwara'
+              : 'Delhi/NCR';
+          }
+          return item;
+        });
       } catch (e) {
         console.error('[BhojStore] getDispatches parse error:', e);
         return this.initStore();
@@ -616,7 +757,7 @@
     },
 
     /**
-     * Retrieves the 4 fixed hunger relief shelters.
+     * Retrieves the fixed hunger relief shelters.
      * @returns {Array} List of fixed shelter hubs
      */
     getShelters() {
@@ -636,7 +777,38 @@
     },
 
     /**
-     * Adds a new surplus food dispatch with mandatory hygiene validation flags.
+     * Dual-Corridor Geofenced Shelter Matching:
+     * Returns shelters filtered by designated geographical corridor.
+     * Ensures couriers in Delhi/NCR route to Delhi relief hubs and Punjab couriers route to Jalandhar/Phagwara hubs.
+     * 
+     * @param {string} [corridor] - Target corridor or region name
+     * @returns {Array} Matching shelters
+     */
+    getSheltersForCorridor(corridor) {
+      if (!corridor) return this.getShelters();
+      const norm = String(corridor).toLowerCase();
+      const isPunjab = norm.includes('jalandhar') || norm.includes('phagwara') || norm.includes('punjab') || norm.includes('lpu');
+      const targetCorridor = isPunjab ? 'Punjab / Jalandhar / Phagwara' : 'Delhi/NCR';
+      return SHELTER_HUBS.filter((s) => s.corridor === targetCorridor);
+    },
+
+    /**
+     * Determines geographical corridor from coordinates.
+     * Latitude >= 30.0 degrees N is the Punjab NH-44 corridor; otherwise Delhi/NCR.
+     * 
+     * @param {number} lat
+     * @param {number} lng
+     * @returns {string} Corridor identifier
+     */
+    determineCorridor(lat, lng) {
+      const latitude = parseFloat(lat) || 0;
+      return latitude >= 30.0 ? 'Punjab / Jalandhar / Phagwara' : 'Delhi/NCR';
+    },
+
+    /**
+     * Adds a new surplus food dispatch with mandatory hygiene validation flags,
+     * OCC revision counter, and 4-digit handover proof of delivery (PoD) token.
+     * 
      * @param {Object} data - Form input fields
      * @returns {Object} Newly created dispatch record
      */
@@ -662,6 +834,11 @@
         ? new Date(data.expiryTime).toISOString() 
         : new Date(now + shelfLifeHours * 60 * 60 * 1000).toISOString();
 
+      const lat = parseFloat(data.lat) || 28.6139;
+      const lng = parseFloat(data.lng) || 77.2090;
+      const corridor = data.corridor || this.determineCorridor(lat, lng);
+      const handoverPin = data.handoverPin || String(Math.floor(1000 + Math.random() * 9000));
+
       const newDispatch = {
         id: newId,
         donorName: String(data.donorName || 'Anonymous Donor').trim(),
@@ -674,9 +851,12 @@
         shelfLifeHours: shelfLifeHours,
         expiryTime: expiryTime,
         status: 'Available',
-        lat: parseFloat(data.lat) || 28.6139,
-        lng: parseFloat(data.lng) || 77.2090,
-        address: data.address || 'Central Delhi Hub, New Delhi',
+        version: 1, // OCC initial revision
+        handoverPin: handoverPin, // Proof of Delivery 4-digit token
+        corridor: corridor,
+        lat: lat,
+        lng: lng,
+        address: data.address || (corridor.includes('Punjab') ? 'GT Road Corridor, Phagwara/Jalandhar' : 'Central Delhi Hub, New Delhi'),
         contactPhone: data.contactPhone || '+91 98000 00000',
         contactPerson: data.contactPerson || 'Dispatch Coordinator',
         itemsDescription: data.itemsDescription || 'Surplus hot cooked meal portions packed hygienically.',
@@ -692,7 +872,7 @@
         volunteer: null,
         volunteerPhone: null,
         targetShelter: null,
-        region: data.region || ((parseFloat(data.lat) || 28.6139) > 30 ? 'Jalandhar' : 'Delhi/NCR'),
+        region: data.region || (corridor.includes('Punjab') ? 'Jalandhar' : 'Delhi/NCR'),
         notes: data.notes || 'Ready for immediate pickup by registered community courier.',
         createdAt: new Date(now).toISOString(),
         statusTimestamps: {
@@ -704,7 +884,7 @@
 
       // Unshift to keep newest at the top
       list.unshift(newDispatch);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      SafeStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 
       broadcastEvent('DISPATCH_ADDED', newDispatch);
       return newDispatch;
@@ -712,13 +892,20 @@
 
     /**
      * Updates dispatch status along the lifecycle: Available -> In-Transit -> Delivered.
+     * Enforces:
+     * 1. Optimistic Concurrency Control (OCC) state assertions
+     * 2. Revision counter increments
+     * 3. Handover Proof of Delivery (PoD) PIN verification on delivery completion
+     * 
      * @param {string} id - Dispatch ID (e.g. 'BV-1082')
      * @param {'Available'|'In-Transit'|'Delivered'} newStatus
      * @param {string} [volunteerName] - Name of courier taking the pickup
      * @param {string} [shelterName] - Name of receiving hunger shelter
+     * @param {string} [expectedStatus] - Assert expected state before mutating (OCC)
+     * @param {string} [deliveryVerificationCode] - 4-digit handover PIN from shelter coordinator (PoD)
      * @returns {Object} Updated dispatch
      */
-    updateStatus(id, newStatus, volunteerName = null, shelterName = null) {
+    updateStatus(id, newStatus, volunteerName = null, shelterName = null, expectedStatus = null, deliveryVerificationCode = null) {
       if (!id || !newStatus) {
         throw new Error('[BhojStore] updateStatus requires valid id and newStatus.');
       }
@@ -735,6 +922,60 @@
       if (!validStatuses.includes(newStatus)) {
         throw new Error(`[BhojStore] Invalid status "${newStatus}". Must be one of: ${validStatuses.join(', ')}`);
       }
+
+      // ========================================================================
+      // Optimistic Concurrency Control (OCC) Verification
+      // ========================================================================
+      if (expectedStatus && item.status !== expectedStatus) {
+        const conflictErr = new Error(
+          `[BhojStore:OCC] Concurrency Conflict: Dispatch ${id} status is "${item.status}", expected "${expectedStatus}". Claimed by: ${item.volunteer || 'another courier'}.`
+        );
+        conflictErr.name = 'ConcurrencyConflictError';
+        conflictErr.code = 'ERR_CLAIM_CONFLICT';
+        conflictErr.currentStatus = item.status;
+        conflictErr.claimedBy = item.volunteer;
+        throw conflictErr;
+      }
+
+      // Safeguard: When claiming ('In-Transit'), current status MUST be 'Available'
+      if (newStatus === 'In-Transit' && item.status !== 'Available') {
+        const conflictErr = new Error(
+          `[BhojStore:OCC] Concurrency Conflict: Dispatch ${id} has already been claimed (status: "${item.status}" by ${item.volunteer || 'another courier'}).`
+        );
+        conflictErr.name = 'ConcurrencyConflictError';
+        conflictErr.code = 'ERR_CLAIM_CONFLICT';
+        conflictErr.currentStatus = item.status;
+        conflictErr.claimedBy = item.volunteer;
+        throw conflictErr;
+      }
+
+      // ========================================================================
+      // Handover Proof of Delivery (PoD) Verification
+      // ========================================================================
+      if (newStatus === 'Delivered') {
+        const expectedPin = String(item.handoverPin || '1234').trim();
+        const enteredPin = (deliveryVerificationCode !== undefined && deliveryVerificationCode !== null)
+          ? String(deliveryVerificationCode).trim()
+          : '';
+
+        if (!deliveryVerificationCode || enteredPin !== expectedPin) {
+          const pinErr = new Error(
+            `ERR_INVALID_POD_PIN: Handover verification code mismatch or missing. Required 4-digit PIN from shelter coordinator (expected ${expectedPin}, entered ${enteredPin || 'none'}).`
+          );
+          pinErr.name = 'VerificationCodeError';
+          pinErr.code = 'ERR_INVALID_POD_PIN';
+          throw pinErr;
+        }
+
+        item.proofOfDelivery = {
+          verifiedAt: new Date().toISOString(),
+          verifiedBy: shelterName || item.targetShelter || 'Shelter Coordinator',
+          pinMatch: true
+        };
+      }
+
+      // Increment monotonically increasing OCC version
+      item.version = (item.version || 1) + 1;
 
       const nowIso = new Date().toISOString();
       item.status = newStatus;
@@ -764,7 +1005,7 @@
       }
 
       list[index] = item;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      SafeStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 
       broadcastEvent('STATUS_UPDATED', item);
       return item;
@@ -829,14 +1070,14 @@
     },
 
     /**
-     * Resets localStorage with fresh demo seed data for viva / evaluation demos.
+     * Resets SafeStorage with fresh demo seed data for viva / evaluation demos.
      * Triggers broadcast so all active tabs reset synchronously.
      */
     resetDemoData() {
       const seeds = generateSeedData();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
+      SafeStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
       broadcastEvent('DEMO_DATA_RESET', seeds);
-      console.log('[BhojStore] Demo data successfully reset to seed items.');
+      console.log('[BhojStore] Demo data successfully reset to seed items via SafeStorage.');
       return seeds;
     },
 
@@ -934,6 +1175,9 @@
           storageTemp: p.temp,
           temperatureRecorded: p.recorded,
           region: lat > 30 ? 'Jalandhar' : 'Delhi/NCR',
+          corridor: lat > 30 ? 'Punjab / Jalandhar / Phagwara' : 'Delhi/NCR',
+          version: 1,
+          handoverPin: String(Math.floor(2000 + Math.random() * 7000)),
           safetyChecklist: {
             tempCheck: true,
             cleanPackaging: true,
@@ -955,7 +1199,7 @@
         filteredList.unshift(newDispatch);
       });
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredList));
+      SafeStorage.setItem(STORAGE_KEY, JSON.stringify(filteredList));
       broadcastEvent('DEMO_DATA_RESET', filteredList);
       return filteredList;
     },
@@ -1069,5 +1313,11 @@
 
   // Export globally
   global.BhojStore = BhojStore;
+  global.SafeStorage = SafeStorage;
+  global.escapeHtml = BhojStore.escapeHtml;
 
-})(typeof window !== 'undefined' ? window : this);
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = BhojStore;
+  }
+
+})(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));

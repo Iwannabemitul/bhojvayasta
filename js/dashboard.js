@@ -13,6 +13,71 @@
   let currentFilter = 'all';
   let searchQuery = '';
 
+  // Stored XSS Mitigation Sanitizer
+  const escapeHtml = (global.BhojStore && typeof global.BhojStore.escapeHtml === 'function')
+    ? global.BhojStore.escapeHtml
+    : function (str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      };
+
+  /**
+   * WCAG 2.1 AA Accessible Dialog Focus Management:
+   * Traps Tab focus inside modal dialog, dismisses on Escape, and restores focus.
+   */
+  function trapModalFocus(modalEl, onDismiss) {
+    if (!modalEl) return;
+    const previouslyFocused = document.activeElement;
+
+    const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(modalEl.querySelectorAll(focusableSelectors))
+      .filter((el) => !el.disabled && el.offsetParent !== null);
+
+    if (focusableElements.length > 0) {
+      setTimeout(() => focusableElements[0].focus(), 50);
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        modalEl.removeEventListener('keydown', handleKeyDown);
+        if (typeof onDismiss === 'function') onDismiss();
+        if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+          previouslyFocused.focus();
+        }
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const currentElements = Array.from(modalEl.querySelectorAll(focusableSelectors))
+          .filter((el) => !el.disabled && el.offsetParent !== null);
+        if (currentElements.length === 0) return;
+
+        const first = currentElements[0];
+        const last = currentElements[currentElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    }
+
+    modalEl.addEventListener('keydown', handleKeyDown);
+  }
+
   function easeOutQuad(t) {
     return t * (2 - t);
   }
@@ -345,19 +410,19 @@
         let logisticsHtml = '';
         if (item.status === 'Delivered') {
           logisticsHtml = `
-            <div class="text-[#141E18] font-medium">Delivered by <strong>${item.volunteer || 'Volunteer'}</strong></div>
-            <div class="text-[11px] text-[#525B55] mt-0.5">To: ${item.targetShelter || 'Shelter'}</div>
+            <div class="text-[#141E18] font-medium">Delivered by <strong>${escapeHtml(item.volunteer || 'Volunteer')}</strong></div>
+            <div class="text-[11px] text-[#525B55] mt-0.5">To: ${escapeHtml(item.targetShelter || 'Shelter')}</div>
           `;
         } else if (item.status === 'In-Transit') {
           logisticsHtml = `
-            <div class="text-[#B45309] font-medium">Picked up by <strong>${item.volunteer || 'Courier'}</strong></div>
-            <div class="text-[11px] text-[#525B55] mt-0.5">To: ${item.targetShelter || 'Asha Shelter'}</div>
+            <div class="text-[#B45309] font-medium">Picked up by <strong>${escapeHtml(item.volunteer || 'Courier')}</strong></div>
+            <div class="text-[11px] text-[#525B55] mt-0.5">To: ${escapeHtml(item.targetShelter || 'Asha Shelter')}</div>
           `;
         } else {
           logisticsHtml = `
             <div class="text-[#1B4332] font-semibold">Waiting for volunteer</div>
             <div class="text-[11px]">
-              <a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] hover:underline font-semibold font-mono">
+              <a href="volunteer.html?claim=${encodeURIComponent(item.id)}" class="text-[#C84B31] hover:underline font-semibold font-mono">
                 Claim on Map
               </a>
             </div>
@@ -369,7 +434,7 @@
             
             <td class="py-3.5 px-4 sm:px-6 font-mono font-bold text-[#141E18]">
               <div class="flex items-center gap-1.5">
-                <span>${item.id}</span>
+                <span>${escapeHtml(item.id)}</span>
                 ${expiry.isUrgent && item.status === 'Available'
                   ? `<span title="Eat soon (<2h left)" class="w-2 h-2 rounded-full bg-[#C84B31]"></span>`
                   : ''}
@@ -377,13 +442,13 @@
             </td>
 
             <td class="py-3.5 px-4">
-              <div class="font-bold text-[#141E18]">${item.donorName}</div>
-              <div class="text-xs text-[#525B55] truncate max-w-[200px]">${item.address || 'Delhi/NCR'}</div>
+              <div class="font-bold text-[#141E18]">${escapeHtml(item.donorName)}</div>
+              <div class="text-xs text-[#525B55] truncate max-w-[200px]">${escapeHtml(item.address || 'Delhi/NCR')}</div>
             </td>
 
             <td class="py-3.5 px-4">
               <div class="mb-1">${foodTypeBadge}</div>
-              <div class="text-xs text-[#525B55] line-clamp-1">${item.foodTitle || item.itemsDescription}</div>
+              <div class="text-xs text-[#525B55] line-clamp-1">${escapeHtml(item.foodTitle || item.itemsDescription)}</div>
             </td>
 
             <td class="py-3.5 px-4 font-mono">
@@ -396,14 +461,14 @@
                 <span>Safe & Verified</span>
               </div>
               <div class="text-[10px] font-mono text-[#525B55] mt-0.5">
-                ${item.storageTemp || 'Fresh'}
+                ${escapeHtml(item.storageTemp || 'Fresh')}
               </div>
             </td>
 
             <td class="py-3.5 px-4">
               <span class="status-pill ${statusPillClass}">
                 <span class="status-dot"></span>
-                <span>${statusText}</span>
+                <span>${escapeHtml(statusText)}</span>
               </span>
             </td>
 
@@ -412,7 +477,7 @@
             </td>
 
             <td class="py-3.5 px-4 text-right">
-              <button type="button" data-action="view-modal" data-id="${item.id}" class="px-2.5 py-1 text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] rounded transition-colors cursor-pointer">
+              <button type="button" data-action="view-modal" data-id="${escapeHtml(item.id)}" class="px-2.5 py-1 text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] rounded transition-colors cursor-pointer">
                 Details
               </button>
             </td>
@@ -448,21 +513,21 @@
               <div class="flex items-start justify-between gap-2">
                 <div>
                   <div class="flex items-center gap-1.5 font-mono text-xs">
-                    <span class="font-bold text-[#141E18]">${item.id}</span>
+                    <span class="font-bold text-[#141E18]">${escapeHtml(item.id)}</span>
                     <span class="text-[#DCD9D0]">•</span>
                     ${foodTypeBadge}
                   </div>
-                  <h4 class="font-bold text-[#141E18] text-sm mt-0.5">${item.donorName}</h4>
-                  <div class="text-[11px] text-[#525B55] truncate max-w-xs">${item.address || 'Delhi/NCR'}</div>
+                  <h4 class="font-bold text-[#141E18] text-sm mt-0.5">${escapeHtml(item.donorName)}</h4>
+                  <div class="text-[11px] text-[#525B55] truncate max-w-xs">${escapeHtml(item.address || 'Delhi/NCR')}</div>
                 </div>
                 <span class="status-pill ${statusPillClass} text-[10px] shrink-0">
                   <span class="status-dot"></span>
-                  <span>${statusText}</span>
+                  <span>${escapeHtml(statusText)}</span>
                 </span>
               </div>
 
               <div class="text-xs text-[#525B55] italic bg-[#FAF9F6] p-2 rounded border border-[#DCD9D0]">
-                ${item.itemsDescription || item.foodTitle}
+                ${escapeHtml(item.itemsDescription || item.foodTitle)}
               </div>
 
               <div class="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -472,7 +537,7 @@
                 </div>
                 <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
                   <span class="text-[10px] text-[#525B55]">Safety Check</span>
-                  <div class="font-bold text-[#1B4332]">Verified (${item.storageTemp || 'Fresh'})</div>
+                  <div class="font-bold text-[#1B4332]">Verified (${escapeHtml(item.storageTemp || 'Fresh')})</div>
                 </div>
               </div>
 
@@ -480,11 +545,11 @@
                 <div>
                   ${
                     item.status === 'Available'
-                      ? `<a href="volunteer.html?claim=${item.id}" class="text-[#C84B31] font-semibold hover:underline">Claim on Map</a>`
-                      : `<span class="text-[#525B55]">To: ${item.targetShelter || 'Shelter'}</span>`
+                      ? `<a href="volunteer.html?claim=${encodeURIComponent(item.id)}" class="text-[#C84B31] font-semibold hover:underline">Claim on Map</a>`
+                      : `<span class="text-[#525B55]">To: ${escapeHtml(item.targetShelter || 'Shelter')}</span>`
                   }
                 </div>
-                <button type="button" data-action="view-modal" data-id="${item.id}" class="px-3 py-1 text-xs font-medium border border-[#DCD9D0] bg-white rounded text-[#141E18] hover:bg-[#EFECE6]">
+                <button type="button" data-action="view-modal" data-id="${escapeHtml(item.id)}" class="px-3 py-1 text-xs font-medium border border-[#DCD9D0] bg-white rounded text-[#141E18] hover:bg-[#EFECE6]">
                   Details
                 </button>
               </div>
@@ -526,9 +591,9 @@
 
     const logisticsBox = document.getElementById('modal-logistics-text');
     if (dispatch.status === 'Delivered') {
-      logisticsBox.innerHTML = `Delivered to <strong class="text-[#141E18]">${dispatch.targetShelter || 'Shelter'}</strong> by volunteer <strong class="text-[#1B4332]">${dispatch.volunteer || 'Volunteer'}</strong>`;
+      logisticsBox.innerHTML = `Delivered to <strong class="text-[#141E18]">${escapeHtml(dispatch.targetShelter || 'Shelter')}</strong> by volunteer <strong class="text-[#1B4332]">${escapeHtml(dispatch.volunteer || 'Volunteer')}</strong>`;
     } else if (dispatch.status === 'In-Transit') {
-      logisticsBox.innerHTML = `Being delivered by volunteer <strong class="text-[#B45309]">${dispatch.volunteer || 'Volunteer'}</strong> to <strong class="text-[#141E18]">${dispatch.targetShelter || 'Asha Shelter'}</strong>`;
+      logisticsBox.innerHTML = `Being delivered by volunteer <strong class="text-[#B45309]">${escapeHtml(dispatch.volunteer || 'Volunteer')}</strong> to <strong class="text-[#141E18]">${escapeHtml(dispatch.targetShelter || 'Asha Shelter')}</strong>`;
     } else {
       logisticsBox.innerHTML = `Ready at donor location. <strong class="text-[#1B4332]">Waiting for a volunteer to pick up.</strong>`;
     }
@@ -536,16 +601,17 @@
     const cta = document.getElementById('modal-action-cta');
     if (cta) {
       if (dispatch.status === 'Available') {
-        cta.href = `volunteer.html?claim=${dispatch.id}`;
+        cta.href = `volunteer.html?claim=${encodeURIComponent(dispatch.id)}`;
         cta.textContent = 'Accept Pickup on Courier Map';
         cta.classList.remove('hidden');
       } else {
-        cta.href = `volunteer.html?claim=${dispatch.id}`;
+        cta.href = `volunteer.html?claim=${encodeURIComponent(dispatch.id)}`;
         cta.textContent = 'View Route on Courier Map';
       }
     }
 
     modal.classList.remove('hidden');
+    trapModalFocus(modal, closeModal);
   }
 
   function closeModal() {
@@ -583,6 +649,16 @@
     const tableBody = document.getElementById('ledger-table-body');
     if (tableBody) {
       tableBody.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-action="view-modal"]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        openDispatchModal(id);
+      });
+    }
+
+    const mobileCardsContainer = document.getElementById('ledger-cards-mobile');
+    if (mobileCardsContainer) {
+      mobileCardsContainer.addEventListener('click', function (e) {
         const btn = e.target.closest('[data-action="view-modal"]');
         if (!btn) return;
         const id = btn.getAttribute('data-id');

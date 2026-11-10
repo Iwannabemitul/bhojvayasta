@@ -27,6 +27,71 @@
   let currentRadiusFilter = '50'; // Default: 50 km local operations radius
   let activeSelectedDispatchId = null;
 
+  // Stored XSS Sanitization Utility
+  const escapeHtml = (global.BhojStore && typeof global.BhojStore.escapeHtml === 'function')
+    ? global.BhojStore.escapeHtml
+    : function (str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      };
+
+  /**
+   * WCAG 2.1 AA Accessible Dialog Focus Management:
+   * Traps Tab focus inside modal dialog, dismisses on Escape, and restores focus.
+   */
+  function trapModalFocus(modalEl, onDismiss) {
+    if (!modalEl) return;
+    const previouslyFocused = document.activeElement;
+
+    const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(modalEl.querySelectorAll(focusableSelectors))
+      .filter((el) => !el.disabled && el.offsetParent !== null);
+
+    if (focusableElements.length > 0) {
+      setTimeout(() => focusableElements[0].focus(), 50);
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        modalEl.removeEventListener('keydown', handleKeyDown);
+        if (typeof onDismiss === 'function') onDismiss();
+        if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+          previouslyFocused.focus();
+        }
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const currentElements = Array.from(modalEl.querySelectorAll(focusableSelectors))
+          .filter((el) => !el.disabled && el.offsetParent !== null);
+        if (currentElements.length === 0) return;
+
+        const first = currentElements[0];
+        const last = currentElements[currentElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    }
+
+    modalEl.addEventListener('keydown', handleKeyDown);
+  }
+
   // ==========================================
   // 1. Haversine Distance Formula (km)
   // ==========================================
@@ -335,8 +400,8 @@
           </div>
 
           <div>
-            <h4 class="font-bold text-[#141E18] text-sm">${item.donorName}</h4>
-            <p class="text-[#525B55] text-[11px] truncate max-w-xs">${item.address}</p>
+            <h4 class="font-bold text-[#141E18] text-sm">${escapeHtml(item.donorName)}</h4>
+            <p class="text-[#525B55] text-[11px] truncate max-w-xs">${escapeHtml(item.address)}</p>
           </div>
 
           <div class="grid grid-cols-2 gap-1 p-2 rounded bg-[#F7F5F0] border border-[#DCD9D0] font-mono text-[11px]">
@@ -359,7 +424,7 @@
               ? `<button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="w-full py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
                   Mark as Delivered
                 </button>`
-              : `<div class="text-center text-[#525B55] font-mono text-[11px]">Delivered to ${item.targetShelter || 'Shelter'}</div>`
+              : `<div class="text-center text-[#525B55] font-mono text-[11px]">Delivered to ${escapeHtml(item.targetShelter || 'Shelter')}</div>`
           }
         </div>
       `);
@@ -581,7 +646,7 @@
                 selectedDispatch.status === 'Available' ? 'bg-[#E8F3EE] text-[#1B4332]' : 'bg-[#FEF3C7] text-[#B45309]'
               }">${selectedDispatch.status}</span>
             </div>
-            <div class="font-bold text-[#141E18] text-xs truncate">${selectedDispatch.donorName}</div>
+            <div class="font-bold text-[#141E18] text-xs truncate">${escapeHtml(selectedDispatch.donorName)}</div>
             <div class="text-[10px] text-[#525B55]">
               ${selectedDispatch.servings} serv (~${((selectedDispatch.servings * 0.45).toFixed(1))} kg) • ${selectedDispatch.storageTemp || 'Temp OK'}
             </div>
@@ -820,9 +885,15 @@
         const isSelected = item.id === activeSelectedDispatchId;
 
         return `
-          <div id="card-${item.id}" class="courier-card p-4 sm:p-5 space-y-3 transition-colors cursor-pointer bg-white ${
-            isSelected ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332]' : 'hover:bg-[#FAF9F6]'
-          }" onclick="window.BhojFocusDispatch('${item.id}')">
+          <div id="card-${item.id}"
+               tabindex="0"
+               role="button"
+               aria-label="Dispatch ${item.id} from ${escapeHtml(item.donorName)}, ${item.servings} servings, ${distKm} kilometers away. Press Enter or Space to inspect on map."
+               class="courier-card p-4 sm:p-5 space-y-3 transition-colors cursor-pointer bg-white focus:outline-none ${
+                 isSelected ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332]' : 'hover:bg-[#FAF9F6]'
+               }"
+               onclick="window.BhojFocusDispatch('${item.id}')"
+               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.BhojFocusDispatch('${item.id}');}">
             
             <div class="flex items-start justify-between gap-3">
               <div>
@@ -831,14 +902,14 @@
                   <span class="text-[#DCD9D0]">&bull;</span>
                   ${typeBadge}
                   ${expiry.isUrgent && item.status === 'Available'
-                    ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF2F2] text-[#C84B31] border border-[#FCA5A5]">Urgent (&lt;2h)</span>`
+                    ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF2F2] text-[#C84B31] border border-[#FCA5A5] pulse-critical-badge">Urgent (&lt;2h)</span>`
                     : ''}
                 </div>
                 <h3 class="text-sm sm:text-base font-bold text-[#141E18] mt-1">
-                  ${item.donorName}
+                  ${escapeHtml(item.donorName)}
                 </h3>
                 <div class="text-xs text-[#525B55] truncate max-w-xs mt-0.5">
-                  ${item.address || 'Local Region'}
+                  ${escapeHtml(item.address || 'Local Region')}
                 </div>
               </div>
 
@@ -849,7 +920,7 @@
             </div>
 
             <p class="text-xs text-[#525B55] line-clamp-2 italic font-sans">
-              "${item.itemsDescription || item.foodTitle}"
+              "${escapeHtml(item.itemsDescription || item.foodTitle)}"
             </p>
 
             <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs">
@@ -861,8 +932,12 @@
 
               <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
                 <div class="text-[10px] text-[#525B55]">Safe For</div>
-                <div class="font-bold ${expiry.isUrgent ? 'text-[#C84B31]' : 'text-[#1B4332]'}">${expiry.formattedText}</div>
-                <div class="text-[10px] text-[#525B55]">${item.storageTemp || 'Temp OK'}</div>
+                <div class="font-bold">
+                  <span class="dispatch-expiry-text ${expiry.isUrgent ? 'text-[#C84B31] pulse-critical-badge' : 'text-[#1B4332]'}" data-expiry-time="${item.expiryTime}" data-id="${item.id}">
+                    ${expiry.formattedText}
+                  </span>
+                </div>
+                <div class="text-[10px] text-[#525B55]">${escapeHtml(item.storageTemp || 'Temp OK')}</div>
               </div>
 
               <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
@@ -877,7 +952,7 @@
               <span>Temperature Checked &bull; Clean Packaging &bull; Verified Fresh</span>
             </div>
 
-            <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+            <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">
               <button type="button" onclick="window.BhojFocusDispatch('${item.id}')" class="px-3 py-1.5 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] transition-colors cursor-pointer">
                 View on Map
               </button>
@@ -889,7 +964,7 @@
                     </button>`
                   : item.status === 'In-Transit'
                   ? `<div class="flex items-center gap-2">
-                      <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">To: ${item.targetShelter || 'Shelter'}</span>
+                      <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">To: ${escapeHtml(item.targetShelter || 'Shelter')}</span>
                       <button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
                         Mark as Delivered
                       </button>
@@ -907,7 +982,7 @@
   }
 
   // ==========================================
-  // 7. Shelter Assignment & Acceptance Modal
+  // 7. Corridor-Geofenced Shelter Assignment & Acceptance Modal
   // ==========================================
   let pendingAcceptDispatchId = null;
 
@@ -926,10 +1001,17 @@
     document.getElementById('assign-modal-servings').textContent = `${dispatch.servings} servings (~${((dispatch.servings * 0.45).toFixed(1))} kg)`;
     document.getElementById('assign-modal-volunteer-name').textContent = volunteerName;
 
-    const shelters = global.BhojStore.getShelters();
+    // Dual-Corridor Geofenced Shelter Matching
+    const corridor = dispatch.corridor || global.BhojStore.determineCorridor(dispatch.lat, dispatch.lng);
+    const corridorEl = document.getElementById('assign-modal-corridor');
+    if (corridorEl) corridorEl.textContent = corridor;
+    const badgeEl = document.getElementById('shelter-corridor-badge');
+    if (badgeEl) badgeEl.textContent = corridor.includes('Punjab') ? 'Punjab NH-44 Hub' : 'Delhi/NCR Metro';
+
+    const shelters = global.BhojStore.getSheltersForCorridor(corridor);
     const optionsContainer = document.getElementById('shelter-options-list');
 
-    // Filter shelters by proximity to the donor to avoid showing cross-state shelters
+    // Filter shelters by proximity to the donor within the operating corridor
     const localShelters = shelters
       .map((s) => ({
         ...s,
@@ -937,9 +1019,7 @@
       }))
       .sort((a, b) => a.distFromDonor - b.distFromDonor);
 
-    // Pick top shelters within 60 km of donor (or top 3 closest if all are further)
-    const filteredShelters = localShelters.filter((s) => s.distFromDonor <= 60);
-    const sheltersToShow = filteredShelters.length > 0 ? filteredShelters : localShelters.slice(0, 3);
+    const sheltersToShow = localShelters.length > 0 ? localShelters : global.BhojStore.getShelters().slice(0, 3);
 
     if (optionsContainer) {
       optionsContainer.innerHTML = sheltersToShow
@@ -948,17 +1028,17 @@
 
           return `
             <label class="p-3 rounded border border-[#DCD9D0] bg-[#FAF9F6] hover:bg-white cursor-pointer flex items-start gap-3 transition-colors">
-              <input type="radio" name="targetShelter" value="${s.name}" ${idx === 0 ? 'checked' : ''} class="mt-1 accent-[#1B4332]">
+              <input type="radio" name="targetShelter" value="${escapeHtml(s.name)}" ${idx === 0 ? 'checked' : ''} class="mt-1 accent-[#1B4332]">
               <div class="flex-1 space-y-0.5 text-xs">
                 <div class="flex items-center justify-between">
-                  <span class="font-bold text-[#141E18]">${s.name}</span>
+                  <span class="font-bold text-[#141E18]">${escapeHtml(s.name)}</span>
                   <span class="font-mono text-[#1B4332] font-bold">${s.distFromDonor} km away</span>
                 </div>
-                <p class="text-[11px] text-[#525B55]">${s.address}</p>
+                <p class="text-[11px] text-[#525B55]">${escapeHtml(s.address)}</p>
                 <div class="flex items-center gap-3 pt-1 text-[10px] font-mono text-[#525B55]">
                   <span>Capacity: <strong class="text-[#141E18]">${s.currentOccupancy}/${s.mealDemand}</strong></span>
                   <span>&bull;</span>
-                  <span>Contact: ${s.contactPerson}</span>
+                  <span>Contact: ${escapeHtml(s.contactPerson)}</span>
                   ${isNearest ? `<span class="ml-auto px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-bold">Nearest Shelter</span>` : ''}
                 </div>
               </div>
@@ -969,6 +1049,13 @@
     }
 
     modal.classList.remove('hidden');
+    trapModalFocus(modal, closeShelterAssignModal);
+  }
+
+  function closeShelterAssignModal() {
+    const modal = document.getElementById('shelter-assign-modal');
+    if (modal) modal.classList.add('hidden');
+    pendingAcceptDispatchId = null;
   }
 
   function setupShelterAssignModal() {
@@ -977,13 +1064,8 @@
     const cancelBtn = document.getElementById('btn-cancel-shelter-assign');
     const confirmBtn = document.getElementById('btn-confirm-pickup');
 
-    function close() {
-      if (modal) modal.classList.add('hidden');
-      pendingAcceptDispatchId = null;
-    }
-
-    if (closeBtn) closeBtn.onclick = close;
-    if (cancelBtn) cancelBtn.onclick = close;
+    if (closeBtn) closeBtn.onclick = closeShelterAssignModal;
+    if (cancelBtn) cancelBtn.onclick = closeShelterAssignModal;
 
     if (confirmBtn) {
       confirmBtn.onclick = function () {
@@ -993,14 +1075,16 @@
         const chosenShelter = selectedRadio ? selectedRadio.value : 'Community Shelter';
 
         try {
+          // Optimistic Concurrency Control (OCC): Assert that status is still strictly 'Available'
           const updated = global.BhojStore.updateStatus(
             pendingAcceptDispatchId,
             'In-Transit',
             volunteerName,
-            chosenShelter
+            chosenShelter,
+            'Available' // Precondition check
           );
 
-          close();
+          closeShelterAssignModal();
 
           if (global.BhojToast) {
             global.BhojToast.success(`Pickup confirmed! Route mapped to ${chosenShelter}`);
@@ -1012,6 +1096,15 @@
 
         } catch (e) {
           console.error('[BhojVolunteer] Error accepting pickup:', e);
+          if (e.code === 'ERR_CLAIM_CONFLICT') {
+            if (global.BhojToast) {
+              global.BhojToast.error('Pickup Conflict: This donation was just claimed by another courier! Feed updated.');
+            }
+            closeShelterAssignModal();
+            renderFeed();
+            refreshDonorMarkers();
+            return;
+          }
           if (global.BhojToast) global.BhojToast.error('Failed to accept pickup.');
         }
       };
@@ -1019,44 +1112,153 @@
   }
 
   // ==========================================
-  // 8. Complete Delivery Workflow
+  // 8. Handover Proof of Delivery (PoD) Protocol & Completion
   // ==========================================
-  function completeDelivery(id) {
+  let pendingDeliveryDispatchId = null;
+
+  function openHandoverPodModal(id) {
     if (!id || !global.BhojStore) return;
+    pendingDeliveryDispatchId = id;
 
     const dispatch = global.BhojStore.getDispatchById(id);
     if (!dispatch) return;
 
-    try {
-      const updated = global.BhojStore.updateStatus(
-        id,
-        'Delivered',
-        volunteerName,
-        dispatch.targetShelter || 'Community Shelter'
-      );
+    const modal = document.getElementById('handover-pod-modal');
+    if (!modal) return;
 
-      const modal = document.getElementById('delivery-celebrate-modal');
-      if (modal) {
-        document.getElementById('celebrate-volunteer-name').textContent = volunteerName;
-        document.getElementById('celebrate-meals-count').textContent = `${updated.servings} serv`;
-        document.getElementById('celebrate-kg-count').textContent = `~${(updated.servings * 0.45).toFixed(1)} kg`;
-        modal.classList.remove('hidden');
-      }
+    const shelter = global.BhojStore.getShelter(dispatch.targetShelter) || {
+      name: dispatch.targetShelter || 'Community Relief Shelter',
+      contactPerson: 'Shelter Manager'
+    };
 
-      if (global.BhojToast) {
-        global.BhojToast.success(
-          `Delivery complete! ${updated.servings} meals delivered to ${updated.targetShelter}.`
-        );
-      }
+    document.getElementById('pod-modal-id').textContent = dispatch.id;
+    document.getElementById('pod-modal-shelter').textContent = shelter.name;
+    document.getElementById('pod-modal-coordinator').textContent = shelter.contactPerson || 'Shelter Coordinator';
+    document.getElementById('pod-modal-servings').textContent = `${dispatch.servings} servings (~${((dispatch.servings * 0.45).toFixed(1))} kg)`;
 
-      renderFeed();
-      refreshDonorMarkers();
-      drawRoute(updated);
+    // Academic / Demo Hint: Expected verification PIN
+    const expectedPin = dispatch.handoverPin || shelter.handoverPin || '4821';
+    const hintEl = document.getElementById('pod-expected-pin-hint');
+    if (hintEl) hintEl.textContent = expectedPin;
 
-    } catch (e) {
-      console.error('[BhojVolunteer] Error completing delivery:', e);
-      if (global.BhojToast) global.BhojToast.error('Failed to complete delivery.');
+    const pinInput = document.getElementById('pod-pin-input');
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.classList.remove('is-invalid');
     }
+    const errEl = document.getElementById('pod-pin-error');
+    if (errEl) errEl.classList.add('hidden');
+
+    modal.classList.remove('hidden');
+    trapModalFocus(modal, closeHandoverPodModal);
+    if (pinInput) setTimeout(() => pinInput.focus(), 100);
+  }
+
+  function closeHandoverPodModal() {
+    const modal = document.getElementById('handover-pod-modal');
+    if (modal) modal.classList.add('hidden');
+    pendingDeliveryDispatchId = null;
+  }
+
+  function setupHandoverPodModal() {
+    const modal = document.getElementById('handover-pod-modal');
+    const closeBtn = document.getElementById('modal-pod-close');
+    const cancelBtn = document.getElementById('btn-cancel-pod');
+    const submitBtn = document.getElementById('btn-submit-pod');
+    const pinInput = document.getElementById('pod-pin-input');
+    const errEl = document.getElementById('pod-pin-error');
+
+    if (closeBtn) closeBtn.onclick = closeHandoverPodModal;
+    if (cancelBtn) cancelBtn.onclick = closeHandoverPodModal;
+
+    if (pinInput) {
+      pinInput.addEventListener('input', function () {
+        this.classList.remove('is-invalid');
+        if (errEl) errEl.classList.add('hidden');
+      });
+      pinInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (submitBtn) submitBtn.click();
+        }
+      });
+    }
+
+    if (submitBtn) {
+      submitBtn.onclick = function () {
+        if (!pendingDeliveryDispatchId || !global.BhojStore) return;
+        const enteredPin = (pinInput?.value || '').trim();
+
+        if (!enteredPin || enteredPin.length < 4) {
+          if (errEl) {
+            errEl.classList.remove('hidden');
+            const span = errEl.querySelector('span');
+            if (span) span.textContent = 'Please enter the complete 4-digit verification PIN.';
+          }
+          if (pinInput) {
+            pinInput.classList.add('is-invalid');
+            pinInput.focus();
+          }
+          return;
+        }
+
+        const dispatch = global.BhojStore.getDispatchById(pendingDeliveryDispatchId);
+        if (!dispatch) return;
+
+        try {
+          const updated = global.BhojStore.updateStatus(
+            pendingDeliveryDispatchId,
+            'Delivered',
+            volunteerName,
+            dispatch.targetShelter || 'Community Shelter',
+            'In-Transit',
+            enteredPin // Verified PoD code
+          );
+
+          closeHandoverPodModal();
+
+          const celebrateModal = document.getElementById('delivery-celebrate-modal');
+          if (celebrateModal) {
+            document.getElementById('celebrate-volunteer-name').textContent = volunteerName;
+            document.getElementById('celebrate-meals-count').textContent = `${updated.servings} serv`;
+            document.getElementById('celebrate-kg-count').textContent = `~${(updated.servings * 0.45).toFixed(1)} kg`;
+            celebrateModal.classList.remove('hidden');
+            trapModalFocus(celebrateModal, () => celebrateModal.classList.add('hidden'));
+          }
+
+          if (global.BhojToast) {
+            global.BhojToast.success(
+              `PoD Verified! ${updated.servings} meals safely delivered to ${updated.targetShelter}.`
+            );
+          }
+
+          renderFeed();
+          refreshDonorMarkers();
+          drawRoute(updated);
+
+        } catch (err) {
+          console.error('[BhojVolunteer] PoD Verification Error:', err);
+          if (err.code === 'ERR_INVALID_POD_PIN') {
+            if (errEl) {
+              errEl.classList.remove('hidden');
+              const span = errEl.querySelector('span');
+              if (span) span.textContent = 'Incorrect verification code. Please request the 4-digit PIN from the shelter manager.';
+            }
+            if (pinInput) {
+              pinInput.classList.add('is-invalid');
+              pinInput.focus();
+            }
+          } else {
+            if (global.BhojToast) global.BhojToast.error('Failed to verify delivery.');
+          }
+        }
+      };
+    }
+  }
+
+  function completeDelivery(id) {
+    // Open the Handover Proof of Delivery PIN verification modal
+    openHandoverPodModal(id);
   }
 
   function setupCelebrationModal() {
@@ -1071,6 +1273,59 @@
         if (e.target === modal) modal.classList.add('hidden');
       };
     }
+  }
+
+  /**
+   * Dynamic Expiry Ticker (every 30 seconds):
+   * Recalculates remaining safe shelf-life across all rendered feed cards,
+   * updating badges and pulsing urgency styling dynamically without page reload.
+   */
+  let expiryTickerInterval = null;
+
+  function startDynamicExpiryTicker() {
+    if (expiryTickerInterval) clearInterval(expiryTickerInterval);
+
+    expiryTickerInterval = setInterval(() => {
+      const expiryElements = document.querySelectorAll('.dispatch-expiry-text');
+      if (!expiryElements.length) return;
+
+      const now = Date.now();
+      let urgencyChanged = false;
+
+      expiryElements.forEach((el) => {
+        const expiryIso = el.getAttribute('data-expiry-time');
+        if (!expiryIso) return;
+
+        const diffMs = new Date(expiryIso).getTime() - now;
+        if (diffMs <= 0) {
+          if (el.textContent !== 'Expired') {
+            el.textContent = 'Expired';
+            el.className = 'dispatch-expiry-text font-bold text-[#DC2626] font-mono';
+            urgencyChanged = true;
+          }
+        } else {
+          const totalMinutes = Math.floor(diffMs / 60000);
+          const hours = Math.floor(totalMinutes / 60);
+          const mins = totalMinutes % 60;
+          const isUrgent = totalMinutes <= 120;
+
+          const text = hours > 0 ? `${hours}h ${mins}m left` : `${mins}m left`;
+          if (el.textContent !== text) {
+            el.textContent = text;
+          }
+
+          if (isUrgent) {
+            el.className = 'dispatch-expiry-text font-bold text-[#C84B31] pulse-critical-badge font-mono';
+          } else {
+            el.className = 'dispatch-expiry-text font-bold text-[#1B4332] font-mono';
+          }
+        }
+      });
+
+      if (urgencyChanged) {
+        refreshDonorMarkers();
+      }
+    }, 30000); // 30-second interval
   }
 
   // ==========================================
@@ -1491,10 +1746,12 @@
     initReliefMap();
     setupToolbarListeners();
     setupShelterAssignModal();
+    setupHandoverPodModal();
     setupCelebrationModal();
     setupStoreSync();
 
     renderFeed();
+    startDynamicExpiryTicker();
     checkUrlClaim();
   }
 
