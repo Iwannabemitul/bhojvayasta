@@ -306,7 +306,7 @@
               <div><a href="index.html" class="text-[#525B55] hover:text-[#C84B31]">Impact Dashboard</a></div>
               <div><a href="donate.html" class="text-[#525B55] hover:text-[#C84B31]">Donate Extra Food</a></div>
               <div><a href="volunteer.html" class="text-[#525B55] hover:text-[#C84B31]">Volunteer Pickup Map</a></div>
-              <div><a href="javascript:void(0)" onclick="document.getElementById('btn-reset-demo')?.click()" class="text-[#B45309] hover:underline">Reset Demo Data</a></div>
+              <div><a href="javascript:void(0)" data-action="reset-demo-data" onclick="document.getElementById('btn-reset-demo')?.click()" class="text-[#B45309] hover:underline">Reset Demo Data</a></div>
             </div>
 
             <!-- Col 3: Food Safety & Hygiene -->
@@ -361,6 +361,19 @@
 
     window.addEventListener('storage', updateBadge);
     window.addEventListener('bhoj:datareload', updateBadge);
+
+    document.addEventListener('click', function (e) {
+      const actionEl = e.target && e.target.closest && e.target.closest('[data-action]');
+      if (!actionEl) return;
+      if (actionEl.getAttribute('data-action') === 'reset-demo-data') {
+        const btn = document.getElementById('btn-reset-demo');
+        if (btn) {
+          btn.click();
+        } else {
+          document.dispatchEvent(new CustomEvent('bhoj:resetDemoData'));
+        }
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

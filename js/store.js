@@ -1245,10 +1245,13 @@
     /**
      * Calculates countdown time remaining before food expiry.
      * Flags urgent items (< 2 hours remaining) for visual pulsation.
-     * @param {Object} dispatch
-     * @returns {Object} { totalMinutes, hours, minutes, isExpired, isUrgent, formattedText }
+     * Dynamically incorporates FSSAI thermal decay kinetics when BhojSafety is available.
+     * 
+     * @param {Object} dispatch - Surplus food dispatch record
+     * @param {number|string} [ambientTemp] - Optional current ambient temperature override (°C)
+     * @returns {Object} { totalMinutes, hours, minutes, isExpired, isUrgent, formattedText, freshnessIndex?, dangerZone?, decayMultiplier? }
      */
-    getExpiryStatus(dispatch) {
+    getExpiryStatus(dispatch, ambientTemp) {
       if (!dispatch || !dispatch.expiryTime) {
         return {
           totalMinutes: 0,
@@ -1268,6 +1271,27 @@
           isExpired: false,
           isUrgent: false,
           formattedText: 'Delivered on Time'
+        };
+      }
+
+      // Check if BhojSafety is available for dynamic thermal shelf-life calculation
+      const safety = global.BhojSafety || (typeof window !== 'undefined' && window.BhojSafety);
+      const hasAmbient = typeof ambientTemp !== 'undefined' && ambientTemp !== null;
+      if (safety && typeof safety.calculateDynamicShelfLife === 'function' && (hasAmbient || dispatch.holdingTempC || dispatch.temperatureRecorded || dispatch.storageTemp)) {
+        const temp = hasAmbient ? ambientTemp : (dispatch.holdingTempC || dispatch.temperatureRecorded || dispatch.storageTemp || 25);
+        const dynamic = safety.calculateDynamicShelfLife(dispatch, temp, Date.now());
+        const hours = Math.floor(dynamic.remainingMinutes / 60);
+        const minutes = dynamic.remainingMinutes % 60;
+        return {
+          totalMinutes: dynamic.remainingMinutes,
+          hours,
+          minutes,
+          isExpired: dynamic.isExpired,
+          isUrgent: dynamic.isUrgent,
+          formattedText: dynamic.formattedText,
+          freshnessIndex: dynamic.freshnessIndex,
+          dangerZone: dynamic.dangerZone,
+          decayMultiplier: dynamic.multiplier
         };
       }
 

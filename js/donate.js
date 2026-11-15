@@ -834,6 +834,21 @@
     document.getElementById('modal-success-servings').textContent = `${dispatch.servings} servings (~${(dispatch.servings * 0.45).toFixed(1)} kg)`;
     document.getElementById('modal-success-zone').textContent = dispatch.address;
 
+    // Generate and render FSSAI Digital Dispatch Pass & SVG QR
+    if (global.BhojQRPass && typeof global.BhojQRPass.generatePass === 'function') {
+      try {
+        const pass = global.BhojQRPass.generatePass(dispatch);
+        const passIdEl = document.getElementById('modal-pass-id');
+        if (passIdEl) passIdEl.textContent = pass.passId;
+        const qrSvgContainer = document.getElementById('modal-pass-qr-svg');
+        if (qrSvgContainer) {
+          global.BhojQRPass.renderSvgQr(pass.qrPayload, qrSvgContainer, { size: 160 });
+        }
+      } catch (err) {
+        console.warn('[BhojDonate] Failed to generate FSSAI QR pass:', err);
+      }
+    }
+
     const btnFeed = document.getElementById('btn-view-on-feed');
     if (btnFeed) btnFeed.href = `volunteer.html?claim=${dispatch.id}&mode=donor`;
 

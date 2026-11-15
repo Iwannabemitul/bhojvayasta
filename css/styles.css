@@ -542,3 +542,29 @@ body {
   animation: pulseUrgentBadge 1.2s ease-in-out infinite;
 }
 
+/* ==========================================================================
+   10. Live Transit Simulator & Moving Courier Marker (R4)
+   ========================================================================== */
+.courier-sim-marker {
+  transition: transform 0.08s linear;
+  filter: drop-shadow(0 3px 6px rgba(29, 78, 216, 0.45));
+}
+
+#sim-hud {
+  animation: fadeInHud 0.2s ease-out;
+}
+
+@keyframes fadeInHud {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   11. Digital FSSAI QR Dispatch Pass (R5)
+   ========================================================================== */
+#modal-pass-qr-svg svg {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+

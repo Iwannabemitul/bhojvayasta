@@ -546,6 +546,10 @@
               const group = L.featureGroup([leg1Line, leg2Line]);
               reliefMap.fitBounds(group.getBounds(), { padding: [55, 55], maxZoom: 15 });
               osrmSucceeded = true;
+
+              if (global.BhojTransitSimulator && typeof global.BhojTransitSimulator.loadRoute === 'function') {
+                global.BhojTransitSimulator.loadRoute(allCoords);
+              }
             }
           }
         }
@@ -572,6 +576,10 @@
 
       const group = L.featureGroup([leg1Line, leg2Line]);
       reliefMap.fitBounds(group.getBounds(), { padding: [55, 55], maxZoom: 14 });
+
+      if (global.BhojTransitSimulator && typeof global.BhojTransitSimulator.loadRoute === 'function') {
+        global.BhojTransitSimulator.loadRoute([courierPoint, donorPoint, shelterPoint]);
+      }
     }
 
     const overlay = document.getElementById('route-summary-overlay');
@@ -634,7 +642,7 @@
               <span class="w-2 h-2 rounded-full bg-[#1B4332] animate-pulse"></span>
               Route Inspection
             </span>
-            <button type="button" onclick="window.BhojClearRouteSelection()" class="text-[10px] text-[#C84B31] hover:underline font-bold cursor-pointer">
+            <button type="button" data-action="clear-route" onclick="window.BhojClearRouteSelection()" class="text-[10px] text-[#C84B31] hover:underline font-bold cursor-pointer">
               Clear Selection
             </button>
           </div>
@@ -733,6 +741,9 @@
 
   global.BhojClearRouteSelection = function () {
     activeSelectedDispatchId = null;
+    if (global.BhojTransitSimulator && typeof global.BhojTransitSimulator.stop === 'function') {
+      global.BhojTransitSimulator.stop();
+    }
     if (routeLayerGroup) routeLayerGroup.clearLayers();
     const overlay = document.getElementById('route-summary-overlay');
     if (overlay) overlay.classList.add('hidden');
@@ -886,6 +897,8 @@
 
         return `
           <div id="card-${item.id}"
+               data-action="focus-dispatch"
+               data-dispatch-id="${item.id}"
                tabindex="0"
                role="button"
                aria-label="Dispatch ${item.id} from ${escapeHtml(item.donorName)}, ${item.servings} servings, ${distKm} kilometers away. Press Enter or Space to inspect on map."
@@ -953,19 +966,19 @@
             </div>
 
             <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">
-              <button type="button" onclick="window.BhojFocusDispatch('${item.id}')" class="px-3 py-1.5 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] transition-colors cursor-pointer">
+              <button type="button" data-action="focus-dispatch" data-dispatch-id="${item.id}" onclick="window.BhojFocusDispatch('${item.id}')" class="px-3 py-1.5 rounded text-xs font-semibold font-mono border border-[#DCD9D0] bg-white hover:bg-[#EFECE6] text-[#141E18] transition-colors cursor-pointer">
                 View on Map
               </button>
 
               ${
                 item.status === 'Available'
-                  ? `<button type="button" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="btn-primary px-4 py-1.5 text-xs uppercase tracking-wider cursor-pointer">
+                  ? `<button type="button" data-action="accept-dispatch" data-dispatch-id="${item.id}" onclick="window.BhojVolunteerTriggerAccept('${item.id}')" class="btn-primary px-4 py-1.5 text-xs uppercase tracking-wider cursor-pointer">
                       I'll Pick This Up
                     </button>`
                   : item.status === 'In-Transit'
                   ? `<div class="flex items-center gap-2">
                       <span class="text-[11px] font-mono text-[#B45309] hidden sm:inline">To: ${escapeHtml(item.targetShelter || 'Shelter')}</span>
-                      <button type="button" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
+                      <button type="button" data-action="complete-dispatch" data-dispatch-id="${item.id}" onclick="window.BhojVolunteerTriggerComplete('${item.id}')" class="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider text-white bg-[#B45309] hover:bg-[#92400e] cursor-pointer">
                         Mark as Delivered
                       </button>
                     </div>`
@@ -1738,6 +1751,164 @@
     });
   }
 
+  function setupEventDelegation() {
+    const feedContainer = document.getElementById('courier-feed');
+    if (feedContainer) {
+      feedContainer.addEventListener('click', (event) => {
+        const actionBtn = event.target.closest('[data-action]');
+        if (!actionBtn) return;
+        const action = actionBtn.getAttribute('data-action');
+        const id = actionBtn.getAttribute('data-dispatch-id');
+        if (action === 'focus-dispatch' && id) {
+          focusOnDispatch(id, true);
+        } else if (action === 'accept-dispatch' && id) {
+          openShelterAssignModal(id);
+        } else if (action === 'complete-dispatch' && id) {
+          completeDelivery(id);
+        } else if (action === 'clear-route') {
+          clearRouteSelection();
+        } else if (action === 'start-simulation') {
+          const playBtn = document.getElementById('btn-sim-play');
+          if (playBtn) playBtn.click();
+        } else if (action === 'verify-qr-pass') {
+          const verifyBtn = document.getElementById('btn-verify-qr-pass');
+          if (verifyBtn) verifyBtn.click();
+        }
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      const actionBtn = event.target.closest && event.target.closest('[data-action]');
+      if (!actionBtn) return;
+      const action = actionBtn.getAttribute('data-action');
+      const id = actionBtn.getAttribute('data-dispatch-id');
+      if (action === 'clear-route') {
+        clearRouteSelection();
+      } else if (action === 'focus-dispatch' && id && (!feedContainer || !feedContainer.contains(actionBtn))) {
+        focusOnDispatch(id, true);
+      } else if (action === 'accept-dispatch' && id && (!feedContainer || !feedContainer.contains(actionBtn))) {
+        openShelterAssignModal(id);
+      } else if (action === 'complete-dispatch' && id && (!feedContainer || !feedContainer.contains(actionBtn))) {
+        completeDelivery(id);
+      }
+    });
+  }
+
+  let currentSimSpeed = 1;
+
+  function setupTransitSimulator() {
+    if (!global.BhojTransitSimulator) return;
+
+    global.BhojTransitSimulator.init(reliefMap, courierMarker);
+
+    global.BhojTransitSimulator.onTick(function (telemetry) {
+      const speedEl = document.getElementById('sim-telemetry-speed');
+      const etaEl = document.getElementById('sim-telemetry-eta');
+      const distEl = document.getElementById('sim-telemetry-dist');
+      const barEl = document.getElementById('sim-progress-bar');
+
+      if (speedEl) speedEl.textContent = `${telemetry.speedKmH} km/h`;
+      if (etaEl) etaEl.textContent = `${telemetry.etaMinutes} mins`;
+      if (distEl) distEl.textContent = `${telemetry.distanceRemainingKm} km`;
+      if (barEl) barEl.style.width = `${telemetry.progressPercent}%`;
+    });
+
+    global.BhojTransitSimulator.onArrival(function () {
+      const playBtn = document.getElementById('btn-sim-play');
+      const pauseBtn = document.getElementById('btn-sim-pause');
+      if (playBtn) playBtn.classList.remove('hidden');
+      if (pauseBtn) pauseBtn.classList.add('hidden');
+
+      if (global.BhojToast) {
+        global.BhojToast.success('Courier reached Destination Shelter! Complete handover verification.');
+      }
+      if (activeSelectedDispatchId) {
+        completeDelivery(activeSelectedDispatchId);
+      }
+    });
+
+    const playBtn = document.getElementById('btn-sim-play');
+    const pauseBtn = document.getElementById('btn-sim-pause');
+
+    if (playBtn) {
+      playBtn.onclick = function () {
+        global.BhojTransitSimulator.start(currentSimSpeed || 5);
+        playBtn.classList.add('hidden');
+        if (pauseBtn) pauseBtn.classList.remove('hidden');
+      };
+    }
+    if (pauseBtn) {
+      pauseBtn.onclick = function () {
+        global.BhojTransitSimulator.pause();
+        pauseBtn.classList.add('hidden');
+        if (playBtn) playBtn.classList.remove('hidden');
+      };
+    }
+
+    document.querySelectorAll('.sim-speed-btn').forEach(btn => {
+      btn.onclick = function () {
+        document.querySelectorAll('.sim-speed-btn').forEach(b => {
+          b.classList.remove('bg-[#E8F3EE]');
+          b.classList.add('bg-white');
+        });
+        btn.classList.add('bg-[#E8F3EE]');
+        btn.classList.remove('bg-white');
+        const speed = parseInt(btn.dataset.speed, 10) || 1;
+        currentSimSpeed = speed;
+        if (global.BhojTransitSimulator.getState().isRunning && !global.BhojTransitSimulator.getState().isPaused) {
+          global.BhojTransitSimulator.start(speed);
+        }
+      };
+    });
+  }
+
+  function setupQrVerification() {
+    const verifyBtn = document.getElementById('btn-verify-qr-pass');
+    const qrInput = document.getElementById('pod-qr-input');
+    const feedbackEl = document.getElementById('pod-qr-feedback');
+    const pinInput = document.getElementById('pod-pin-input');
+
+    if (verifyBtn && qrInput) {
+      verifyBtn.onclick = function () {
+        const payload = qrInput.value.trim();
+        if (!payload) {
+          if (feedbackEl) {
+            feedbackEl.textContent = 'Please enter or paste QR pass payload.';
+            feedbackEl.className = 'text-[11px] font-mono text-[#C84B31] block';
+          }
+          return;
+        }
+
+        if (global.BhojQRPass && typeof global.BhojQRPass.verifyPass === 'function') {
+          const result = global.BhojQRPass.verifyPass(payload);
+          if (result.isValid) {
+            if (feedbackEl) {
+              feedbackEl.textContent = `✓ ${result.message} (Pass ID: ${result.pass.passId})`;
+              feedbackEl.className = 'text-[11px] font-mono text-[#1B4332] font-bold block';
+            }
+            if (result.pass && result.pass.handoverSecurity && result.pass.handoverSecurity.handoverPin) {
+              if (pinInput) {
+                pinInput.value = result.pass.handoverSecurity.handoverPin;
+                pinInput.classList.remove('is-invalid');
+              }
+            }
+            if (global.BhojToast) {
+              global.BhojToast.success('FSSAI QR Pass Authenticated! PIN auto-filled.');
+            }
+          } else {
+            if (feedbackEl) {
+              feedbackEl.textContent = `✗ Verification Failed: [${result.code}] ${result.message}`;
+              feedbackEl.className = 'text-[11px] font-mono text-[#C84B31] font-bold block';
+            }
+            if (global.BhojToast) {
+              global.BhojToast.error(`QR Verification Rejected: ${result.code}`);
+            }
+          }
+        }
+      };
+    }
+  }
+
   function initVolunteer() {
     if (global.BhojStore && typeof global.BhojStore.initStore === 'function') {
       global.BhojStore.initStore();
@@ -1745,6 +1916,9 @@
 
     initReliefMap();
     setupToolbarListeners();
+    setupEventDelegation();
+    setupTransitSimulator();
+    setupQrVerification();
     setupShelterAssignModal();
     setupHandoverPodModal();
     setupCelebrationModal();

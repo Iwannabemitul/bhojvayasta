@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.arcgisonline.com https://*.openstreetmap.org https://unpkg.com; connect-src 'self' https://router.project-osrm.org https://nominatim.openstreetmap.org https://server.arcgisonline.com https://*.tile.openstreetmap.org; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self';">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1B4332">
   <title>Donate Extra Food - BhojVayasta Relief Network</title>
   <meta name="description" content="Quickly donate extra food from banquets, cafeterias, and stores to local community shelters in Delhi/NCR.">
 
@@ -745,6 +748,23 @@
         </div>
       </div>
 
+      <!-- Digital FSSAI Dispatch Pass & SVG QR (R5) -->
+      <div id="modal-qr-pass-container" class="p-3 bg-white border border-[#1B4332]/30 rounded-lg shadow-sm space-y-2 text-left">
+        <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5 text-[10px] font-mono">
+          <span class="font-bold text-[#1B4332] flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-[#1B4332]"></span>
+            FSSAI Digital Dispatch Pass
+          </span>
+          <span id="modal-pass-id" class="text-[#525B55] font-bold">PASS-BV-XXXX</span>
+        </div>
+        <div id="modal-pass-qr-svg" class="flex justify-center p-2 bg-[#FAF9F6] rounded border border-[#EFECE6]">
+          <!-- Scalable SVG QR code dynamically rendered by js/qrPass.js -->
+        </div>
+        <div class="text-[10px] font-mono text-[#525B55] text-center">
+          Present this official QR pass to the volunteer courier upon food handover.
+        </div>
+      </div>
+
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
         <a id="btn-view-on-feed" href="volunteer.html" class="flex-1 btn-primary py-2.5 text-xs text-center uppercase tracking-wider">
           Track on Map
@@ -762,6 +782,9 @@
 
   <!-- Foundational Scripts -->
   <script src="js/store.js"></script>
+  <script src="js/foodSafety.js"></script>
+  <script src="js/qrPass.js"></script>
+  <script src="js/pwa.js"></script>
   <script src="js/navbar.js"></script>
   <script src="js/donate.js"></script>
 

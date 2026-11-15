@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.arcgisonline.com https://*.openstreetmap.org https://unpkg.com; connect-src 'self' https://router.project-osrm.org https://nominatim.openstreetmap.org https://server.arcgisonline.com https://*.tile.openstreetmap.org; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self';">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1B4332">
   <title>Volunteer Courier Feed & Map - BhojVayasta Network</title>
   <meta name="description" content="View nearby surplus food pickups, choose a shelter, and deliver meals across Delhi/NCR.">
 
@@ -347,9 +350,43 @@
               </div>
             </div>
 
-            <button id="btn-route-action" type="button" class="btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-wider shrink-0">
-              I'll Pick This Up
-            </button>
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="btn-route-clear" type="button" data-action="clear-route" class="px-3 py-2 text-xs font-mono font-semibold border border-[#DCD9D0] bg-white hover:bg-[#FAF9F6] text-[#C84B31] rounded cursor-pointer">
+                Clear Route
+              </button>
+              <button id="btn-route-action" type="button" class="btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-wider">
+                I'll Pick This Up
+              </button>
+            </div>
+          </div>
+
+          <!-- Simulator HUD Controls (Integrated into route inspection) -->
+          <div id="sim-hud" class="mt-2.5 pt-2 border-t border-[#DCD9D0] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+            <div class="flex items-center gap-2">
+              <button id="btn-sim-play" type="button" data-action="start-simulation" class="px-2.5 py-1 bg-[#1B4332] text-white rounded text-[11px] font-bold hover:bg-[#143225] flex items-center gap-1 cursor-pointer">
+                <span>▶ Sim Transit</span>
+              </button>
+              <button id="btn-sim-pause" type="button" class="px-2 py-1 bg-[#FAF9F6] border border-[#DCD9D0] rounded text-[11px] font-bold hover:bg-[#EFECE6] hidden cursor-pointer">
+                ⏸ Pause
+              </button>
+              <div class="flex items-center gap-1 text-[10px] text-[#525B55]">
+                <span>Speed:</span>
+                <button type="button" class="sim-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-[#E8F3EE] font-bold" data-speed="1">1x</button>
+                <button type="button" class="sim-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-white font-bold" data-speed="5">5x</button>
+                <button type="button" class="sim-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-white font-bold" data-speed="10">10x</button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 text-[11px] text-[#525B55]">
+              <div>Speed: <strong id="sim-telemetry-speed" class="text-[#141E18]">0 km/h</strong></div>
+              <div>ETA: <strong id="sim-telemetry-eta" class="text-[#141E18]">--</strong></div>
+              <div>Dist: <strong id="sim-telemetry-dist" class="text-[#141E18]">--</strong></div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-[#EFECE6] h-1.5 rounded-full overflow-hidden mt-1">
+              <div id="sim-progress-bar" class="bg-[#1B4332] h-full w-0 transition-all duration-100"></div>
+            </div>
           </div>
         </div>
 
@@ -488,6 +525,20 @@
         </div>
       </div>
 
+      <!-- FSSAI QR Pass Verification Gate (R5) -->
+      <div class="space-y-1.5 pt-1 border-t border-[#DCD9D0]">
+        <label for="pod-qr-input" class="block text-xs font-bold uppercase tracking-wider text-[#525B55]">
+          Or Verify FSSAI QR Pass
+        </label>
+        <div class="flex gap-2">
+          <input id="pod-qr-input" type="text" placeholder="Paste or scan QR pass payload..." class="bhoj-input text-xs font-mono py-1.5">
+          <button id="btn-verify-qr-pass" type="button" data-action="verify-qr-pass" class="px-3 py-1.5 bg-[#1B4332] text-white text-xs font-mono font-bold rounded shrink-0 hover:bg-[#143225] cursor-pointer">
+            Verify QR
+          </button>
+        </div>
+        <p id="pod-qr-feedback" class="text-[11px] font-mono hidden"></p>
+      </div>
+
       <!-- Action Buttons -->
       <div class="flex items-center justify-end gap-3 pt-2 border-t border-[#DCD9D0]">
         <button id="btn-cancel-pod" type="button" class="btn-secondary px-4 py-2 text-xs font-semibold">
@@ -553,6 +604,10 @@
 
   <!-- Foundational Scripts -->
   <script src="js/store.js"></script>
+  <script src="js/foodSafety.js"></script>
+  <script src="js/qrPass.js"></script>
+  <script src="js/transitSimulator.js"></script>
+  <script src="js/pwa.js"></script>
   <script src="js/navbar.js"></script>
   <script src="js/volunteer.js"></script>
 
