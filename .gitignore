@@ -12,6 +12,9 @@ skills-lock.json
 .env.local
 .env.*.local
 
+# Netlify
+.netlify/
+
 # OS files
 .DS_Store
 Thumbs.db
