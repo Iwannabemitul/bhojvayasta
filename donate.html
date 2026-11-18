@@ -601,27 +601,31 @@
           
           <div class="space-y-6">
             
-            <!-- Live Preview Card -->
-            <div class="card-surface p-6 rounded space-y-4">
-              <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-3">
-                <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-[#525B55]">
-                  How Volunteers See Your Listing
-                </h3>
-                <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
-                  Preview
+            <!-- Perforated Physical Thermal-Certified Transit Ticket Preview -->
+            <div class="transit-ticket-card p-6 shadow-sm space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-[#DCD9D0] text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#C84B31] animate-pulse"></span>
+                  <h3 class="font-bold uppercase tracking-wider text-[#141E18]">
+                    Courier Live Manifest Ticket
+                  </h3>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
+                  PREVIEW DOCKET
                 </span>
               </div>
 
-              <div class="p-4 rounded bg-[#FAF9F6] border border-[#DCD9D0] space-y-3">
+              <!-- Ticket Body -->
+              <div class="space-y-3">
                 <div class="flex items-start justify-between gap-3">
                   <div>
                     <span id="preview-id" class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#EFECE6] text-[#141E18] border border-[#DCD9D0]">
                       BV-PENDING
                     </span>
-                    <h4 id="preview-donor" class="text-base font-bold text-[#141E18] mt-1">
+                    <h4 id="preview-donor" class="text-base font-bold text-[#141E18] mt-1 font-display">
                       Grand Imperial Banquet
                     </h4>
-                    <div id="preview-address" class="text-xs text-[#525B55] truncate max-w-xs mt-0.5">
+                    <div id="preview-address" class="text-xs text-[#525B55] truncate max-w-xs mt-0.5 font-sans">
                       Barakhamba Road, Connaught Place, New Delhi
                     </div>
                   </div>
@@ -631,46 +635,51 @@
                   </span>
                 </div>
 
-                <div class="space-y-1">
+                <div class="space-y-1.5 pt-1">
                   <div class="flex items-center gap-2">
-                    <span id="preview-badge-type" class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
+                    <span id="preview-badge-type" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
                       Cooked Meals
                     </span>
-                    <span id="preview-badge-diet" class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#EFECE6] text-[#525B55]">
+                    <span id="preview-badge-diet" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#EFECE6] text-[#525B55]">
                       Vegetarian
                     </span>
                   </div>
-                  <p id="preview-description" class="text-xs text-[#525B55] line-clamp-2 italic">
+                  <p id="preview-description" class="text-xs text-[#525B55] line-clamp-2 italic font-sans py-1 border-l-2 border-[#DCD9D0] pl-2.5">
                     Paneer curry, dal makhani, steamed rice, rotis in foil trays.
                   </p>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 pt-2 border-t border-[#DCD9D0] text-center font-mono text-xs">
-                  <div class="p-2 bg-white rounded border border-[#DCD9D0]">
-                    <div class="text-[10px] text-[#525B55]">Quantity</div>
-                    <div id="preview-servings" class="font-bold text-[#141E18]">120 serv</div>
+                <!-- Perforated Ticket Divider -->
+                <div class="ticket-perforation"></div>
+
+                <!-- Hairline-Divided 3-Column Metadata Strip (Zero Nested Sub-Boxes) -->
+                <div class="grid grid-cols-3 divide-x divide-[#DCD9D0] border-y border-[#DCD9D0] py-2.5 text-center font-mono text-xs">
+                  <div class="px-2">
+                    <div class="text-[9px] uppercase tracking-wider text-[#525B55]">Quantity</div>
+                    <div id="preview-servings" class="font-bold text-sm text-[#141E18] tabular-nums mt-0.5">120 serv</div>
                   </div>
-                  <div class="p-2 bg-white rounded border border-[#DCD9D0]">
-                    <div class="text-[10px] text-[#525B55]">Est. Weight</div>
-                    <div id="preview-weight" class="font-bold text-[#C84B31]">54.0 kg</div>
+                  <div class="px-2">
+                    <div class="text-[9px] uppercase tracking-wider text-[#525B55]">Est. Weight</div>
+                    <div id="preview-weight" class="font-bold text-sm text-[#C84B31] tabular-nums mt-0.5">54.0 kg</div>
                   </div>
-                  <div class="p-2 bg-white rounded border border-[#DCD9D0]">
-                    <div class="text-[10px] text-[#525B55]">Safe For</div>
-                    <div id="preview-expiry" class="font-bold text-[#1B4332]">4h left</div>
+                  <div class="px-2">
+                    <div class="text-[9px] uppercase tracking-wider text-[#525B55]">Safe For</div>
+                    <div id="preview-expiry" class="font-bold text-sm text-[#1B4332] tabular-nums mt-0.5">4h left</div>
                   </div>
                 </div>
 
-                <div class="pt-2 flex items-center justify-between text-[11px] font-mono text-[#525B55]">
-                  <span class="flex items-center gap-1 text-[#1B4332] font-semibold">
+                <!-- Verification Stamp -->
+                <div class="pt-1 flex items-center justify-between text-[11px] font-mono">
+                  <span class="flex items-center gap-1.5 text-[#1B4332] font-semibold">
                     <svg class="w-3.5 h-3.5 text-[#1B4332]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    Safety Verified
+                    FSSAI Thermal Gate Certified
                   </span>
-                  <span class="font-semibold text-[#1B4332]">Ready for Pickup</span>
+                  <span class="font-bold text-[#1B4332] uppercase text-[10px] tracking-wider">Ready for Pickup</span>
                 </div>
               </div>
 
-              <p class="text-[11px] text-[#525B55] leading-relaxed">
-                When submitted, this listing broadcasts directly to nearby volunteers on the map.
+              <p class="text-[11px] text-[#525B55] leading-relaxed pt-2 border-t border-[#DCD9D0]">
+                Broadcast ticket is generated upon safety verification and instantly routed to nearby NH-44 couriers.
               </p>
             </div>
 
@@ -710,67 +719,75 @@
   </main>
 
   <!-- ====================================================================
-       SUCCESS CONFIRMATION MODAL
+       SUCCESS CONFIRMATION MODAL (Physical Thermal Transit Ticket Design)
        ==================================================================== -->
   <div id="success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-success-heading" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-[#141E18]/60 backdrop-blur-sm">
-    <div class="bg-white border border-[#DCD9D0] w-full max-w-md rounded p-6 sm:p-8 space-y-5 shadow-2xl text-center">
+    <div class="transit-ticket-card w-full max-w-md p-6 sm:p-7 space-y-4 shadow-2xl text-center">
       
-      <div class="w-12 h-12 rounded-full bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] flex items-center justify-center mx-auto">
-        <svg class="w-6 h-6 text-[#1B4332]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-        </svg>
+      <!-- Ticket Top Ribbon -->
+      <div class="flex items-center justify-between pb-3 border-b border-[#DCD9D0] text-xs font-mono">
+        <span class="font-bold text-[#141E18] tracking-wider uppercase flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#1B4332] animate-pulse"></span>
+          FSSAI Dispatch Ticket
+        </span>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E8F3EE] text-[#1B4332] border border-[#A3C9B8]">
+          DONATION LIVE
+        </span>
       </div>
 
       <div class="space-y-1">
-        <span class="font-mono text-xs px-2 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] font-semibold">
-          Donation Live
-        </span>
         <h3 id="modal-success-heading" class="font-display text-2xl font-bold text-[#141E18]">
           Food Posted for Pickup!
         </h3>
         <p class="text-xs text-[#525B55]">
-          Your donation is now visible to nearby volunteer couriers on the live map.
+          Your donation is now broadcasted directly to nearby volunteer couriers on the NH-44 corridor map.
         </p>
       </div>
 
-      <div class="p-3.5 bg-[#F7F5F0] border border-[#DCD9D0] rounded space-y-2 font-mono text-left text-xs">
-        <div class="flex justify-between">
-          <span class="text-[#525B55]">Donation ID:</span>
+      <!-- Hairline-Divided Monospace Metadata Table (Zero Nested Boxes) -->
+      <div class="border-y border-[#DCD9D0] divide-y divide-[#DCD9D0] font-mono text-left text-xs py-1">
+        <div class="flex justify-between py-1.5 px-2">
+          <span class="text-[#525B55] uppercase text-[10px] tracking-wider">Donation ID:</span>
           <span id="modal-success-id" class="text-[#141E18] font-bold">BV-0000</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-[#525B55]">Total Food:</span>
+        <div class="flex justify-between py-1.5 px-2">
+          <span class="text-[#525B55] uppercase text-[10px] tracking-wider">Total Payload:</span>
           <span id="modal-success-servings" class="text-[#141E18] font-bold">120 servings</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-[#525B55]">Pickup Location:</span>
-          <span id="modal-success-zone" class="text-[#141E18] truncate max-w-[200px]">Connaught Place</span>
+        <div class="flex justify-between py-1.5 px-2">
+          <span class="text-[#525B55] uppercase text-[10px] tracking-wider">Pickup Location:</span>
+          <span id="modal-success-zone" class="text-[#141E18] font-bold truncate max-w-[200px]">Connaught Place</span>
         </div>
       </div>
 
+      <!-- Perforated Ticket Divider -->
+      <div class="ticket-perforation"></div>
+
       <!-- Digital FSSAI Dispatch Pass & SVG QR (R5) -->
-      <div id="modal-qr-pass-container" class="p-3 bg-white border border-[#1B4332]/30 rounded-lg shadow-sm space-y-2 text-left">
-        <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5 text-[10px] font-mono">
+      <div id="modal-qr-pass-container" class="space-y-2.5 text-left">
+        <div class="flex items-center justify-between text-[10px] font-mono border-b border-[#DCD9D0] pb-1.5">
           <span class="font-bold text-[#1B4332] flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-[#1B4332]"></span>
-            FSSAI Digital Dispatch Pass
+            <span class="w-1.5 h-1.5 rounded-full bg-[#1B4332]"></span>
+            FSSAI Digital Verification Matrix
           </span>
           <span id="modal-pass-id" class="text-[#525B55] font-bold">PASS-BV-XXXX</span>
         </div>
-        <div id="modal-pass-qr-svg" class="flex justify-center p-2 bg-[#FAF9F6] rounded border border-[#EFECE6]">
+        
+        <div id="modal-pass-qr-svg" class="flex justify-center p-3 bg-white border border-[#DCD9D0]">
           <!-- Scalable SVG QR code dynamically rendered by js/qrPass.js -->
         </div>
+
         <div class="text-[10px] font-mono text-[#525B55] text-center">
-          Present this official QR pass to the volunteer courier upon food handover.
+          Present this verified QR pass to the courier at physical handover.
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <div class="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-[#DCD9D0]">
         <a id="btn-view-on-feed" href="volunteer.html" class="flex-1 btn-primary py-2.5 text-xs text-center uppercase tracking-wider">
-          Track on Map
+          Track on Map &rarr;
         </a>
-        <button id="btn-modal-dismiss" type="button" class="btn-secondary py-2.5 px-4 text-xs">
-          Donate More Food
+        <button id="btn-modal-dismiss" type="button" class="btn-secondary py-2.5 px-4 text-xs font-mono">
+          Donate More
         </button>
       </div>
 

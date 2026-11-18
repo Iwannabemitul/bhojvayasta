@@ -894,6 +894,9 @@
         if (item.status === 'Delivered') statusPillClass = 'status-delivered';
 
         const isSelected = item.id === activeSelectedDispatchId;
+        const statusAccent = isSelected
+          ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332]'
+          : (item.status === 'Available' ? 'border-l-2 border-l-[#1B4332] hover:bg-[#FAF9F6]' : 'border-l-2 border-l-[#B45309] hover:bg-[#FAF9F6]');
 
         return `
           <div id="card-${item.id}"
@@ -902,9 +905,7 @@
                tabindex="0"
                role="button"
                aria-label="Dispatch ${item.id} from ${escapeHtml(item.donorName)}, ${item.servings} servings, ${distKm} kilometers away. Press Enter or Space to inspect on map."
-               class="courier-card p-4 sm:p-5 space-y-3 transition-colors cursor-pointer bg-white focus:outline-none ${
-                 isSelected ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332]' : 'hover:bg-[#FAF9F6]'
-               }"
+               class="courier-card p-4 sm:p-5 space-y-2.5 transition-colors cursor-pointer bg-white focus:outline-none ${statusAccent}"
                onclick="window.BhojFocusDispatch('${item.id}')"
                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); window.BhojFocusDispatch('${item.id}');}">
             
@@ -918,10 +919,10 @@
                     ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FEF2F2] text-[#C84B31] border border-[#FCA5A5] pulse-critical-badge">Urgent (&lt;2h)</span>`
                     : ''}
                 </div>
-                <h3 class="text-sm sm:text-base font-bold text-[#141E18] mt-1">
+                <h3 class="text-sm sm:text-base font-bold text-[#141E18] mt-1 font-display">
                   ${escapeHtml(item.donorName)}
                 </h3>
-                <div class="text-xs text-[#525B55] truncate max-w-xs mt-0.5">
+                <div class="text-xs text-[#525B55] truncate max-w-xs mt-0.5 font-sans">
                   ${escapeHtml(item.address || 'Local Region')}
                 </div>
               </div>
@@ -932,37 +933,41 @@
               </span>
             </div>
 
-            <p class="text-xs text-[#525B55] line-clamp-2 italic font-sans">
+            <p class="text-xs text-[#525B55] line-clamp-2 italic font-sans py-1 border-l-2 border-[#DCD9D0] pl-2.5">
               "${escapeHtml(item.itemsDescription || item.foodTitle)}"
             </p>
 
-            <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs">
-              <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                <div class="text-[10px] text-[#525B55]">Servings</div>
-                <div class="font-bold text-[#141E18]">${item.servings}</div>
-                <div class="text-[10px] text-[#525B55]">~${weightKg} kg</div>
+            <!-- Clean Hairline-Divided 3-Column Metadata Strip (Zero Nested Sub-Boxes) -->
+            <div class="grid grid-cols-3 divide-x divide-[#DCD9D0] border-y border-[#DCD9D0] py-2 my-2 font-mono text-center text-xs">
+              <div class="px-2">
+                <div class="text-[9px] uppercase tracking-wider text-[#525B55]">Servings</div>
+                <div class="font-bold text-sm text-[#141E18] tabular-nums mt-0.5">${item.servings} <span class="text-[10px] font-normal text-[#525B55]">(~${weightKg}kg)</span></div>
               </div>
 
-              <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                <div class="text-[10px] text-[#525B55]">Safe For</div>
-                <div class="font-bold">
+              <div class="px-2">
+                <div class="text-[9px] uppercase tracking-wider text-[#525B55]">Safe For</div>
+                <div class="font-bold text-sm tabular-nums mt-0.5">
                   <span class="dispatch-expiry-text ${expiry.isUrgent ? 'text-[#C84B31] pulse-critical-badge' : 'text-[#1B4332]'}" data-expiry-time="${item.expiryTime}" data-id="${item.id}">
                     ${expiry.formattedText}
                   </span>
                 </div>
-                <div class="text-[10px] text-[#525B55]">${escapeHtml(item.storageTemp || 'Temp OK')}</div>
+                <div class="text-[9px] text-[#525B55] truncate">${escapeHtml(item.storageTemp || 'Temp OK')}</div>
               </div>
 
-              <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                <div class="text-[10px] text-[#525B55]">Distance</div>
-                <div class="font-bold text-[#1D4ED8]">${distKm} km</div>
-                <div class="text-[10px] text-[#525B55]">~${travelMins} mins</div>
+              <div class="px-2">
+                <div class="text-[9px] uppercase tracking-wider text-[#525B55]">Distance</div>
+                <div class="font-bold text-sm text-[#1B4332] tabular-nums mt-0.5">${distKm} km</div>
+                <div class="text-[9px] text-[#525B55]">~${travelMins} mins</div>
               </div>
             </div>
 
-            <div class="text-[11px] font-mono text-[#1B4332] bg-[#E8F3EE] border border-[#A3C9B8] px-2.5 py-1 rounded flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5 text-[#1B4332] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              <span>Temperature Checked &bull; Clean Packaging &bull; Verified Fresh</span>
+            <!-- Subtle Verification Indicator (No bulky nested banner) -->
+            <div class="text-[10px] font-mono text-[#1B4332] flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-[#1B4332] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                <span>FSSAI Certified Fresh &bull; Clean Packaging</span>
+              </span>
+              <span class="text-[#525B55] uppercase text-[9px]">Verified Gate</span>
             </div>
 
             <div class="pt-2 border-t border-[#DCD9D0] flex items-center justify-between gap-2" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">
@@ -1862,6 +1867,403 @@
     });
   }
 
+  // ==========================================
+  // Fleet Simulation & Reachability Isochrones (R1 & R2)
+  // ==========================================
+  let fleetLayerGroup = null;
+  let fleetIsochroneLayerGroup = null;
+  let isochronesVisible = true;
+  let fleetMarkersMap = new Map();
+  let fleetPolylinesMap = new Map();
+  let fleetIsochronesMap = new Map();
+  let currentFleetSpeed = 1;
+  let isFleetDrawerOpen = true;
+
+  function setupFleetSimulation() {
+    if (!reliefMap || typeof L === 'undefined' || !global.BhojTransitSimulator || !global.BhojTransitSimulator.fleet) {
+      return;
+    }
+
+    const fleet = global.BhojTransitSimulator.fleet;
+
+    if (!fleetLayerGroup) {
+      fleetLayerGroup = L.layerGroup().addTo(reliefMap);
+    }
+    if (!fleetIsochroneLayerGroup) {
+      fleetIsochroneLayerGroup = L.layerGroup().addTo(reliefMap);
+    }
+
+    // Initialize Preset Multi-Corridor Fleet
+    const couriers = fleet.loadPresetFleet();
+    renderFleetMarkersAndIsochrones(couriers);
+
+    // Initial Telemetry HUD population
+    const initialTelemetry = fleet.getFleetTelemetry();
+    renderFleetTelemetryHUD(initialTelemetry);
+
+    // Master Fleet Tick Listener
+    fleet.onFleetTick(function (telemetryList) {
+      updateFleetMapPositions(telemetryList);
+      renderFleetTelemetryHUD(telemetryList);
+    });
+
+    // Master Fleet Arrival Listener
+    fleet.onFleetArrival(function (courier, finalState) {
+      if (global.BhojToast) {
+        global.BhojToast.success(`Courier ${courier.name} (${courier.id}) reached destination shelter!`);
+      }
+      const telemetryList = fleet.getFleetTelemetry();
+      renderFleetTelemetryHUD(telemetryList);
+    });
+
+    // Wire Controls & Quick-Focus Buttons
+    wireFleetControls();
+  }
+
+  function renderFleetMarkersAndIsochrones(couriers) {
+    if (!fleetLayerGroup || !fleetIsochroneLayerGroup || !Array.isArray(couriers)) return;
+
+    fleetLayerGroup.clearLayers();
+    fleetIsochroneLayerGroup.clearLayers();
+    fleetMarkersMap.clear();
+    fleetPolylinesMap.clear();
+    fleetIsochronesMap.clear();
+
+    couriers.forEach(courier => {
+      // 1. Route Polyline
+      const polyline = L.polyline(courier.waypoints, {
+        color: courier.color,
+        weight: 3.5,
+        opacity: 0.75,
+        dashArray: '5, 7',
+        lineJoin: 'round'
+      }).addTo(fleetLayerGroup);
+      fleetPolylinesMap.set(courier.id, polyline);
+
+      // 2. Dual Reachability Isochrones (15-min and 30-min)
+      const iso = courier.getDualIsochrones();
+      const polygon15 = L.polygon(iso.polygon15, {
+        color: '#10B981',
+        weight: 1.5,
+        fillColor: '#10B981',
+        fillOpacity: 0.16,
+        lineJoin: 'round'
+      }).addTo(fleetIsochroneLayerGroup);
+
+      const polygon30 = L.polygon(iso.polygon30, {
+        color: '#F59E0B',
+        weight: 1.2,
+        fillColor: '#F59E0B',
+        fillOpacity: 0.09,
+        dashArray: '5, 6',
+        lineJoin: 'round'
+      }).addTo(fleetIsochroneLayerGroup);
+
+      fleetIsochronesMap.set(courier.id, { polygon15, polygon30 });
+
+      // 3. Directional Courier Beacon Marker
+      const icon = L.divIcon({
+        className: 'bhoj-fleet-divicon',
+        html: `
+          <div class="bhoj-fleet-courier-beacon" style="background-color: ${courier.color};" title="${courier.name}">
+            <div class="bhoj-fleet-radar-ring" style="border: 2px solid ${courier.color};"></div>
+            <div class="courier-heading-arrow" id="fleet-arrow-${courier.id}" style="transform: rotate(${courier.currentHeading}deg);">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+              </svg>
+            </div>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+
+      const marker = L.marker(courier.currentCoord, {
+        icon: icon,
+        zIndexOffset: 950
+      }).addTo(fleetLayerGroup);
+
+      marker.bindPopup(`
+        <div class="text-xs font-mono space-y-1 p-0.5">
+          <div class="flex items-center gap-1.5 font-bold text-[#141E18]">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${courier.color};"></span>
+            <span>${courier.name} (${courier.id})</span>
+          </div>
+          <p class="text-[#525B55] text-[11px]">${courier.vehicleType} &bull; ${courier.corridor}</p>
+          <div class="pt-1 border-t border-[#DCD9D0] text-[10px] space-y-0.5">
+            <div>Base Speed: <strong>${courier.baseSpeedKmH} km/h</strong></div>
+            <div>Route Distance: <strong>${courier.totalDistanceKm} km</strong></div>
+          </div>
+        </div>
+      `);
+
+      fleetMarkersMap.set(courier.id, marker);
+    });
+  }
+
+  function updateFleetMapPositions(telemetryList) {
+    if (!Array.isArray(telemetryList)) return;
+
+    telemetryList.forEach(t => {
+      const marker = fleetMarkersMap.get(t.id);
+      if (marker && typeof marker.setLatLng === 'function') {
+        marker.setLatLng(t.currentCoord);
+      }
+
+      const arrow = document.getElementById(`fleet-arrow-${t.id}`);
+      if (arrow) {
+        arrow.style.transform = `rotate(${t.heading}deg)`;
+      }
+
+      if (isochronesVisible && t.isochrones) {
+        const isoEntry = fleetIsochronesMap.get(t.id);
+        if (isoEntry) {
+          if (isoEntry.polygon15 && t.isochrones.polygon15) {
+            isoEntry.polygon15.setLatLngs(t.isochrones.polygon15);
+          }
+          if (isoEntry.polygon30 && t.isochrones.polygon30) {
+            isoEntry.polygon30.setLatLngs(t.isochrones.polygon30);
+          }
+        }
+      }
+    });
+  }
+
+  function renderFleetTelemetryHUD(telemetryList) {
+    const container = document.getElementById('fleet-courier-cards-container');
+    if (!container || !Array.isArray(telemetryList)) return;
+
+    let html = '';
+    telemetryList.forEach(t => {
+      const isComplete = t.progressPercent >= 100;
+      const statusBadge = isComplete
+        ? `<span class="px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] text-[9px] font-bold">ARRIVED</span>`
+        : (t.isRunning && !t.isPaused
+          ? `<span class="px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] text-[9px] font-bold">IN-TRANSIT</span>`
+          : (t.isPaused
+            ? `<span class="px-1.5 py-0.5 rounded bg-[#FAF9F6] text-[#525B55] text-[9px] font-bold">PAUSED</span>`
+            : `<span class="px-1.5 py-0.5 rounded bg-[#EFECE6] text-[#525B55] text-[9px] font-bold">IDLE</span>`));
+
+      const corridorBadge = t.corridor === 'Delhi/NCR'
+        ? `<span class="text-[9px] text-[#10B981] font-bold">Delhi/NCR</span>`
+        : `<span class="text-[9px] text-[#B45309] font-bold">Punjab NH-44</span>`;
+
+      html += `
+        <div class="fleet-telemetry-card p-2 bg-white border border-[#DCD9D0] rounded space-y-1 cursor-pointer hover:border-[#1B4332]"
+             tabindex="0"
+             role="button"
+             data-action="focus-courier"
+             data-courier-id="${t.id}"
+             data-lat="${t.currentCoord[0]}"
+             data-lng="${t.currentCoord[1]}"
+             aria-label="Focus map on courier ${t.name}">
+          <div class="flex items-center justify-between border-b border-[#DCD9D0]/70 pb-1 gap-1">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${t.color};"></span>
+              <strong class="text-[#141E18] text-[10px] sm:text-[11px] font-bold whitespace-nowrap">${t.name}</strong>
+            </div>
+            <div class="shrink-0">${statusBadge}</div>
+          </div>
+          <div class="flex items-center justify-between text-[9px] text-[#525B55] gap-1">
+            <span class="truncate">${t.vehicleType}</span>
+            <span class="shrink-0">${corridorBadge}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-x-1.5 gap-y-0.5 text-[9px] text-[#525B55] pt-0.5 font-mono">
+            <div>Speed: <strong class="text-[#141E18]">${t.speedKmH} km/h</strong></div>
+            <div>ETA: <strong class="text-[#141E18]">${t.etaMinutes} min</strong></div>
+            <div>Rem: <strong class="text-[#141E18]">${t.distanceRemainingKm} km</strong></div>
+            <div>Heading: <strong class="text-[#141E18]">${t.heading}&deg;</strong></div>
+          </div>
+          <!-- Progress Bar -->
+          <div class="w-full bg-[#EFECE6] h-1.5 rounded-full overflow-hidden mt-1">
+            <div class="h-full transition-all duration-100" style="background-color: ${t.color}; width: ${t.progressPercent}%;"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+
+    // Attach keyboard navigation listeners (Enter / Space) to cards
+    container.querySelectorAll('.fleet-telemetry-card').forEach(card => {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const lat = parseFloat(card.getAttribute('data-lat'));
+          const lng = parseFloat(card.getAttribute('data-lng'));
+          if (!isNaN(lat) && !isNaN(lng) && reliefMap) {
+            reliefMap.setView([lat, lng], 15, { animate: true });
+            const courierId = card.getAttribute('data-courier-id');
+            const marker = fleetMarkersMap.get(courierId);
+            if (marker) marker.openPopup();
+          }
+        }
+      });
+    });
+  }
+
+  function wireFleetControls() {
+    const fleet = global.BhojTransitSimulator.fleet;
+    const playBtn = document.getElementById('btn-fleet-play');
+    const pauseBtn = document.getElementById('btn-fleet-pause');
+    const resetBtn = document.getElementById('btn-fleet-reset');
+    const isoBtn = document.getElementById('btn-toggle-isochrones');
+    const drawerBtn = document.getElementById('btn-toggle-fleet-drawer');
+    const drawerText = document.getElementById('fleet-drawer-toggle-text');
+    const drawer = document.getElementById('fleet-telemetry-hud');
+
+    if (playBtn) {
+      playBtn.onclick = function () {
+        fleet.startAll(currentFleetSpeed || 1);
+        playBtn.classList.add('hidden');
+        if (pauseBtn) pauseBtn.classList.remove('hidden');
+      };
+    }
+
+    if (pauseBtn) {
+      pauseBtn.onclick = function () {
+        fleet.pauseAll();
+        pauseBtn.classList.add('hidden');
+        if (playBtn) playBtn.classList.remove('hidden');
+      };
+    }
+
+    if (resetBtn) {
+      resetBtn.onclick = function () {
+        fleet.stopAll();
+        const couriers = fleet.loadPresetFleet();
+        renderFleetMarkersAndIsochrones(couriers);
+        renderFleetTelemetryHUD(fleet.getFleetTelemetry());
+        if (pauseBtn) pauseBtn.classList.add('hidden');
+        if (playBtn) playBtn.classList.remove('hidden');
+      };
+    }
+
+    // Speed selector buttons
+    document.querySelectorAll('.fleet-speed-btn').forEach(btn => {
+      btn.onclick = function () {
+        document.querySelectorAll('.fleet-speed-btn').forEach(b => {
+          b.classList.remove('bg-[#E8F3EE]', 'text-[#1B4332]');
+          b.classList.add('bg-white');
+        });
+        btn.classList.add('bg-[#E8F3EE]', 'text-[#1B4332]');
+        btn.classList.remove('bg-white');
+
+        const speed = parseInt(btn.getAttribute('data-speed'), 10) || 1;
+        currentFleetSpeed = speed;
+        if (fleet.isFleetRunning && !fleet.isFleetPaused) {
+          fleet.startAll(speed);
+        }
+      };
+    });
+
+    // Isochrone toggle button
+    if (isoBtn) {
+      isoBtn.onclick = function () {
+        isochronesVisible = !isochronesVisible;
+        if (isochronesVisible) {
+          if (reliefMap && !reliefMap.hasLayer(fleetIsochroneLayerGroup)) {
+            reliefMap.addLayer(fleetIsochroneLayerGroup);
+          }
+          isoBtn.innerHTML = '<span>⏱ Isochrones: ON</span>';
+          isoBtn.classList.remove('bg-white', 'text-[#525B55]');
+          isoBtn.classList.add('bg-[#E8F3EE]', 'text-[#1B4332]', 'border-[#A3C9B8]');
+          isoBtn.setAttribute('aria-pressed', 'true');
+        } else {
+          if (reliefMap && reliefMap.hasLayer(fleetIsochroneLayerGroup)) {
+            reliefMap.removeLayer(fleetIsochroneLayerGroup);
+          }
+          isoBtn.innerHTML = '<span>⏱ Isochrones: OFF</span>';
+          isoBtn.classList.add('bg-white', 'text-[#525B55]');
+          isoBtn.classList.remove('bg-[#E8F3EE]', 'text-[#1B4332]', 'border-[#A3C9B8]');
+          isoBtn.setAttribute('aria-pressed', 'false');
+        }
+      };
+    }
+
+    // Map Legend popover toggle button
+    const legendBtn = document.getElementById('btn-toggle-map-legend');
+    const legendPopover = document.getElementById('dynamic-map-legend');
+    if (legendBtn && legendPopover) {
+      legendBtn.onclick = function (e) {
+        e.stopPropagation();
+        legendPopover.classList.toggle('hidden');
+        const isOpen = !legendPopover.classList.contains('hidden');
+        legendBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      };
+
+      document.addEventListener('click', function (e) {
+        if (!legendPopover.classList.contains('hidden') && !legendPopover.contains(e.target) && !legendBtn.contains(e.target)) {
+          legendPopover.classList.add('hidden');
+          legendBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Corridor quick-focus buttons
+    const focusDelhi = document.getElementById('btn-focus-delhi');
+    const focusPunjab = document.getElementById('btn-focus-punjab');
+    const focusDual = document.getElementById('btn-focus-dual');
+
+    if (focusDelhi) {
+      focusDelhi.onclick = function () {
+        if (reliefMap) {
+          reliefMap.fitBounds([[28.55, 77.02], [28.73, 77.40]], { padding: [30, 30] });
+        }
+      };
+    }
+
+    if (focusPunjab) {
+      focusPunjab.onclick = function () {
+        if (reliefMap) {
+          reliefMap.fitBounds([[31.23, 75.52], [31.36, 75.75]], { padding: [30, 30] });
+        }
+      };
+    }
+
+    if (focusDual) {
+      focusDual.onclick = function () {
+        if (reliefMap) {
+          reliefMap.fitBounds([[28.50, 75.50], [31.40, 77.45]], { padding: [35, 35] });
+        }
+      };
+    }
+
+    // Telemetry HUD drawer collapse/expand toggle
+    if (drawerBtn && drawer) {
+      drawerBtn.onclick = function () {
+        isFleetDrawerOpen = !isFleetDrawerOpen;
+        const container = document.getElementById('fleet-courier-cards-container');
+        if (container) {
+          if (isFleetDrawerOpen) {
+            container.classList.remove('hidden');
+            if (drawerText) drawerText.textContent = 'Telemetry HUD ▼';
+          } else {
+            container.classList.add('hidden');
+            if (drawerText) drawerText.textContent = 'Telemetry HUD ▲';
+          }
+        }
+      };
+    }
+
+    // Courier card click delegation to zoom/pan
+    if (drawer) {
+      drawer.addEventListener('click', function (e) {
+        const card = e.target.closest('[data-action="focus-courier"]');
+        if (!card) return;
+        const lat = parseFloat(card.getAttribute('data-lat'));
+        const lng = parseFloat(card.getAttribute('data-lng'));
+        if (!isNaN(lat) && !isNaN(lng) && reliefMap) {
+          reliefMap.setView([lat, lng], 15, { animate: true });
+          const courierId = card.getAttribute('data-courier-id');
+          const marker = fleetMarkersMap.get(courierId);
+          if (marker) marker.openPopup();
+        }
+      });
+    }
+  }
+
   function setupQrVerification() {
     const verifyBtn = document.getElementById('btn-verify-qr-pass');
     const qrInput = document.getElementById('pod-qr-input');
@@ -1918,6 +2320,7 @@
     setupToolbarListeners();
     setupEventDelegation();
     setupTransitSimulator();
+    setupFleetSimulation();
     setupQrVerification();
     setupShelterAssignModal();
     setupHandoverPodModal();

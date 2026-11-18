@@ -283,8 +283,49 @@
         <!-- Map Canvas -->
         <div id="relief-map" class="w-full h-full z-10"></div>
 
-        <!-- Dynamic Context-Aware Map Legend (Top Right) -->
-        <div id="dynamic-map-legend" class="absolute top-3 right-3 z-[400] bg-white/95 backdrop-blur-sm border border-[#DCD9D0] p-3 rounded text-[10px] font-mono shadow-md w-64 sm:w-72 hidden sm:block transition-all">
+        <!-- Minimalist Compact Floating Control Pill (Top Right, Non-Intrusive) -->
+        <div id="fleet-control-bar" class="map-hud-pill p-2 sm:p-2.5 rounded shadow-sm text-xs font-mono flex flex-wrap items-center gap-2 max-w-full">
+          
+          <!-- Corridor Quick-Focus Row -->
+          <div class="flex items-center gap-1 text-[10px]">
+            <span class="text-[#525B55] uppercase font-bold hidden sm:inline">Corridor:</span>
+            <button id="btn-focus-delhi" type="button" data-action="focus-corridor" data-corridor="delhi" class="px-2 py-0.5 rounded border border-[#DCD9D0] bg-white hover:bg-[#FAF9F6] text-[#141E18] font-bold transition-colors cursor-pointer">
+              Delhi/NCR (2)
+            </button>
+            <button id="btn-focus-punjab" type="button" data-action="focus-corridor" data-corridor="punjab" class="px-2 py-0.5 rounded border border-[#DCD9D0] bg-white hover:bg-[#FAF9F6] text-[#141E18] font-bold transition-colors cursor-pointer">
+              Punjab (2)
+            </button>
+            <button id="btn-focus-dual" type="button" data-action="focus-corridor" data-corridor="dual" class="px-2 py-0.5 rounded border border-[#DCD9D0] bg-[#FAF9F6] hover:bg-[#EFECE6] text-[#141E18] font-bold transition-colors cursor-pointer">
+              Dual View
+            </button>
+          </div>
+
+          <span class="text-[#DCD9D0] hidden sm:inline">|</span>
+
+          <!-- Speed Multipliers -->
+          <div class="flex items-center gap-1 bg-[#FAF9F6] border border-[#DCD9D0] rounded px-1.5 py-0.5 text-[10px] text-[#525B55]">
+            <span class="font-bold hidden sm:inline">Speed:</span>
+            <button type="button" data-action="fleet-speed" data-speed="1" class="fleet-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-[#E8F3EE] text-[#1B4332] font-bold cursor-pointer">1x</button>
+            <button type="button" data-action="fleet-speed" data-speed="2" class="fleet-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-white font-bold cursor-pointer">2x</button>
+            <button type="button" data-action="fleet-speed" data-speed="5" class="fleet-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-white font-bold cursor-pointer">5x</button>
+            <button type="button" data-action="fleet-speed" data-speed="10" class="fleet-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-white font-bold cursor-pointer">10x</button>
+            <button type="button" data-action="fleet-speed" data-speed="25" class="fleet-speed-btn px-1.5 py-0.5 rounded border border-[#DCD9D0] bg-white font-bold cursor-pointer">25x</button>
+          </div>
+
+          <!-- Isochrone Toggle -->
+          <button id="btn-toggle-isochrones" type="button" data-action="toggle-isochrones" class="px-2 py-1 bg-[#E8F3EE] border border-[#A3C9B8] text-[#1B4332] rounded text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer" aria-pressed="true" aria-label="Toggle Dynamic Reachability Isochrones">
+            <span>⏱ Isochrones: ON</span>
+          </button>
+
+          <!-- Collapsible Legend Popover Button -->
+          <button id="btn-toggle-map-legend" type="button" class="px-2 py-1 bg-white hover:bg-[#FAF9F6] border border-[#DCD9D0] text-[#525B55] hover:text-[#141E18] rounded text-[10px] font-bold transition-colors cursor-pointer" title="Toggle Map Legend">
+            <span>Legend ▾</span>
+          </button>
+
+        </div>
+
+        <!-- Collapsible Context-Aware Map Legend Popover (Drops down below pill when toggled) -->
+        <div id="dynamic-map-legend" class="absolute top-14 right-3 z-[410] bg-white/95 backdrop-blur-sm border border-[#DCD9D0] p-3 rounded text-[10px] font-mono shadow-xl w-64 sm:w-72 hidden transition-all">
           <div id="legend-content">
             <!-- Dynamically populated and morphed by js/volunteer.js -->
             <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5 mb-2">
@@ -329,12 +370,110 @@
                 </div>
                 <span id="legend-count-shelter" class="text-[9px] font-bold text-[#0284C7]">7 Hubs</span>
               </div>
+              <div id="legend-row-isochrone15" class="flex items-center justify-between pt-1 border-t border-[#DCD9D0]/60">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-2 rounded border border-[#10B981] bg-[#10B981]/25 shrink-0"></span>
+                  <span class="text-[#525B55]">15-Min Safe Window</span>
+                </div>
+                <span class="text-[9px] text-[#10B981] font-bold">&le; 60&deg;C Hot</span>
+              </div>
+              <div id="legend-row-isochrone30" class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-2 rounded border border-[#F59E0B] border-dashed bg-[#F59E0B]/15 shrink-0"></span>
+                  <span class="text-[#525B55]">30-Min FSSAI Limit</span>
+                </div>
+                <span class="text-[9px] text-[#B45309] font-bold">Perimeter</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Floating Route Summary Overlay (Bottom) -->
-        <div id="route-summary-overlay" class="absolute bottom-4 left-4 right-4 z-[400] bg-white border border-[#DCD9D0] p-3 rounded shadow-lg hidden">
+        <!-- Sleek Docked Bottom Telemetry Ribbon (Leaves 85%+ of the Map Completely Open) -->
+        <div id="map-docked-ribbon" class="map-docked-ribbon">
+          
+          <!-- Collapsible 4-Courier Telemetry Pop-up Drawer (Only visible when user toggles) -->
+          <div id="fleet-telemetry-hud" class="p-3 bg-white/98 border-b border-[#DCD9D0] max-h-56 overflow-y-auto hidden">
+            <div class="flex items-center justify-between border-b border-[#DCD9D0] pb-1.5 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-[10px] uppercase font-bold text-[#1B4332] px-1.5 py-0.5 bg-[#E8F3EE] border border-[#A3C9B8] rounded">
+                  Live Fleet Telemetry
+                </span>
+                <span class="text-xs font-bold text-[#141E18]">4 Concurrent Multi-Corridor Couriers</span>
+              </div>
+              <div class="text-[10px] font-mono text-[#525B55]">
+                Click any card to center map
+              </div>
+            </div>
+            <!-- Grid of courier telemetry cards -->
+            <div id="fleet-courier-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs font-mono">
+              <!-- Populated dynamically by js/volunteer.js -->
+            </div>
+          </div>
+
+          <!-- Bottom Ribbon Single-Line Bar -->
+          <div class="px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+            
+            <!-- Left: Fleet Play / Pause / Reset Controls -->
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse"></span>
+              <span class="font-bold text-[#141E18] text-[11px] hidden sm:inline uppercase tracking-wider">Fleet:</span>
+              <span id="fleet-active-badge" class="px-1.5 py-0.5 rounded bg-[#E8F3EE] text-[#1B4332] text-[10px] font-bold">4 Couriers</span>
+
+              <!-- Play / Pause / Reset -->
+              <button id="btn-fleet-play" type="button" data-action="start-fleet" class="px-2 py-0.5 bg-[#1B4332] hover:bg-[#143225] text-white rounded text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer" aria-label="Dispatch Fleet Simulation">
+                <span>▶ Dispatch</span>
+              </button>
+              <button id="btn-fleet-pause" type="button" data-action="pause-fleet" class="px-2 py-0.5 bg-[#FAF9F6] hover:bg-[#EFECE6] border border-[#DCD9D0] text-[#141E18] rounded text-[10px] font-bold hidden transition-colors cursor-pointer" aria-label="Pause Fleet Simulation">
+                <span>⏸ Pause</span>
+              </button>
+              <button id="btn-fleet-reset" type="button" data-action="reset-fleet" class="px-2 py-0.5 bg-white hover:bg-[#FAF9F6] border border-[#DCD9D0] text-[#525B55] hover:text-[#141E18] rounded text-[10px] font-semibold transition-colors cursor-pointer" aria-label="Reset Fleet Waypoints">
+                <span>↺ Reset</span>
+              </button>
+            </div>
+
+            <!-- Center: Status Ticker / Telemetry Toggle -->
+            <div class="flex items-center gap-2">
+              <button id="btn-toggle-fleet-drawer" type="button" data-action="toggle-fleet-drawer" class="text-[10px] text-[#525B55] hover:text-[#141E18] px-2 py-0.5 rounded hover:bg-[#EFECE6] border border-[#DCD9D0] transition-colors cursor-pointer flex items-center gap-1">
+                <span id="fleet-drawer-toggle-text">Telemetry HUD ▲</span>
+              </button>
+            </div>
+
+            <!-- Right: Route status or prompt -->
+            <div class="text-[11px] text-[#525B55] truncate max-w-xs sm:max-w-none">
+              <span class="hidden md:inline">Click any pickup card in feed to inspect live route &bull; </span>
+              <span class="text-[#1B4332] font-bold">15m/30m Isochrones Active</span>
+            </div>
+
+          </div>
+
+          <!-- Integrated Route Summary Bar (Appears docked inside ribbon on dispatch selection) -->
+          <div id="route-summary-overlay" class="border-t border-[#DCD9D0] bg-[#FAF9F6] px-4 py-2.5 hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="font-mono text-[9px] uppercase font-bold text-[#1B4332] px-1.5 py-0.5 bg-[#E8F3EE] border border-[#A3C9B8] rounded shrink-0">
+                  Selected Route
+                </span>
+                <span id="route-donor-name" class="font-bold text-[#141E18] text-sm truncate font-display">Grand Imperial Banquet</span>
+                <span class="text-[#DCD9D0] hidden sm:inline">&bull;</span>
+                <div class="text-[11px] text-[#525B55] flex items-center gap-2 shrink-0">
+                  <span>To Pickup: <strong id="route-courier-dist" class="text-[#141E18]">0.0 km</strong> (<span id="route-courier-time">0 mins</span>)</span>
+                  <span>&bull;</span>
+                  <span id="route-shelter-dist">To Shelter: 0.0 km</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <button id="btn-route-clear" type="button" data-action="clear-route" class="px-2.5 py-1 text-xs font-mono font-semibold border border-[#DCD9D0] bg-white hover:bg-[#FAF9F6] text-[#C84B31] rounded cursor-pointer">
+                  Clear
+                </button>
+                <button id="btn-route-action" type="button" class="btn-primary px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">
+                  I'll Pick This Up
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div class="space-y-0.5">
               <div class="flex items-center gap-2">

@@ -526,18 +526,18 @@
                 </span>
               </div>
 
-              <div class="text-xs text-[#525B55] italic bg-[#FAF9F6] p-2 rounded border border-[#DCD9D0]">
+              <div class="text-xs text-[#525B55] italic py-1 border-l-2 border-[#DCD9D0] pl-2.5">
                 ${escapeHtml(item.itemsDescription || item.foodTitle)}
               </div>
 
-              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-                <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                  <span class="text-[10px] text-[#525B55]">Total Food</span>
-                  <div class="font-bold text-[#141E18]">${item.servings} meals <span class="text-[#525B55] font-normal">(~${weightKg} kg)</span></div>
+              <div class="grid grid-cols-2 divide-x divide-[#DCD9D0] border-y border-[#DCD9D0] py-2 my-1 text-xs font-mono">
+                <div class="px-2">
+                  <span class="text-[9px] uppercase tracking-wider text-[#525B55] block">Total Food</span>
+                  <div class="font-bold text-[#141E18] text-sm tabular-nums mt-0.5">${item.servings} <span class="text-[11px] font-normal text-[#525B55]">meals (~${weightKg}kg)</span></div>
                 </div>
-                <div class="p-2 bg-[#F7F5F0] border border-[#DCD9D0] rounded">
-                  <span class="text-[10px] text-[#525B55]">Safety Check</span>
-                  <div class="font-bold text-[#1B4332]">Verified (${escapeHtml(item.storageTemp || 'Fresh')})</div>
+                <div class="px-2">
+                  <span class="text-[9px] uppercase tracking-wider text-[#525B55] block">Safety Check</span>
+                  <div class="font-bold text-[#1B4332] text-xs mt-0.5">Verified (${escapeHtml(item.storageTemp || 'Fresh')})</div>
                 </div>
               </div>
 
