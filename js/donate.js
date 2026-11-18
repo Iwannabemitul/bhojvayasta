@@ -507,8 +507,10 @@
     panels.forEach((p, idx) => {
       if (idx + 1 === currentStep) {
         p.classList.remove('hidden');
+        p.classList.add('tab-content-active');
       } else {
         p.classList.add('hidden');
+        p.classList.remove('tab-content-active');
       }
     });
 

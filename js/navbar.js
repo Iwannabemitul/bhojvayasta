@@ -171,6 +171,11 @@
 
         <!-- Right Utility Actions -->
         <div class="hidden sm:flex items-center gap-3 shrink-0">
+          <button id="btn-toggle-theme" type="button" title="Switch Theme (Day Editorial / Night Radar)" aria-label="Toggle theme" class="whitespace-nowrap font-mono text-xs text-[#525B55] hover:text-[#141E18] px-2.5 py-1.5 border border-[#DCD9D0] bg-white rounded cursor-pointer transition-colors flex items-center gap-1.5">
+            <span id="theme-toggle-icon">🌙</span>
+            <span id="theme-toggle-label" class="hidden lg:inline text-[11px] font-semibold">Night Radar</span>
+          </button>
+
           <button id="btn-reset-demo" type="button" title="Reset sample data for testing" class="whitespace-nowrap font-mono text-xs text-[#525B55] hover:text-[#141E18] px-2.5 py-1.5 border border-[#DCD9D0] bg-white rounded cursor-pointer transition-colors">
             Reset Demo
           </button>
@@ -206,6 +211,10 @@
           <span class="font-mono text-xs bg-[#FEF3C7] text-[#B45309] px-2 py-0.5 border border-[#F59E0B]/30 rounded">${availableCount} Live</span>
         </a>
         <div class="pt-3 border-t border-[#DCD9D0] flex flex-col gap-2">
+          <button id="mobile-btn-toggle-theme" type="button" class="w-full text-center py-2 text-xs font-mono border border-[#DCD9D0] bg-white text-[#525B55] flex items-center justify-center gap-2">
+            <span id="mobile-theme-icon">🌙</span>
+            <span id="mobile-theme-label">Switch to Night Radar</span>
+          </button>
           <button id="mobile-btn-reset-demo" type="button" class="w-full text-center py-2 text-xs font-mono border border-[#DCD9D0] bg-white text-[#525B55]">
             Reset Demo Data
           </button>
@@ -258,6 +267,49 @@
 
     const mobileResetBtn = document.getElementById('mobile-btn-reset-demo');
     if (mobileResetBtn) mobileResetBtn.onclick = handleReset;
+
+    // Theme Switch Logic (Day Editorial <-> Night Radar)
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const targetTheme = isDark ? 'light' : 'dark';
+      applyTheme(targetTheme);
+      localStorage.setItem('bhoj_theme', targetTheme);
+      BhojToast.info(targetTheme === 'dark' ? 'Switched to Night Radar Mode' : 'Switched to Day Paper Mode', 2500);
+    }
+
+    const themeToggleBtn = document.getElementById('btn-toggle-theme');
+    if (themeToggleBtn) themeToggleBtn.onclick = toggleTheme;
+
+    const mobileThemeToggleBtn = document.getElementById('mobile-btn-toggle-theme');
+    if (mobileThemeToggleBtn) mobileThemeToggleBtn.onclick = toggleTheme;
+  }
+
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (document.body) document.body.classList.add('dark-mode');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      if (document.body) document.body.classList.remove('dark-mode');
+    }
+
+    const icon = document.getElementById('theme-toggle-icon');
+    const label = document.getElementById('theme-toggle-label');
+    if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+    if (label) label.textContent = isDark ? 'Day Paper' : 'Night Radar';
+
+    const mobileIcon = document.getElementById('mobile-theme-icon');
+    const mobileLabel = document.getElementById('mobile-theme-label');
+    if (mobileIcon) mobileIcon.textContent = isDark ? '☀️' : '🌙';
+    if (mobileLabel) mobileLabel.textContent = isDark ? 'Switch to Day Paper' : 'Switch to Night Radar';
+
+    window.dispatchEvent(new CustomEvent('bhoj:themechange', { detail: { theme } }));
+  }
+
+  function initTheme() {
+    const savedTheme = localStorage.getItem('bhoj_theme') || 'light';
+    applyTheme(savedTheme);
   }
 
   function updateBadge() {
@@ -350,7 +402,9 @@
   }
 
   function init() {
+    initTheme();
     renderNavbar();
+    initTheme(); // Re-sync icon and label after navbar DOM render
     renderFooter();
 
     if (global.BhojStore && typeof global.BhojStore.subscribe === 'function') {

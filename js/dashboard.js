@@ -164,8 +164,9 @@
   function updateCharts() {
     if (!global.BhojStore || typeof Chart === 'undefined') return;
 
-    Chart.defaults.color = '#525B55';
-    Chart.defaults.borderColor = '#DCD9D0';
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    Chart.defaults.color = isDark ? '#8F9E96' : '#525B55';
+    Chart.defaults.borderColor = isDark ? '#26362C' : '#DCD9D0';
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 
     const dispatches = global.BhojStore.getDispatches();
@@ -722,6 +723,18 @@
       updateKPIs();
       updateCharts();
       renderLedger();
+    });
+
+    window.addEventListener('bhoj:themechange', function () {
+      if (foodTypeChartInstance) {
+        foodTypeChartInstance.destroy();
+        foodTypeChartInstance = null;
+      }
+      if (shelterDistChartInstance) {
+        shelterDistChartInstance.destroy();
+        shelterDistChartInstance = null;
+      }
+      updateCharts();
     });
   }
 

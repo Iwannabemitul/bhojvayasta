@@ -533,12 +533,13 @@
                 lineJoin: 'round'
               }).addTo(routeLayerGroup);
 
-              // Leg 2: Dashed Terracotta along real streets
+              // Leg 2: Dashed Terracotta along real streets with live animated flow
               const leg2Line = L.polyline(leg2Coords.length > 1 ? leg2Coords : [donorPoint, shelterPoint], {
                 color: '#C84B31',
                 weight: 4,
                 opacity: 0.95,
                 dashArray: '6, 8',
+                className: 'animated-route-flow',
                 lineCap: 'round',
                 lineJoin: 'round'
               }).addTo(routeLayerGroup);
@@ -564,14 +565,16 @@
         color: '#1D4ED8',
         weight: 3.5,
         opacity: 0.9,
-        dashArray: '6, 6'
+        dashArray: '6, 6',
+        className: 'animated-route-flow'
       }).addTo(routeLayerGroup);
 
       const leg2Line = L.polyline([donorPoint, shelterPoint], {
         color: '#C84B31',
         weight: 3.5,
         opacity: 0.9,
-        dashArray: '6, 6'
+        dashArray: '6, 6',
+        className: 'animated-route-flow'
       }).addTo(routeLayerGroup);
 
       const group = L.featureGroup([leg1Line, leg2Line]);
@@ -895,8 +898,8 @@
 
         const isSelected = item.id === activeSelectedDispatchId;
         const statusAccent = isSelected
-          ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332]'
-          : (item.status === 'Available' ? 'border-l-2 border-l-[#1B4332] hover:bg-[#FAF9F6]' : 'border-l-2 border-l-[#B45309] hover:bg-[#FAF9F6]');
+          ? 'bg-[#F0FDF4] border-l-4 border-l-[#1B4332] shadow-md ring-1 ring-[#1B4332]/25'
+          : (item.status === 'Available' ? 'border-l-4 border-l-[#1B4332] hover:bg-[#FAF9F6]' : 'border-l-4 border-l-[#B45309] hover:bg-[#FAF9F6]');
 
         return `
           <div id="card-${item.id}"
@@ -1934,8 +1937,9 @@
       const polyline = L.polyline(courier.waypoints, {
         color: courier.color,
         weight: 3.5,
-        opacity: 0.75,
+        opacity: 0.8,
         dashArray: '5, 7',
+        className: 'animated-route-flow',
         lineJoin: 'round'
       }).addTo(fleetLayerGroup);
       fleetPolylinesMap.set(courier.id, polyline);
